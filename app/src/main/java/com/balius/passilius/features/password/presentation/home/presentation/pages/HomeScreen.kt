@@ -1,5 +1,6 @@
 package com.balius.passilius.features.password.presentation.home.presentation.pages
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,10 +26,18 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,7 +53,8 @@ import com.balius.passilius.core.presentation.navigation.Screen
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    navController: NavController, viewModel: HomeViewModel = getViewModel()) {
+    navController: NavController, viewModel: HomeViewModel = getViewModel()
+) {
 
     val state = viewModel.state.value
 
@@ -57,9 +67,10 @@ fun HomeScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text(text = stringResource(id = R.string.app_name),
+                    Text(
+                        text = stringResource(id = R.string.app_name),
                         color = Color.Black
-                        )
+                    )
                 },
                 actions = {
                     Row(
@@ -114,37 +125,89 @@ fun HomeScreen(
 
 @Composable
 fun PasswordList(passwords: List<Password>, modifier: Modifier = Modifier) {
+    val visiblePasswords = remember(passwords) { mutableStateMapOf<Int, Boolean>() }
+
     LazyColumn(
-        modifier = modifier.padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        modifier = modifier.padding(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(passwords) { password ->
-            PasswordItem(password)
+        items(passwords, key = { it.id ?: it.hashCode() }) { password ->
+            val id = password.id ?: password.hashCode()
+            val isVisible = visiblePasswords[id] ?: false
+            PasswordItem(
+                password = password,
+                isVisible = isVisible,
+                onVisibilityChange = { visiblePasswords[id] = it }
+            )
         }
     }
 }
 
 
 @Composable
-fun PasswordItem(password: Password) {
+fun PasswordItem(
+    password: Password,
+    isVisible: Boolean,
+    onVisibilityChange: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val clipboardManager = LocalClipboardManager.current
+
     Surface(
         color = MaterialTheme.colorScheme.surfaceVariant,
         tonalElevation = 2.dp,
         shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth()
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(
-                text = password.username.toString(),
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = password.url,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 12.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = password.url,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = password.username ?: "(بدون نام کاربری)",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Text(
+                    text = if (isVisible) password.password else "******",
+                    fontSize = 18.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
+
+            IconButton(onClick = { onVisibilityChange(!isVisible) }) {
+                Icon(
+                    painter = painterResource(
+                        id = if (isVisible) R.drawable.unhide_icon else R.drawable.hide_icon
+                    ),
+                    contentDescription = if (isVisible) "Hide password" else "Show password"
+                )
+            }
+            IconButton(onClick = {
+
+                clipboardManager.setText(AnnotatedString(password.username.toString()))
+                clipboardManager.setText(AnnotatedString(password.password))
+                Toast.makeText(context,"user and pass copied to clipboard",Toast.LENGTH_SHORT).show()
+
+            }) {
+                Icon(
+                    painter = painterResource(
+                        id = R.drawable.copy_icon
+                    ),
+                    contentDescription = "copy password"
+                )
+            }
         }
     }
 }

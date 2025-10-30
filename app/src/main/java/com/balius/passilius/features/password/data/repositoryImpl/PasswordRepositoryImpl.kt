@@ -25,5 +25,5 @@ class PasswordRepositoryImpl(
 
 
 // Mapping extensions
-fun PasswordEntity.toDomain() = Password(user   , password, url)
+fun PasswordEntity.toDomain() = Password(id, user, password, url)
 fun Password.toEntity() = PasswordEntity(user = username, password = password, url = url)

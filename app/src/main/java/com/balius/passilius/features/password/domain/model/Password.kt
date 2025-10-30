@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 
 
 data class Password(
+    val id : Int?,
     val username: String?,
     val password: String,
     val url: String

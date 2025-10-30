@@ -51,6 +51,7 @@ class PasswordViewModel(
 
                 useCases.savePassword(
                     Password(
+                        id = current.PasswordId,
                         username = current.username,
                         password = current.password,
                         url = current.url

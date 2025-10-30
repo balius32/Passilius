@@ -1,6 +1,7 @@
 package com.balius.passilius.features.password.presentation.crud
 
 data class PasswordState (
+    val PasswordId : Int = 0,
     val username: String = "",
     val password: String = "",
     val url: String = "",
