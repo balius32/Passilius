@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.yield
 
 class VaultViewModel(
     application: Application,
@@ -77,10 +78,10 @@ class VaultViewModel(
                 showToast("Username copied to clipboard")
             }
             is VaultUiIntent.OpenCreate -> {
-                _uiState.update { it.copy(editingCredential = null, isBottomSheetOpen = true) }
+                openBottomSheet(editingCredential = null)
             }
             is VaultUiIntent.OpenEdit -> {
-                _uiState.update { it.copy(editingCredential = intent.credential, isBottomSheetOpen = true) }
+                openBottomSheet(editingCredential = intent.credential)
             }
             is VaultUiIntent.CloseBottomSheet -> {
                 _uiState.update { it.copy(isBottomSheetOpen = false, editingCredential = null) }
@@ -111,6 +112,22 @@ class VaultViewModel(
             }
             is VaultUiIntent.UnlockVault -> {
                 _uiState.update { it.copy(isLocked = false) }
+            }
+        }
+    }
+
+    private fun openBottomSheet(editingCredential: Credential?) {
+        viewModelScope.launch {
+            // Tear down any stuck Hidden sheet before remounting.
+            _uiState.update {
+                it.copy(editingCredential = null, isBottomSheetOpen = false)
+            }
+            yield()
+            _uiState.update {
+                it.copy(
+                    editingCredential = editingCredential,
+                    isBottomSheetOpen = true
+                )
             }
         }
     }

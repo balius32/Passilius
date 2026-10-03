@@ -49,6 +49,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,6 +73,7 @@ import com.example.core.designsystem.SecurityTertiaryBright
 import com.example.core.designsystem.SurfaceCanvas
 import com.example.core.designsystem.VaultTypography
 import com.example.domain.model.Credential
+import kotlinx.coroutines.launch
 
 private val SheetFieldShape = RoundedCornerShape(16.dp)
 private val SheetFieldBackground = Color(0xFFEFF2F7)
@@ -117,7 +119,28 @@ fun CredentialBottomSheet(
         entropyBits = PasswordGenerator.calculateEntropy(password)
     }
 
+    val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    fun dismissSheet() {
+        scope.launch {
+            sheetState.hide()
+        }.invokeOnCompletion {
+            if (!sheetState.isVisible) {
+                onDismiss()
+            }
+        }
+    }
+
+    fun saveAndDismiss(credential: Credential) {
+        scope.launch {
+            sheetState.hide()
+        }.invokeOnCompletion {
+            if (!sheetState.isVisible) {
+                onSave(credential)
+            }
+        }
+    }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -171,7 +194,7 @@ fun CredentialBottomSheet(
                     modifier = Modifier
                         .size(36.dp)
                         .sheetIconButton()
-                        .clickable { onDismiss() },
+                        .clickable { dismissSheet() },
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
@@ -607,7 +630,7 @@ fun CredentialBottomSheet(
                     .height(56.dp)
                     .clip(RoundedCornerShape(20.dp))
                     .background(ElectricPrimaryBright, RoundedCornerShape(20.dp))
-                    .clickable(enabled = service.isNotBlank() && password.isNotBlank()) {
+                    .clickable(enabled = service.isNotBlank() && password.isNotBlank() && !isSaving) {
                         isSaving = true
                         val cred = Credential(
                             id = initialCredential?.id ?: 0L,
@@ -621,7 +644,7 @@ fun CredentialBottomSheet(
                             isFavorite = initialCredential?.isFavorite ?: false,
                             entropyBits = entropyBits
                         )
-                        onSave(cred)
+                        saveAndDismiss(cred)
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -654,7 +677,7 @@ fun CredentialBottomSheet(
                 color = SecondarySlate,
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
-                    .clickable { onDismiss() }
+                    .clickable { dismissSheet() }
                     .padding(8.dp)
             )
         }
