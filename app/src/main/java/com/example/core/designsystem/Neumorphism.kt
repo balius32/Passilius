@@ -4,11 +4,10 @@ import android.graphics.BlurMaskFilter
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +33,9 @@ fun Modifier.neuFlat(
     elevation: Dp = 6.dp,
     lightColor: Color = Color(0xFFFFFFFF),
     darkColor: Color = Color(0x70CAD3DF),
-    backgroundColor: Color = SurfaceCanvas
+    backgroundColor: Color = SurfaceCanvas,
+    strokeColor: Color = SoftStroke,
+    borderWidth: Dp = 1.dp
 ): Modifier = this
     .drawBehind {
         val radiusPx = cornerRadius.toPx()
@@ -79,6 +80,7 @@ fun Modifier.neuFlat(
         }
     }
     .background(backgroundColor, shape)
+    .border(borderWidth, strokeColor, shape)
     .clip(shape)
 
 /**
@@ -90,9 +92,12 @@ fun Modifier.neuPressed(
     depth: Dp = 4.dp,
     insetDarkColor: Color = Color(0x50BAC7D5),
     insetLightColor: Color = Color(0xAAFFFFFF),
-    backgroundColor: Color = Color(0xFFEFF2F7)
+    backgroundColor: Color = Color(0xFFEFF2F7),
+    strokeColor: Color = SoftStroke,
+    borderWidth: Dp = 1.dp
 ): Modifier = this
     .background(backgroundColor, shape)
+    .border(borderWidth, strokeColor, shape)
     .drawBehind {
         val radiusPx = cornerRadius.toPx()
         val depthPx = depth.toPx()

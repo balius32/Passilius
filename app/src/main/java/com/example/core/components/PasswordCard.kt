@@ -5,8 +5,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,7 +29,6 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,7 +38,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
@@ -154,12 +152,23 @@ fun PasswordCard(
                             style = VaultTypography.bodySmall,
                             color = OnSurfaceSecondary,
                             maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier
+                                .testTag("username_${credential.id}")
+                                .combinedClickable(
+                                    interactionSource = remember { MutableInteractionSource() },
+                                    indication = null,
+                                    onClick = { isExpanded = !isExpanded },
+                                    onLongClick = {
+                                        if (credential.username.isNotBlank()) {
+                                            onCopyUsername(credential.username)
+                                        }
+                                    }
+                                )
                         )
 
                         Spacer(modifier = Modifier.height(2.dp))
 
-                        // Password text in JetBrains Mono
                         Text(
                             text = if (isRevealed) credential.password else "••••••••",
                             style = VaultTypography.labelSmall,
@@ -172,37 +181,68 @@ fun PasswordCard(
 
                 Spacer(modifier = Modifier.width(8.dp))
 
-                // Right: Eye reveal toggle disc button
-                Box(
-                    modifier = Modifier
-                        .size(38.dp)
-                        .testTag("eye_toggle_${credential.id}")
-                        .then(
-                            if (isRevealed) {
-                                Modifier.neuPressed(
-                                    shape = CircleShape,
-                                    cornerRadius = 19.dp,
-                                    depth = 3.dp,
-                                    backgroundColor = Color(0xFFE5EDFC)
-                                )
-                            } else {
-                                Modifier.neuFlat(
-                                    shape = CircleShape,
-                                    cornerRadius = 19.dp,
-                                    elevation = 3.dp,
-                                    backgroundColor = SurfaceCanvas
-                                )
-                            }
-                        )
-                        .clickable { isRevealed = !isRevealed },
-                    contentAlignment = Alignment.Center
+                // Quick copy password + reveal — username: long-press the email/username text
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
-                    Icon(
-                        imageVector = if (isRevealed) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                        contentDescription = if (isRevealed) "Hide Password" else "Show Password",
-                        tint = if (isRevealed) ElectricPrimaryBright else SecondarySlate,
-                        modifier = Modifier.size(18.dp)
-                    )
+                    Box(
+                        modifier = Modifier
+                            .size(38.dp)
+                            .testTag("quick_copy_password_${credential.id}")
+                            .neuFlat(
+                                shape = CircleShape,
+                                cornerRadius = 19.dp,
+                                elevation = 3.dp,
+                                backgroundColor = SurfaceCanvas
+                            )
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { onCopyPassword(credential.password) },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ContentCopy,
+                            contentDescription = "Copy password",
+                            tint = ElectricPrimaryBright,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(38.dp)
+                            .testTag("eye_toggle_${credential.id}")
+                            .then(
+                                if (isRevealed) {
+                                    Modifier.neuPressed(
+                                        shape = CircleShape,
+                                        cornerRadius = 19.dp,
+                                        depth = 3.dp,
+                                        backgroundColor = Color(0xFFE5EDFC)
+                                    )
+                                } else {
+                                    Modifier.neuFlat(
+                                        shape = CircleShape,
+                                        cornerRadius = 19.dp,
+                                        elevation = 3.dp,
+                                        backgroundColor = SurfaceCanvas
+                                    )
+                                }
+                            )
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = null
+                            ) { isRevealed = !isRevealed },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = if (isRevealed) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            contentDescription = if (isRevealed) "Hide Password" else "Show Password",
+                            tint = if (isRevealed) ElectricPrimaryBright else SecondarySlate,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
                 }
             }
 
@@ -217,7 +257,6 @@ fun PasswordCard(
                         .fillMaxWidth()
                         .padding(top = 16.dp)
                 ) {
-                    // Divider
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -227,7 +266,6 @@ fun PasswordCard(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // 2FA TOTP view if available
                     if (credential.totpSecret.isNotBlank()) {
                         Row(
                             modifier = Modifier
@@ -272,13 +310,11 @@ fun PasswordCard(
                         Spacer(modifier = Modifier.height(12.dp))
                     }
 
-                    // Action buttons row: Copy Password, Copy Username, Edit, Favorite, Delete
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        // Copy Password Pill
                         Box(
                             modifier = Modifier
                                 .neuFlat(
@@ -307,7 +343,6 @@ fun PasswordCard(
                             }
                         }
 
-                        // Copy Username Pill
                         Box(
                             modifier = Modifier
                                 .neuFlat(
@@ -327,7 +362,6 @@ fun PasswordCard(
                             )
                         }
 
-                        // Edit Button
                         Box(
                             modifier = Modifier
                                 .size(32.dp)
@@ -348,7 +382,6 @@ fun PasswordCard(
                             )
                         }
 
-                        // Favorite Button
                         Box(
                             modifier = Modifier
                                 .size(32.dp)
@@ -369,7 +402,6 @@ fun PasswordCard(
                             )
                         }
 
-                        // Delete Button
                         Box(
                             modifier = Modifier
                                 .size(32.dp)

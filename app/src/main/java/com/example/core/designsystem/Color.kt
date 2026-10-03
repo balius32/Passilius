@@ -11,12 +11,13 @@ val SurfaceContainer = Color(0xFFEBEEF3)
 val SurfaceContainerHigh = Color(0xFFE5E8ED)
 val SurfaceContainerHighest = Color(0xFFDFE3E8)
 
-// Text and Glyphs
+// Text and Glyphs (secondary tones tuned for ~4.5:1 on SurfaceCanvas)
 val OnSurfacePrimary = Color(0xFF0F172A)
-val OnSurfaceSecondary = Color(0xFF434654)
-val SecondarySlate = Color(0xFF545F73)
-val OutlineColor = Color(0xFF737686)
+val OnSurfaceSecondary = Color(0xFF334155)
+val SecondarySlate = Color(0xFF3F4B5F)
+val OutlineColor = Color(0xFF5B6475)
 val OutlineVariant = Color(0xFFC3C6D7)
+val SoftStroke = Color(0x0D000000) // Black @ 5% — subtle edge on neumorphic surfaces
 
 // Accent Colors
 val ElectricPrimary = Color(0xFF0050D6)
