@@ -38,6 +38,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -72,6 +73,8 @@ import com.example.presentation.vault.VaultViewModel
 private const val ProfileTransitionDurationMs = 320
 
 private val FabSize = 56.dp
+/** Extra touch padding around the FAB — visual size stays FabSize. */
+private val FabHitSize = 80.dp
 
 private val profileForwardTransition: AnimatedContentTransitionScope<*>.() -> ContentTransform = {
     slideInHorizontally(
@@ -222,11 +225,13 @@ fun VaultApp(
                 )
 
                 if (vaultState.isBottomSheetOpen) {
-                    CredentialBottomSheet(
-                        initialCredential = vaultState.editingCredential,
-                        onDismiss = { vaultViewModel.handleIntent(VaultUiIntent.CloseBottomSheet) },
-                        onSave = { vaultViewModel.handleIntent(VaultUiIntent.SaveCredential(it)) }
-                    )
+                    key(vaultState.bottomSheetSessionId) {
+                        CredentialBottomSheet(
+                            initialCredential = vaultState.editingCredential,
+                            onDismiss = { vaultViewModel.handleIntent(VaultUiIntent.CloseBottomSheet) },
+                            onSave = { vaultViewModel.handleIntent(VaultUiIntent.SaveCredential(it)) }
+                        )
+                    }
                 }
             }
         }
@@ -255,7 +260,8 @@ fun VaultBottomNavigationBar(
     ) {
         Box(
             modifier = Modifier
-                .padding(top = FabSize / 2)
+                // Align notch with visual FAB center inside the larger hit target.
+                .padding(top = FabHitSize / 2)
                 .fillMaxWidth()
                 .height(64.dp)
                 .background(SurfaceContainerLowest, barShape)
@@ -327,24 +333,32 @@ fun VaultBottomNavigationBar(
             }
         }
 
+        // Larger hit target stays inside bottomBar bounds (no negative offset).
+        // Visual circle remains FabSize so the design looks the same.
         Box(
             modifier = Modifier
-                .size(FabSize)
+                .size(FabHitSize)
                 .testTag("open_generator_fab")
-                .clip(CircleShape)
-                .background(ElectricPrimaryBright, CircleShape)
                 .clickable(
                     interactionSource = fabInteraction,
                     indication = null
                 ) { onOpenCreate() },
             contentAlignment = Alignment.Center
         ) {
-            Icon(
-                imageVector = Icons.Default.Add,
-                contentDescription = "Create Password",
-                tint = OnPrimary,
-                modifier = Modifier.size(26.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .size(FabSize)
+                    .clip(CircleShape)
+                    .background(ElectricPrimaryBright, CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Add,
+                    contentDescription = "Create Password",
+                    tint = OnPrimary,
+                    modifier = Modifier.size(26.dp)
+                )
+            }
         }
     }
 }

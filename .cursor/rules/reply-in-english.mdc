@@ -1,0 +1,11 @@
+---
+description: Always reply in English regardless of the user's language
+alwaysApply: true
+---
+
+# Reply in English
+
+- The user may write in any language (Persian, English, mixed, etc.).
+- Always respond in clear English.
+- Do not mirror the user's language for the main reply.
+- Code, identifiers, and file paths stay as-is; explanations around them are in English.

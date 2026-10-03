@@ -12,6 +12,8 @@ data class VaultUiState(
     val toastMessage: String? = null,
     val editingCredential: Credential? = null,
     val isBottomSheetOpen: Boolean = false,
+    /** Bumped on every open so Compose remounts a fresh ModalBottomSheet. */
+    val bottomSheetSessionId: Long = 0L,
     val isLocked: Boolean = false,
     val masterPin: String = "1234"
 )

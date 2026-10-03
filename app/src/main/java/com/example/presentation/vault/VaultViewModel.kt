@@ -11,13 +11,13 @@ import com.example.domain.usecase.SaveCredentialUseCase
 import com.example.domain.usecase.ToggleFavoriteUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 
 class VaultViewModel(
     application: Application,
@@ -34,6 +34,7 @@ class VaultViewModel(
     val events = _eventChannel.receiveAsFlow()
 
     private var searchJob: Job? = null
+    private var sheetOpenJob: Job? = null
 
     init {
         loadCredentials()
@@ -84,12 +85,12 @@ class VaultViewModel(
                 openBottomSheet(editingCredential = intent.credential)
             }
             is VaultUiIntent.CloseBottomSheet -> {
-                _uiState.update { it.copy(isBottomSheetOpen = false, editingCredential = null) }
+                closeBottomSheet()
             }
             is VaultUiIntent.SaveCredential -> {
                 viewModelScope.launch {
                     saveCredentialUseCase(intent.credential)
-                    _uiState.update { it.copy(isBottomSheetOpen = false, editingCredential = null) }
+                    closeBottomSheet()
                     showToast("${intent.credential.service} account encrypted & saved")
                 }
             }
@@ -116,17 +117,28 @@ class VaultViewModel(
         }
     }
 
+    private fun closeBottomSheet() {
+        sheetOpenJob?.cancel()
+        _uiState.update {
+            it.copy(isBottomSheetOpen = false, editingCredential = null)
+        }
+    }
+
     private fun openBottomSheet(editingCredential: Credential?) {
-        viewModelScope.launch {
-            // Tear down any stuck Hidden sheet before remounting.
-            _uiState.update {
-                it.copy(editingCredential = null, isBottomSheetOpen = false)
+        sheetOpenJob?.cancel()
+        sheetOpenJob = viewModelScope.launch {
+            // Fully dispose a stuck/hidden sheet for at least one frame before remounting.
+            if (_uiState.value.isBottomSheetOpen) {
+                _uiState.update {
+                    it.copy(isBottomSheetOpen = false, editingCredential = null)
+                }
+                delay(48)
             }
-            yield()
             _uiState.update {
                 it.copy(
                     editingCredential = editingCredential,
-                    isBottomSheetOpen = true
+                    isBottomSheetOpen = true,
+                    bottomSheetSessionId = it.bottomSheetSessionId + 1
                 )
             }
         }
