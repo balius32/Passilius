@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Elevated Neumorphic Outer Disc -->
+    <path
+        android:pathData="M54,54m-28,0a28,28 0,1 1,56 0a28,28 0,1 1,-56 0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="26"
+                android:startY="26"
+                android:endX="82"
+                android:endY="82"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#FF0050D6" />
+                <item android:offset="1.0" android:color="#FF3B71F7" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- Shackle (Arch) -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="3.2"
+        android:strokeLineCap="round"
+        android:pathData="M48,46V41a6,6 0 0,1 12,0v5" />
+    <!-- Lock Body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M44,46h20a3,3 0 0,1 3,3v14a3,3 0 0,1 -3,3H44a3,3 0 0,1 -3,-3V49a3,3 0 0,1 3,-3z" />
+    <!-- Keyhole / Core -->
+    <path
+        android:fillColor="#FF0050D6"
+        android:pathData="M54,52a2.5,2.5 0 0,0 -1.5,4.5v3a1.5,1.5 0 0,0 3,0v-3a2.5,2.5 0 0,0 -1.5,-4.5z" />
+</vector>

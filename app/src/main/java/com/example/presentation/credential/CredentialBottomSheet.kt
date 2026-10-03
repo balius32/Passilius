@@ -1,0 +1,662 @@
+package com.example.presentation.credential
+
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AlternateEmail
+import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.EnhancedEncryption
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.PhonelinkLock
+import androidx.compose.material.icons.filled.Public
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.core.crypto.GeneratorConfig
+import com.example.core.crypto.PasswordGenerator
+import com.example.core.designsystem.ElectricPrimaryBright
+import com.example.core.designsystem.OnPrimary
+import com.example.core.designsystem.OnSurfacePrimary
+import com.example.core.designsystem.OutlineColor
+import com.example.core.designsystem.SecondarySlate
+import com.example.core.designsystem.SecurityTertiaryBright
+import com.example.core.designsystem.SurfaceCanvas
+import com.example.core.designsystem.VaultTypography
+import com.example.domain.model.Credential
+
+private val SheetFieldShape = RoundedCornerShape(16.dp)
+private val SheetFieldBackground = Color(0xFFEFF2F7)
+private val SheetFieldBorder = Color(0xFFD8DEE8)
+
+private fun Modifier.sheetFieldWell(): Modifier = this
+    .clip(SheetFieldShape)
+    .background(SheetFieldBackground, SheetFieldShape)
+    .border(1.dp, SheetFieldBorder, SheetFieldShape)
+
+private fun Modifier.sheetIconButton(): Modifier = this
+    .clip(CircleShape)
+    .background(SurfaceCanvas, CircleShape)
+    .border(1.dp, SheetFieldBorder, CircleShape)
+
+private fun Modifier.sheetCard(): Modifier = this
+    .clip(RoundedCornerShape(18.dp))
+    .background(SurfaceCanvas, RoundedCornerShape(18.dp))
+    .border(1.dp, SheetFieldBorder, RoundedCornerShape(18.dp))
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CredentialBottomSheet(
+    initialCredential: Credential?,
+    onDismiss: () -> Unit,
+    onSave: (Credential) -> Unit
+) {
+    var service by remember { mutableStateOf(initialCredential?.service ?: "") }
+    var username by remember { mutableStateOf(initialCredential?.username ?: "") }
+    var password by remember { mutableStateOf(initialCredential?.password ?: "") }
+    var category by remember { mutableStateOf(initialCredential?.category ?: "Personal") }
+    var totpSecret by remember { mutableStateOf(initialCredential?.totpSecret ?: "") }
+    var websiteUrl by remember { mutableStateOf(initialCredential?.websiteUrl ?: "") }
+    var notes by remember { mutableStateOf(initialCredential?.notes ?: "") }
+
+    var isPasswordVisible by remember { mutableStateOf(false) }
+    var isSaving by remember { mutableStateOf(false) }
+    var entropyBits by remember { mutableIntStateOf(0) }
+
+    val categories = listOf("Personal", "Work", "Finance", "Entertainment", "Social")
+
+    LaunchedEffect(password) {
+        entropyBits = PasswordGenerator.calculateEntropy(password)
+    }
+
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = SurfaceCanvas,
+        tonalElevation = 0.dp,
+        shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
+        dragHandle = {
+            Box(
+                modifier = Modifier
+                    .padding(top = 12.dp, bottom = 6.dp)
+                    .size(width = 48.dp, height = 5.dp)
+                    .clip(RoundedCornerShape(3.dp))
+                    .background(Color(0xFFCBD5E1))
+            )
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 24.dp)
+                .padding(bottom = 32.dp)
+                .verticalScroll(rememberScrollState())
+                .navigationBarsPadding()
+                .imePadding()
+        ) {
+            // Sheet Header
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 18.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = if (initialCredential == null) "New Credential" else "Edit Credential",
+                        style = VaultTypography.headlineMedium,
+                        color = OnSurfacePrimary,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Text(
+                        text = "Securely store encrypted secret inside Swiss-tier vault",
+                        style = VaultTypography.bodySmall,
+                        color = SecondarySlate,
+                        modifier = Modifier.padding(top = 2.dp)
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(36.dp)
+                        .sheetIconButton()
+                        .clickable { onDismiss() },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close",
+                        tint = SecondarySlate,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+
+            // Field 1: Website or Service
+            Text(
+                text = "Website or Service",
+                style = VaultTypography.labelMedium,
+                color = SecondarySlate,
+                modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .sheetFieldWell()
+                    .padding(horizontal = 14.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color(0xFFD5E0F8)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Public,
+                            contentDescription = null,
+                            tint = ElectricPrimaryBright,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    BasicTextField(
+                        value = service,
+                        onValueChange = { service = it },
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("service_input"),
+                        textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary),
+                        cursorBrush = SolidColor(ElectricPrimaryBright),
+                        singleLine = true,
+                        decorationBox = { inner ->
+                            if (service.isEmpty()) {
+                                Text(
+                                    text = "e.g. Figma Enterprise, Stripe, Google",
+                                    style = VaultTypography.bodyMedium,
+                                    color = OutlineColor
+                                )
+                            }
+                            inner()
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Field 2: Username or Email
+            Text(
+                text = "Username or Email",
+                style = VaultTypography.labelMedium,
+                color = SecondarySlate,
+                modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .sheetFieldWell()
+                    .padding(horizontal = 14.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color(0xFFEBEEF3)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.AlternateEmail,
+                            contentDescription = null,
+                            tint = SecondarySlate,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    BasicTextField(
+                        value = username,
+                        onValueChange = { username = it },
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("username_input"),
+                        textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary),
+                        cursorBrush = SolidColor(ElectricPrimaryBright),
+                        singleLine = true,
+                        decorationBox = { inner ->
+                            if (username.isEmpty()) {
+                                Text(
+                                    text = "name@domain.com or handle",
+                                    style = VaultTypography.bodyMedium,
+                                    color = OutlineColor
+                                )
+                            }
+                            inner()
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Field 3: Password / Secret
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 6.dp, start = 4.dp, end = 4.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Password / Secret",
+                    style = VaultTypography.labelMedium,
+                    color = SecondarySlate
+                )
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(6.dp)
+                            .background(SecurityTertiaryBright, CircleShape)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = if (entropyBits >= 90) "High Entropy" else if (entropyBits >= 60) "Good Entropy" else "Low Entropy",
+                        style = VaultTypography.labelSmall,
+                        color = SecurityTertiaryBright,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+            }
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp)
+                    .sheetFieldWell()
+                    .padding(horizontal = 14.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(Color(0xFFEBEEF3)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Lock,
+                            contentDescription = null,
+                            tint = SecondarySlate,
+                            modifier = Modifier.size(18.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(10.dp))
+
+                    BasicTextField(
+                        value = password,
+                        onValueChange = { password = it },
+                        modifier = Modifier
+                            .weight(1f)
+                            .testTag("password_input"),
+                        textStyle = VaultTypography.labelMedium.copy(color = OnSurfacePrimary),
+                        cursorBrush = SolidColor(ElectricPrimaryBright),
+                        singleLine = true,
+                        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        decorationBox = { inner ->
+                            if (password.isEmpty()) {
+                                Text(
+                                    text = "Enter master password",
+                                    style = VaultTypography.labelMedium,
+                                    color = OutlineColor
+                                )
+                            }
+                            inner()
+                        }
+                    )
+
+                    // Eye visibility toggle
+                    Box(
+                        modifier = Modifier
+                            .size(32.dp)
+                            .sheetIconButton()
+                            .clickable { isPasswordVisible = !isPasswordVisible },
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                            contentDescription = "Toggle Visibility",
+                            tint = SecondarySlate,
+                            modifier = Modifier.size(16.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    // Quick Gen Button
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFFDBE1FF), RoundedCornerShape(12.dp))
+                            .clickable {
+                                val generated = PasswordGenerator.generate(GeneratorConfig(length = 20))
+                                password = generated.password
+                            }
+                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = null,
+                                tint = ElectricPrimaryBright,
+                                modifier = Modifier.size(13.dp)
+                            )
+                            Spacer(modifier = Modifier.width(3.dp))
+                            Text(
+                                text = "Gen",
+                                style = VaultTypography.labelSmall,
+                                color = ElectricPrimaryBright,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
+            }
+
+            // Entropy Strength Track
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 8.dp, start = 4.dp, end = 4.dp)
+            ) {
+                val fraction = (entropyBits / 128f).coerceIn(0.05f, 1f)
+                val barColor = if (entropyBits >= 90) SecurityTertiaryBright else if (entropyBits >= 60) Color(0xFFF59E0B) else Color(0xFFBA1A1A)
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(6.dp)
+                        .clip(RoundedCornerShape(3.dp))
+                        .background(Color(0xFFE2E8F0))
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .fillMaxWidth(fraction)
+                            .clip(RoundedCornerShape(3.dp))
+                            .background(barColor)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Text(
+                        text = "${password.length} Characters (A-Z, 0-9, Symbols)",
+                        style = VaultTypography.labelSmall,
+                        color = SecondarySlate
+                    )
+                    Text(
+                        text = "$entropyBits-bit",
+                        style = VaultTypography.labelSmall,
+                        color = barColor,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // Field 4: Vault Category Tags Selector
+            Text(
+                text = "Vault Category",
+                style = VaultTypography.labelMedium,
+                color = SecondarySlate,
+                modifier = Modifier.padding(bottom = 8.dp, start = 4.dp)
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                categories.forEach { cat ->
+                    val isCatSelected = cat.equals(category, ignoreCase = true)
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(
+                                if (isCatSelected) ElectricPrimaryBright else SurfaceCanvas,
+                                RoundedCornerShape(14.dp)
+                            )
+                            .then(
+                                if (!isCatSelected) {
+                                    Modifier.border(1.dp, SheetFieldBorder, RoundedCornerShape(14.dp))
+                                } else {
+                                    Modifier
+                                }
+                            )
+                            .clickable { category = cat }
+                            .padding(horizontal = 14.dp, vertical = 7.dp)
+                    ) {
+                        Text(
+                            text = cat,
+                            style = VaultTypography.labelSmall,
+                            color = if (isCatSelected) OnPrimary else SecondarySlate,
+                            fontWeight = if (isCatSelected) FontWeight.Bold else FontWeight.Medium
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            // Field 5: Time-Based OTP (2FA) Key
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .sheetCard()
+                    .padding(14.dp)
+            ) {
+                Column {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .sheetIconButton(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.PhonelinkLock,
+                                    contentDescription = null,
+                                    tint = ElectricPrimaryBright,
+                                    modifier = Modifier.size(17.dp)
+                                )
+                            }
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = "Time-based OTP (2FA)",
+                                    style = VaultTypography.bodySmall,
+                                    color = OnSurfacePrimary,
+                                    fontWeight = FontWeight.SemiBold
+                                )
+                                Text(
+                                    text = "Auto-fill authenticator key",
+                                    style = VaultTypography.labelSmall,
+                                    color = SecondarySlate
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    BasicTextField(
+                        value = totpSecret,
+                        onValueChange = { totpSecret = it },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clip(RoundedCornerShape(10.dp))
+                            .background(SheetFieldBackground, RoundedCornerShape(10.dp))
+                            .border(1.dp, SheetFieldBorder, RoundedCornerShape(10.dp))
+                            .padding(horizontal = 12.dp, vertical = 8.dp)
+                            .testTag("totp_input"),
+                        textStyle = VaultTypography.labelSmall.copy(color = OnSurfacePrimary),
+                        cursorBrush = SolidColor(ElectricPrimaryBright),
+                        singleLine = true,
+                        decorationBox = { inner ->
+                            if (totpSecret.isEmpty()) {
+                                Text(
+                                    text = "Paste Base32 Key (e.g. JBSWY3DPEHPK3PXP)",
+                                    style = VaultTypography.labelSmall,
+                                    color = OutlineColor
+                                )
+                            }
+                            inner()
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Action Buttons: Encrypt & Save
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(ElectricPrimaryBright, RoundedCornerShape(20.dp))
+                    .clickable(enabled = service.isNotBlank() && password.isNotBlank()) {
+                        isSaving = true
+                        val cred = Credential(
+                            id = initialCredential?.id ?: 0L,
+                            service = service.trim(),
+                            username = username.trim(),
+                            password = password,
+                            category = category,
+                            totpSecret = totpSecret.trim(),
+                            websiteUrl = websiteUrl.trim(),
+                            notes = notes.trim(),
+                            isFavorite = initialCredential?.isFavorite ?: false,
+                            entropyBits = entropyBits
+                        )
+                        onSave(cred)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.EnhancedEncryption,
+                        contentDescription = null,
+                        tint = OnPrimary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Encrypt & Save",
+                        style = VaultTypography.headlineSmall,
+                        color = OnPrimary,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            // Discard Changes Button
+            Text(
+                text = "Discard Changes",
+                style = VaultTypography.bodyMedium,
+                color = SecondarySlate,
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .clickable { onDismiss() }
+                    .padding(8.dp)
+            )
+        }
+    }
+}
