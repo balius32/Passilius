@@ -51,6 +51,7 @@ import com.example.core.designsystem.OnSurfaceSecondary
 import com.example.core.designsystem.SecondarySlate
 import com.example.core.designsystem.SecurityTertiaryBright
 import com.example.core.designsystem.SurfaceCanvas
+import com.example.core.designsystem.SurfaceContainerLowest
 import com.example.core.designsystem.VaultTypography
 import com.example.core.designsystem.neuFlat
 import com.example.core.designsystem.neuPressed
@@ -100,8 +101,7 @@ fun PasswordCard(
             .neuFlat(
                 shape = cardShape,
                 cornerRadius = 24.dp,
-                elevation = 6.dp,
-                backgroundColor = SurfaceCanvas
+                backgroundColor = SurfaceContainerLowest
             )
             .clickable { isExpanded = !isExpanded }
             .padding(16.dp)
@@ -193,8 +193,7 @@ fun PasswordCard(
                             .neuFlat(
                                 shape = CircleShape,
                                 cornerRadius = 19.dp,
-                                elevation = 3.dp,
-                                backgroundColor = SurfaceCanvas
+                                backgroundColor = SurfaceContainerLowest
                             )
                             .clickable(
                                 interactionSource = remember { MutableInteractionSource() },
@@ -218,15 +217,13 @@ fun PasswordCard(
                                     Modifier.neuPressed(
                                         shape = CircleShape,
                                         cornerRadius = 19.dp,
-                                        depth = 3.dp,
                                         backgroundColor = Color(0xFFE5EDFC)
                                     )
                                 } else {
                                     Modifier.neuFlat(
                                         shape = CircleShape,
                                         cornerRadius = 19.dp,
-                                        elevation = 3.dp,
-                                        backgroundColor = SurfaceCanvas
+                                        backgroundColor = SurfaceContainerLowest
                                     )
                                 }
                             )
@@ -273,7 +270,6 @@ fun PasswordCard(
                                 .neuPressed(
                                     shape = RoundedCornerShape(14.dp),
                                     cornerRadius = 14.dp,
-                                    depth = 2.dp,
                                     backgroundColor = Color(0xFFF1F5F9)
                                 )
                                 .padding(horizontal = 12.dp, vertical = 8.dp),
@@ -320,7 +316,6 @@ fun PasswordCard(
                                 .neuFlat(
                                     shape = RoundedCornerShape(12.dp),
                                     cornerRadius = 12.dp,
-                                    elevation = 2.dp,
                                     backgroundColor = SurfaceCanvas
                                 )
                                 .clickable { onCopyPassword(credential.password) }
@@ -348,7 +343,6 @@ fun PasswordCard(
                                 .neuFlat(
                                     shape = RoundedCornerShape(12.dp),
                                     cornerRadius = 12.dp,
-                                    elevation = 2.dp,
                                     backgroundColor = SurfaceCanvas
                                 )
                                 .clickable { onCopyUsername(credential.username) }
@@ -368,7 +362,6 @@ fun PasswordCard(
                                 .neuFlat(
                                     shape = CircleShape,
                                     cornerRadius = 16.dp,
-                                    elevation = 2.dp,
                                     backgroundColor = SurfaceCanvas
                                 )
                                 .clickable { onEdit(credential) },
@@ -388,7 +381,6 @@ fun PasswordCard(
                                 .neuFlat(
                                     shape = CircleShape,
                                     cornerRadius = 16.dp,
-                                    elevation = 2.dp,
                                     backgroundColor = SurfaceCanvas
                                 )
                                 .clickable { onToggleFavorite(credential.id, !credential.isFavorite) },
@@ -408,7 +400,6 @@ fun PasswordCard(
                                 .neuFlat(
                                     shape = CircleShape,
                                     cornerRadius = 16.dp,
-                                    elevation = 2.dp,
                                     backgroundColor = SurfaceCanvas
                                 )
                                 .clickable { onDelete(credential.id) },

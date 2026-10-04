@@ -45,6 +45,7 @@ import com.example.core.designsystem.OnSurfacePrimary
 import com.example.core.designsystem.OnSurfaceSecondary
 import com.example.core.designsystem.SecondarySlate
 import com.example.core.designsystem.SurfaceCanvas
+import com.example.core.designsystem.SurfaceContainerLowest
 import com.example.core.designsystem.VaultTypography
 import com.example.core.designsystem.neuFlat
 import com.example.core.designsystem.neuPressed
@@ -108,15 +109,13 @@ fun VaultScreen(
                                         Modifier.neuPressed(
                                             shape = CircleShape,
                                             cornerRadius = 20.dp,
-                                            depth = 3.dp,
                                             backgroundColor = Color(0xFFE5EDFC)
                                         )
                                     } else {
                                         Modifier.neuFlat(
                                             shape = CircleShape,
                                             cornerRadius = 20.dp,
-                                            elevation = 3.dp,
-                                            backgroundColor = SurfaceCanvas
+                                            backgroundColor = SurfaceContainerLowest
                                         )
                                     }
                                 )
@@ -139,8 +138,7 @@ fun VaultScreen(
                                 .neuFlat(
                                     shape = CircleShape,
                                     cornerRadius = 20.dp,
-                                    elevation = 3.dp,
-                                    backgroundColor = SurfaceCanvas
+                                    backgroundColor = SurfaceContainerLowest
                                 )
                                 .clickable { onNavigateToSettings() },
                             contentAlignment = Alignment.Center

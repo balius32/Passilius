@@ -12,6 +12,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -43,10 +44,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation3.runtime.NavBackStack
 import androidx.navigation3.runtime.NavKey
@@ -58,8 +61,8 @@ import com.example.core.designsystem.ElectricPrimaryBright
 import com.example.core.designsystem.OnPrimary
 import com.example.core.designsystem.SecondarySlate
 import com.example.core.components.NotchedCapsuleShape
+import com.example.core.designsystem.SoftStroke
 import com.example.core.designsystem.SurfaceCanvas
-import com.example.core.designsystem.SurfaceContainerLowest
 import com.example.core.designsystem.VaultTypography
 import com.example.presentation.credential.CredentialBottomSheet
 import com.example.presentation.generator.GeneratorScreen
@@ -69,6 +72,12 @@ import com.example.presentation.unlock.MasterUnlockScreen
 import com.example.presentation.vault.VaultScreen
 import com.example.presentation.vault.VaultUiIntent
 import com.example.presentation.vault.VaultViewModel
+import dev.chrisbanes.haze.HazeState
+import dev.chrisbanes.haze.HazeStyle
+import dev.chrisbanes.haze.HazeTint
+import dev.chrisbanes.haze.hazeEffect
+import dev.chrisbanes.haze.hazeSource
+import dev.chrisbanes.haze.rememberHazeState
 
 private const val ProfileTransitionDurationMs = 320
 
@@ -118,18 +127,110 @@ fun VaultApp(
     } else {
         val currentKey = backStack.lastOrNull()
         val showBottomBar = currentKey != SettingsRoute
+        val hazeState = rememberHazeState()
 
         Scaffold(
             containerColor = SurfaceCanvas,
-            contentWindowInsets = WindowInsets(0, 0, 0, 0),
-            bottomBar = {
+            contentWindowInsets = WindowInsets(0, 0, 0, 0)
+        ) { paddingValues ->
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = paddingValues.calculateTopPadding())
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .hazeSource(state = hazeState)
+                ) {
+                    NavDisplay(
+                        backStack = backStack,
+                        onBack = {
+                            if (backStack.size > 1) {
+                                backStack.removeLastOrNull()
+                            }
+                        },
+                        transitionSpec = {
+                            slideInHorizontally(
+                                initialOffsetX = { fullWidth -> fullWidth },
+                                animationSpec = tween(ProfileTransitionDurationMs)
+                            ) togetherWith slideOutHorizontally(
+                                targetOffsetX = { fullWidth -> -fullWidth / 4 },
+                                animationSpec = tween(ProfileTransitionDurationMs)
+                            )
+                        },
+                        popTransitionSpec = {
+                            slideInHorizontally(
+                                initialOffsetX = { fullWidth -> -fullWidth / 4 },
+                                animationSpec = tween(ProfileTransitionDurationMs)
+                            ) togetherWith slideOutHorizontally(
+                                targetOffsetX = { fullWidth -> fullWidth },
+                                animationSpec = tween(ProfileTransitionDurationMs)
+                            )
+                        },
+                        predictivePopTransitionSpec = {
+                            slideInHorizontally(
+                                initialOffsetX = { fullWidth -> -fullWidth / 4 },
+                                animationSpec = tween(ProfileTransitionDurationMs)
+                            ) togetherWith slideOutHorizontally(
+                                targetOffsetX = { fullWidth -> fullWidth },
+                                animationSpec = tween(ProfileTransitionDurationMs)
+                            )
+                        },
+                        entryProvider = entryProvider {
+                            entry<VaultRoute>(
+                                metadata = metadata {
+                                    put(NavDisplay.TransitionKey) { instantTransition() }
+                                    put(NavDisplay.PopTransitionKey) { instantTransition() }
+                                }
+                            ) {
+                                VaultScreen(
+                                    viewModel = vaultViewModel,
+                                    onNavigateToSettings = { backStack.add(SettingsRoute) }
+                                )
+                            }
+                            entry<GeneratorRoute>(
+                                metadata = metadata {
+                                    put(NavDisplay.TransitionKey) { instantTransition() }
+                                    put(NavDisplay.PopTransitionKey) { instantTransition() }
+                                }
+                            ) {
+                                GeneratorScreen(
+                                    viewModel = generatorViewModel,
+                                    onNavigateToSettings = { backStack.add(SettingsRoute) }
+                                )
+                            }
+                            entry<SettingsRoute>(
+                                metadata = metadata {
+                                    put(NavDisplay.TransitionKey) { profileForwardTransition() }
+                                    put(NavDisplay.PopTransitionKey) { profilePopTransition() }
+                                    put(NavDisplay.PredictivePopTransitionKey) { _: Int ->
+                                        profilePopTransition()
+                                    }
+                                }
+                            ) {
+                                SettingsScreen(
+                                    onBack = {
+                                        if (backStack.size > 1) {
+                                            backStack.removeLastOrNull()
+                                        }
+                                    },
+                                    onLockVault = { vaultViewModel.handleIntent(VaultUiIntent.LockVault) }
+                                )
+                            }
+                        }
+                    )
+                }
+
                 AnimatedVisibility(
                     visible = showBottomBar,
                     enter = slideInVertically(initialOffsetY = { it }),
-                    exit = slideOutVertically(targetOffsetY = { it })
+                    exit = slideOutVertically(targetOffsetY = { it }),
+                    modifier = Modifier.align(Alignment.BottomCenter)
                 ) {
                     VaultBottomNavigationBar(
                         currentDestination = currentKey,
+                        hazeState = hazeState,
                         onSelectDestination = { destination ->
                             selectTopLevelTab(backStack, destination)
                         },
@@ -138,91 +239,6 @@ fun VaultApp(
                         }
                     )
                 }
-            }
-        ) { paddingValues ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    // Let list content draw under the floating transparent bottom bar
-                    .padding(top = paddingValues.calculateTopPadding())
-            ) {
-                NavDisplay(
-                    backStack = backStack,
-                    onBack = {
-                        if (backStack.size > 1) {
-                            backStack.removeLastOrNull()
-                        }
-                    },
-                    transitionSpec = {
-                        slideInHorizontally(
-                            initialOffsetX = { fullWidth -> fullWidth },
-                            animationSpec = tween(ProfileTransitionDurationMs)
-                        ) togetherWith slideOutHorizontally(
-                            targetOffsetX = { fullWidth -> -fullWidth / 4 },
-                            animationSpec = tween(ProfileTransitionDurationMs)
-                        )
-                    },
-                    popTransitionSpec = {
-                        slideInHorizontally(
-                            initialOffsetX = { fullWidth -> -fullWidth / 4 },
-                            animationSpec = tween(ProfileTransitionDurationMs)
-                        ) togetherWith slideOutHorizontally(
-                            targetOffsetX = { fullWidth -> fullWidth },
-                            animationSpec = tween(ProfileTransitionDurationMs)
-                        )
-                    },
-                    predictivePopTransitionSpec = {
-                        slideInHorizontally(
-                            initialOffsetX = { fullWidth -> -fullWidth / 4 },
-                            animationSpec = tween(ProfileTransitionDurationMs)
-                        ) togetherWith slideOutHorizontally(
-                            targetOffsetX = { fullWidth -> fullWidth },
-                            animationSpec = tween(ProfileTransitionDurationMs)
-                        )
-                    },
-                    entryProvider = entryProvider {
-                        entry<VaultRoute>(
-                            metadata = metadata {
-                                put(NavDisplay.TransitionKey) { instantTransition() }
-                                put(NavDisplay.PopTransitionKey) { instantTransition() }
-                            }
-                        ) {
-                            VaultScreen(
-                                viewModel = vaultViewModel,
-                                onNavigateToSettings = { backStack.add(SettingsRoute) }
-                            )
-                        }
-                        entry<GeneratorRoute>(
-                            metadata = metadata {
-                                put(NavDisplay.TransitionKey) { instantTransition() }
-                                put(NavDisplay.PopTransitionKey) { instantTransition() }
-                            }
-                        ) {
-                            GeneratorScreen(
-                                viewModel = generatorViewModel,
-                                onNavigateToSettings = { backStack.add(SettingsRoute) }
-                            )
-                        }
-                        entry<SettingsRoute>(
-                            metadata = metadata {
-                                put(NavDisplay.TransitionKey) { profileForwardTransition() }
-                                put(NavDisplay.PopTransitionKey) { profilePopTransition() }
-                                put(NavDisplay.PredictivePopTransitionKey) { _: Int ->
-                                    profilePopTransition()
-                                }
-                            }
-                        ) {
-                            SettingsScreen(
-                                onBack = {
-                                    if (backStack.size > 1) {
-                                        backStack.removeLastOrNull()
-                                    }
-                                },
-                                onLockVault = { vaultViewModel.handleIntent(VaultUiIntent.LockVault) }
-                            )
-                        }
-                    }
-                )
 
                 if (vaultState.isBottomSheetOpen) {
                     key(vaultState.bottomSheetSessionId) {
@@ -243,6 +259,7 @@ fun VaultBottomNavigationBar(
     currentDestination: NavKey?,
     onSelectDestination: (NavKey) -> Unit,
     onOpenCreate: () -> Unit,
+    hazeState: HazeState,
     modifier: Modifier = Modifier
 ) {
     val vaultTabInteraction = remember { MutableInteractionSource() }
@@ -250,6 +267,14 @@ fun VaultBottomNavigationBar(
     val fabInteraction = remember { MutableInteractionSource() }
 
     val barShape = remember { NotchedCapsuleShape(fabRadius = FabSize / 2, notchGap = 6.dp) }
+    val glassStyle = remember {
+        HazeStyle(
+            backgroundColor = SurfaceCanvas,
+            tints = listOf(HazeTint(Color.White.copy(alpha = 0.45f))),
+            blurRadius = 28.dp,
+            noiseFactor = 0.04f,
+        )
+    }
 
     Box(
         modifier = modifier
@@ -264,7 +289,9 @@ fun VaultBottomNavigationBar(
                 .padding(top = FabHitSize / 2)
                 .fillMaxWidth()
                 .height(64.dp)
-                .background(SurfaceContainerLowest, barShape)
+                .clip(barShape)
+                .hazeEffect(state = hazeState, style = glassStyle)
+                .border(1.dp, SoftStroke, barShape)
                 .padding(horizontal = 24.dp),
             contentAlignment = Alignment.Center
         ) {
@@ -337,6 +364,7 @@ fun VaultBottomNavigationBar(
         // Visual circle remains FabSize so the design looks the same.
         Box(
             modifier = Modifier
+                .zIndex(2f)
                 .size(FabHitSize)
                 .testTag("open_generator_fab")
                 .clickable(

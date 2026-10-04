@@ -133,10 +133,7 @@ fun MasterUnlockScreen(
                     .neuFlat(
                         shape = CircleShape,
                         cornerRadius = 40.dp,
-                        elevation = 8.dp,
-                        backgroundColor = SurfaceCanvas,
-                        darkColor = Color(0x60CAD3DF),
-                        lightColor = Color(0xFFFFFFFF)
+                        backgroundColor = SurfaceCanvas
                     )
                     .clickable { triggerBiometrics() },
                 contentAlignment = Alignment.Center
@@ -182,14 +179,12 @@ fun MasterUnlockScreen(
                                     Modifier.neuPressed(
                                         shape = CircleShape,
                                         cornerRadius = 8.dp,
-                                        depth = 2.dp,
                                         backgroundColor = ElectricPrimaryBright
                                     )
                                 } else {
                                     Modifier.neuPressed(
                                         shape = CircleShape,
                                         cornerRadius = 8.dp,
-                                        depth = 2.dp,
                                         backgroundColor = Color(0xFFDFE3E8)
                                     )
                                 }
@@ -231,7 +226,6 @@ fun MasterUnlockScreen(
                                     .neuFlat(
                                         shape = CircleShape,
                                         cornerRadius = 32.dp,
-                                        elevation = 4.dp,
                                         backgroundColor = SurfaceCanvas
                                     )
                                     .clickable {

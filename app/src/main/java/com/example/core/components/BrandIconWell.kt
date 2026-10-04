@@ -38,7 +38,6 @@ fun BrandIconWell(
             .neuPressed(
                 shape = RoundedCornerShape(shapeRadius),
                 cornerRadius = shapeRadius,
-                depth = 3.dp,
                 backgroundColor = Color(0xFFF0F3F8)
             ),
         contentAlignment = Alignment.Center

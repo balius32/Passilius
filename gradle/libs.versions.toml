@@ -19,9 +19,11 @@ kotlinxSerializationJson = "1.8.1"
 core = "1.6.1"
 robolectric = "4.16.1"
 biometric = "1.2.0-alpha05"
+haze = "1.6.10"
 
 [libraries]
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
+haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }

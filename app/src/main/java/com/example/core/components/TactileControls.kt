@@ -50,7 +50,7 @@ import com.example.core.designsystem.ElectricPrimaryBright
 import com.example.core.designsystem.OnPrimary
 import com.example.core.designsystem.OnSurfacePrimary
 import com.example.core.designsystem.SecondarySlate
-import com.example.core.designsystem.SurfaceCanvas
+import com.example.core.designsystem.SurfaceContainerLowest
 import com.example.core.designsystem.VaultTypography
 import com.example.core.designsystem.neuFlat
 import com.example.core.designsystem.neuPressed
@@ -77,18 +77,14 @@ fun NeumorphicButton(
             .neuFlat(
                 shape = shape,
                 cornerRadius = shapeRadius,
-                elevation = 8.dp,
-                backgroundColor = ElectricPrimaryBright,
-                darkColor = Color(0x600050D6),
-                lightColor = Color(0x8070A4FF)
+                backgroundColor = ElectricPrimaryBright
             )
     } else {
         Modifier
             .neuFlat(
                 shape = shape,
                 cornerRadius = shapeRadius,
-                elevation = 6.dp,
-                backgroundColor = SurfaceCanvas
+                backgroundColor = SurfaceContainerLowest
             )
     }
 
@@ -166,7 +162,6 @@ fun TactileToggleSwitch(
                 .neuFlat(
                     shape = CircleShape,
                     cornerRadius = thumbSize / 2,
-                    elevation = 2.dp,
                     backgroundColor = Color.White
                 )
         )
@@ -202,7 +197,6 @@ fun TactileSlider(
                 .neuPressed(
                     shape = RoundedCornerShape(5.dp),
                     cornerRadius = 5.dp,
-                    depth = 2.dp,
                     backgroundColor = Color(0xFFE2E8F0)
                 )
         ) {
@@ -225,7 +219,6 @@ fun TactileSlider(
                 .neuFlat(
                     shape = CircleShape,
                     cornerRadius = 13.dp,
-                    elevation = 4.dp,
                     backgroundColor = Color.White
                 )
                 .pointerInput(Unit) {
@@ -267,8 +260,7 @@ fun TactileToastPill(
                 .neuFlat(
                     shape = RoundedCornerShape(20.dp),
                     cornerRadius = 20.dp,
-                    elevation = 6.dp,
-                    backgroundColor = SurfaceCanvas
+                    backgroundColor = SurfaceContainerLowest
                 )
                 .padding(horizontal = 16.dp, vertical = 10.dp)
         ) {

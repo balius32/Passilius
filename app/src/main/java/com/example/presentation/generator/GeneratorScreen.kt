@@ -1,6 +1,5 @@
 package com.example.presentation.generator
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -12,7 +11,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,10 +18,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Casino
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ContentCopy
-import androidx.compose.material.icons.filled.CopyAll
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
@@ -41,21 +37,18 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.core.components.NeumorphicButton
 import com.example.core.components.TactileSlider
 import com.example.core.components.TactileToastPill
 import com.example.core.components.TactileToggleSwitch
 import com.example.core.designsystem.ElectricPrimaryBright
-import com.example.core.designsystem.OnPrimary
 import com.example.core.designsystem.OnSurfacePrimary
-import com.example.core.designsystem.OnSurfaceSecondary
 import com.example.core.designsystem.SecondarySlate
 import com.example.core.designsystem.SecurityTertiaryBright
 import com.example.core.designsystem.SurfaceCanvas
+import com.example.core.designsystem.SurfaceContainerLowest
 import com.example.core.designsystem.VaultTypography
 import com.example.core.util.rememberScreenContentPadding
 import com.example.core.designsystem.neuFlat
@@ -122,8 +115,7 @@ fun GeneratorScreen(
                             .neuFlat(
                                 shape = CircleShape,
                                 cornerRadius = 20.dp,
-                                elevation = 3.dp,
-                                backgroundColor = SurfaceCanvas
+                                backgroundColor = SurfaceContainerLowest
                             )
                             .clickable { onNavigateToSettings() },
                         contentAlignment = Alignment.Center
@@ -146,8 +138,7 @@ fun GeneratorScreen(
                         .neuFlat(
                             shape = RoundedCornerShape(24.dp),
                             cornerRadius = 24.dp,
-                            elevation = 6.dp,
-                            backgroundColor = SurfaceCanvas
+                            backgroundColor = SurfaceContainerLowest
                         )
                         .padding(18.dp)
                 ) {
@@ -162,7 +153,6 @@ fun GeneratorScreen(
                                 .neuPressed(
                                     shape = RoundedCornerShape(18.dp),
                                     cornerRadius = 18.dp,
-                                    depth = 3.dp,
                                     backgroundColor = Color(0xFFEFF2F7)
                                 )
                                 .padding(horizontal = 16.dp, vertical = 14.dp)
@@ -233,8 +223,7 @@ fun GeneratorScreen(
                                         .neuFlat(
                                             shape = CircleShape,
                                             cornerRadius = 19.dp,
-                                            elevation = 3.dp,
-                                            backgroundColor = SurfaceCanvas
+                                            backgroundColor = SurfaceContainerLowest
                                         )
                                         .clickable {
                                             refreshRotation += 180f
@@ -260,8 +249,7 @@ fun GeneratorScreen(
                                         .neuFlat(
                                             shape = CircleShape,
                                             cornerRadius = 19.dp,
-                                            elevation = 3.dp,
-                                            backgroundColor = SurfaceCanvas
+                                            backgroundColor = SurfaceContainerLowest
                                         )
                                         .clickable { viewModel.handleIntent(GeneratorUiIntent.CopyPassword) },
                                     contentAlignment = Alignment.Center
@@ -287,8 +275,7 @@ fun GeneratorScreen(
                         .neuFlat(
                             shape = RoundedCornerShape(24.dp),
                             cornerRadius = 24.dp,
-                            elevation = 6.dp,
-                            backgroundColor = SurfaceCanvas
+                            backgroundColor = SurfaceContainerLowest
                         )
                         .padding(18.dp)
                 ) {
@@ -321,7 +308,6 @@ fun GeneratorScreen(
                                     .neuPressed(
                                         shape = RoundedCornerShape(14.dp),
                                         cornerRadius = 14.dp,
-                                        depth = 2.dp,
                                         backgroundColor = Color(0xFFEFF2F7)
                                     )
                                     .padding(horizontal = 14.dp, vertical = 6.dp)
@@ -366,8 +352,7 @@ fun GeneratorScreen(
                         .neuFlat(
                             shape = RoundedCornerShape(24.dp),
                             cornerRadius = 24.dp,
-                            elevation = 6.dp,
-                            backgroundColor = SurfaceCanvas
+                            backgroundColor = SurfaceContainerLowest
                         )
                         .padding(18.dp)
                 ) {
@@ -428,89 +413,6 @@ fun GeneratorScreen(
                             checked = uiState.config.includeSymbols,
                             onCheckedChange = { viewModel.handleIntent(GeneratorUiIntent.ToggleSymbols(it)) }
                         )
-                    }
-                }
-            }
-
-            // PRIMARY ACTIONS
-            item {
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    // Primary CTA: Copy Password
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .testTag("main_copy_password_btn")
-                            .neuFlat(
-                                shape = RoundedCornerShape(22.dp),
-                                cornerRadius = 22.dp,
-                                elevation = 8.dp,
-                                backgroundColor = if (uiState.isCopied) SecurityTertiaryBright else ElectricPrimaryBright,
-                                darkColor = if (uiState.isCopied) Color(0x60006947) else Color(0x600050D6),
-                                lightColor = if (uiState.isCopied) Color(0x804EDEA3) else Color(0x8070A4FF)
-                            )
-                            .clickable { viewModel.handleIntent(GeneratorUiIntent.CopyPassword) },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = if (uiState.isCopied) Icons.Default.Check else Icons.Default.CopyAll,
-                                contentDescription = null,
-                                tint = OnPrimary,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = if (uiState.isCopied) "Copied to Clipboard" else "Copy Password",
-                                style = VaultTypography.headlineSmall,
-                                color = OnPrimary,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
-                    }
-
-                    // Secondary CTA: Generate Again
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(56.dp)
-                            .testTag("generate_again_btn")
-                            .neuFlat(
-                                shape = RoundedCornerShape(22.dp),
-                                cornerRadius = 22.dp,
-                                elevation = 6.dp,
-                                backgroundColor = SurfaceCanvas
-                            )
-                            .clickable {
-                                refreshRotation += 360f
-                                viewModel.handleIntent(GeneratorUiIntent.Regenerate)
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Casino,
-                                contentDescription = null,
-                                tint = SecondarySlate,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Generate Again",
-                                style = VaultTypography.headlineSmall,
-                                color = OnSurfacePrimary,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        }
                     }
                 }
             }

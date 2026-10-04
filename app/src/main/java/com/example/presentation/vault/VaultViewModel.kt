@@ -127,13 +127,11 @@ class VaultViewModel(
     private fun openBottomSheet(editingCredential: Credential?) {
         sheetOpenJob?.cancel()
         sheetOpenJob = viewModelScope.launch {
-            // Fully dispose a stuck/hidden sheet for at least one frame before remounting.
-            if (_uiState.value.isBottomSheetOpen) {
-                _uiState.update {
-                    it.copy(isBottomSheetOpen = false, editingCredential = null)
-                }
-                delay(48)
+            // Always dispose any existing/stuck sheet before remounting a fresh session.
+            _uiState.update {
+                it.copy(isBottomSheetOpen = false, editingCredential = null)
             }
+            delay(64)
             _uiState.update {
                 it.copy(
                     editingCredential = editingCredential,

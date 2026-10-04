@@ -125,7 +125,9 @@ fun CredentialBottomSheet(
     fun dismissSheet() {
         scope.launch {
             try {
-                sheetState.hide()
+                if (sheetState.isVisible) {
+                    sheetState.hide()
+                }
             } finally {
                 // Always clear parent flag — never leave a Hidden sheet stuck "open".
                 onDismiss()
@@ -136,7 +138,9 @@ fun CredentialBottomSheet(
     fun saveAndDismiss(credential: Credential) {
         scope.launch {
             try {
-                sheetState.hide()
+                if (sheetState.isVisible) {
+                    sheetState.hide()
+                }
             } finally {
                 onSave(credential)
             }

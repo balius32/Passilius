@@ -39,6 +39,7 @@ import com.example.core.designsystem.OnSurfacePrimary
 import com.example.core.designsystem.OutlineColor
 import com.example.core.designsystem.SecondarySlate
 import com.example.core.designsystem.SurfaceCanvas
+import com.example.core.designsystem.SurfaceContainerLowest
 import com.example.core.designsystem.VaultTypography
 import com.example.core.designsystem.neuFlat
 import com.example.core.designsystem.neuPressed
@@ -59,7 +60,6 @@ fun NeumorphicSearchBar(
             .neuPressed(
                 shape = RoundedCornerShape(16.dp),
                 cornerRadius = 16.dp,
-                depth = 3.dp,
                 backgroundColor = Color(0xFFEFF2F7)
             )
             .padding(horizontal = 16.dp),
@@ -144,40 +144,47 @@ fun CategoryPillStrip(
                     .testTag("category_chip_${category.lowercase()}")
                     .then(
                         if (isSelected) {
-                            Modifier.neuPressed(
-                                shape = RoundedCornerShape(16.dp),
-                                cornerRadius = 16.dp,
-                                depth = 2.dp,
-                                backgroundColor = Color(0xFFE5EDFC)
+                            Modifier.neuFlat(
+                                shape = RoundedCornerShape(20.dp),
+                                cornerRadius = 20.dp,
+                                backgroundColor = ElectricPrimaryBright,
+                                strokeColor = ElectricPrimaryBright
                             )
                         } else {
                             Modifier.neuFlat(
-                                shape = RoundedCornerShape(16.dp),
-                                cornerRadius = 16.dp,
-                                elevation = 3.dp,
-                                backgroundColor = SurfaceCanvas
+                                shape = RoundedCornerShape(20.dp),
+                                cornerRadius = 20.dp,
+                                backgroundColor = SurfaceContainerLowest
                             )
                         }
                     )
                     .clickable { onSelectCategory(category) }
-                    .padding(horizontal = 14.dp, vertical = 8.dp),
+                    .padding(horizontal = 16.dp, vertical = 10.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     if (isSelected) {
                         Box(
                             modifier = Modifier
-                                .size(6.dp)
-                                .background(ElectricPrimaryBright, CircleShape)
+                                .size(5.dp)
+                                .background(Color.White, CircleShape)
                         )
-                        Spacer(modifier = Modifier.width(6.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
                     }
                     Text(
                         text = category,
                         style = VaultTypography.labelSmall,
-                        color = if (isSelected) ElectricPrimaryBright else SecondarySlate,
+                        color = if (isSelected) Color.White else SecondarySlate,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
                     )
+                    if (isSelected) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Box(
+                            modifier = Modifier
+                                .size(5.dp)
+                                .background(Color.White, CircleShape)
+                        )
+                    }
                 }
             }
         }

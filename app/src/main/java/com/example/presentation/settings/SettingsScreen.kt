@@ -47,6 +47,7 @@ import com.example.core.designsystem.OnSurfacePrimary
 import com.example.core.designsystem.SecondarySlate
 import com.example.core.designsystem.SecurityTertiaryBright
 import com.example.core.designsystem.SurfaceCanvas
+import com.example.core.designsystem.SurfaceContainerLowest
 import com.example.core.designsystem.VaultTypography
 import com.example.core.util.rememberScreenContentPadding
 import com.example.core.designsystem.neuFlat
@@ -87,8 +88,7 @@ fun SettingsScreen(
                             .neuFlat(
                                 shape = CircleShape,
                                 cornerRadius = 20.dp,
-                                elevation = 3.dp,
-                                backgroundColor = SurfaceCanvas
+                                backgroundColor = SurfaceContainerLowest
                             )
                             .clickable { onBack() },
                         contentAlignment = Alignment.Center
@@ -127,8 +127,7 @@ fun SettingsScreen(
                         .neuFlat(
                             shape = RoundedCornerShape(24.dp),
                             cornerRadius = 24.dp,
-                            elevation = 6.dp,
-                            backgroundColor = SurfaceCanvas
+                            backgroundColor = SurfaceContainerLowest
                         )
                         .padding(20.dp)
                 ) {
@@ -145,7 +144,6 @@ fun SettingsScreen(
                                         .neuPressed(
                                             shape = CircleShape,
                                             cornerRadius = 22.dp,
-                                            depth = 3.dp,
                                             backgroundColor = Color(0xFFE5F8EE)
                                         ),
                                     contentAlignment = Alignment.Center
@@ -205,8 +203,7 @@ fun SettingsScreen(
                         .neuFlat(
                             shape = RoundedCornerShape(24.dp),
                             cornerRadius = 24.dp,
-                            elevation = 6.dp,
-                            backgroundColor = SurfaceCanvas
+                            backgroundColor = SurfaceContainerLowest
                         )
                         .padding(18.dp)
                 ) {
@@ -332,8 +329,7 @@ fun SettingsScreen(
                         .neuFlat(
                             shape = RoundedCornerShape(22.dp),
                             cornerRadius = 22.dp,
-                            elevation = 6.dp,
-                            backgroundColor = SurfaceCanvas
+                            backgroundColor = SurfaceContainerLowest
                         )
                         .clickable { onLockVault() },
                     contentAlignment = Alignment.Center
