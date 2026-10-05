@@ -26,7 +26,6 @@ class GeneratorViewModel(
         when (intent) {
             is GeneratorUiIntent.UpdateLength -> {
                 _uiState.update { it.copy(config = it.config.copy(length = intent.length)) }
-                generate()
             }
             is GeneratorUiIntent.ToggleUppercase -> {
                 val newConfig = _uiState.value.config.copy(includeUppercase = intent.enabled)

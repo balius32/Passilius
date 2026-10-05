@@ -344,35 +344,15 @@ fun CredentialBottomSheet(
             Spacer(modifier = Modifier.height(20.dp))
 
             // Field 3: Password / Secret
-            Row(
+            Text(
+                text = "Password / Secret",
+                style = VaultTypography.labelMedium,
+                color = SecondarySlate,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = SheetHorizontalPadding)
-                    .padding(bottom = 10.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Password / Secret",
-                    style = VaultTypography.labelMedium,
-                    color = SecondarySlate
-                )
-
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier
-                            .size(6.dp)
-                            .background(SecurityTertiaryBright, CircleShape)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = if (entropyBits >= 90) "High Entropy" else if (entropyBits >= 60) "Good Entropy" else "Low Entropy",
-                        style = VaultTypography.labelSmall,
-                        color = SecurityTertiaryBright,
-                        fontWeight = FontWeight.Medium
-                    )
-                }
-            }
+                    .padding(bottom = 10.dp)
+            )
 
             Box(
                 modifier = Modifier
@@ -500,27 +480,16 @@ fun CredentialBottomSheet(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "${password.length} Characters (A-Z, 0-9, Symbols)",
-                        style = VaultTypography.labelSmall,
-                        color = SecondarySlate
-                    )
-                    Text(
-                        text = "$entropyBits-bit",
-                        style = VaultTypography.labelSmall,
-                        color = barColor,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+                Text(
+                    text = "${password.length} characters",
+                    style = VaultTypography.labelSmall,
+                    color = SecondarySlate
+                )
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             // Save
             Box(

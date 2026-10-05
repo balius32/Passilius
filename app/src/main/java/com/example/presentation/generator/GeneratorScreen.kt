@@ -324,7 +324,12 @@ fun GeneratorScreen(
                         // Tactile Slider
                         TactileSlider(
                             value = uiState.config.length.toFloat(),
-                            onValueChange = { viewModel.handleIntent(GeneratorUiIntent.UpdateLength(it.toInt())) },
+                            onValueChange = { raw ->
+                                val length = raw.toInt().coerceIn(8, 32)
+                                if (length != uiState.config.length) {
+                                    viewModel.handleIntent(GeneratorUiIntent.UpdateLength(length))
+                                }
+                            },
                             valueRange = 8f..32f,
                             modifier = Modifier.padding(vertical = 4.dp)
                         )

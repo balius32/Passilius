@@ -10,8 +10,9 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -32,8 +33,13 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -46,6 +52,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.roundToInt
 import com.example.core.designsystem.ElectricPrimaryBright
 import com.example.core.designsystem.OnPrimary
 import com.example.core.designsystem.OnSurfacePrimary
@@ -170,6 +177,7 @@ fun TactileToggleSwitch(
 
 /**
  * Tactile Neumorphic Slider Track with electric blue fill.
+ * Gestures are handled on the full track (not the thumb) so the thumb follows the finger.
  */
 @Composable
 fun TactileSlider(
@@ -179,64 +187,97 @@ fun TactileSlider(
     modifier: Modifier = Modifier,
     steps: Int = 0
 ) {
+    var isDragging by remember { mutableStateOf(false) }
+    var localValue by remember { mutableFloatStateOf(value) }
+    val onValueChangeState by rememberUpdatedState(onValueChange)
+
+    LaunchedEffect(value) {
+        if (!isDragging) {
+            localValue = value
+        }
+    }
+
+    val displayValue = if (isDragging) localValue else value
+
     BoxWithConstraints(
         modifier = modifier
             .fillMaxWidth()
             .height(36.dp),
         contentAlignment = Alignment.CenterStart
     ) {
-        val maxPx = constraints.maxWidth.toFloat()
-        val rangeSpan = valueRange.endInclusive - valueRange.start
-        val fraction = ((value - valueRange.start) / rangeSpan).coerceIn(0f, 1f)
+        val trackWidth = maxWidth
+        val maxPx = constraints.maxWidth.toFloat().coerceAtLeast(1f)
+        val rangeSpan = (valueRange.endInclusive - valueRange.start).coerceAtLeast(0.0001f)
+        val fraction = ((displayValue - valueRange.start) / rangeSpan).coerceIn(0f, 1f)
 
-        // Debossed recessed base channel
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(10.dp)
-                .neuPressed(
-                    shape = RoundedCornerShape(5.dp),
-                    cornerRadius = 5.dp,
-                    backgroundColor = Color(0xFFE2E8F0)
-                )
-        ) {
-            // Electric fill
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(fraction)
-                    .clip(RoundedCornerShape(5.dp))
-                    .background(ElectricPrimaryBright)
-            )
+        fun valueFromX(x: Float): Float {
+            val rawFraction = (x / maxPx).coerceIn(0f, 1f)
+            var newValue = valueRange.start + rawFraction * rangeSpan
+            if (steps > 0) {
+                val stepSize = rangeSpan / (steps + 1)
+                val stepped =
+                    ((newValue - valueRange.start) / stepSize).roundToInt() * stepSize + valueRange.start
+                newValue = stepped.coerceIn(valueRange.start, valueRange.endInclusive)
+            }
+            return newValue
         }
 
-        // Thumb disc
-        val thumbOffset = ((maxWidth - 26.dp) * fraction).coerceAtLeast(0.dp)
         Box(
             modifier = Modifier
-                .offset(x = thumbOffset)
-                .size(26.dp)
-                .neuFlat(
-                    shape = CircleShape,
-                    cornerRadius = 13.dp,
-                    backgroundColor = Color.White
+                .matchParentSize()
+                .pointerInput(valueRange, maxPx, steps) {
+                    awaitEachGesture {
+                        val down = awaitFirstDown()
+                        isDragging = true
+                        val pressed = valueFromX(down.position.x)
+                        localValue = pressed
+                        onValueChangeState(pressed)
+
+                        drag(down.id) { change ->
+                            change.consume()
+                            val dragged = valueFromX(change.position.x)
+                            localValue = dragged
+                            onValueChangeState(dragged)
+                        }
+                        isDragging = false
+                    }
+                }
+        ) {
+            // Debossed recessed base channel
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .fillMaxWidth()
+                    .height(10.dp)
+                    .neuPressed(
+                        shape = RoundedCornerShape(5.dp),
+                        cornerRadius = 5.dp,
+                        backgroundColor = Color(0xFFE2E8F0)
+                    )
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(fraction)
+                        .clip(RoundedCornerShape(5.dp))
+                        .background(ElectricPrimaryBright)
                 )
-                .pointerInput(Unit) {
-                    detectHorizontalDragGestures { change, _ ->
-                        change.consume()
-                        val newFraction = (change.position.x / maxPx).coerceIn(0f, 1f)
-                        val newValue = valueRange.start + newFraction * rangeSpan
-                        onValueChange(newValue)
-                    }
-                }
-                .pointerInput(Unit) {
-                    detectTapGestures { offset ->
-                        val newFraction = (offset.x / maxPx).coerceIn(0f, 1f)
-                        val newValue = valueRange.start + newFraction * rangeSpan
-                        onValueChange(newValue)
-                    }
-                }
-        )
+            }
+
+            // Thumb disc
+            val thumbOffset = ((trackWidth - 26.dp) * fraction).coerceAtLeast(0.dp)
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .offset(x = thumbOffset)
+                    .size(26.dp)
+                    .neuFlat(
+                        shape = CircleShape,
+                        cornerRadius = 13.dp,
+                        backgroundColor = Color.White
+                    )
+            )
+        }
     }
 }
 
