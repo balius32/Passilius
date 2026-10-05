@@ -7,10 +7,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -21,6 +21,8 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -72,6 +74,7 @@ import com.example.core.designsystem.VaultTypography
 import com.example.domain.model.Credential
 import kotlinx.coroutines.launch
 
+private val SheetHorizontalPadding = 24.dp
 private val SheetFieldShape = RoundedCornerShape(16.dp)
 private val SheetFieldBackground = Color(0xFFEFF2F7)
 private val SheetFieldBorder = Color(0xFFD8DEE8)
@@ -149,7 +152,6 @@ fun CredentialBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 24.dp)
                 .padding(bottom = 32.dp)
                 .verticalScroll(rememberScrollState())
                 .navigationBarsPadding()
@@ -160,22 +162,27 @@ fun CredentialBottomSheet(
                 style = VaultTypography.headlineMedium,
                 color = OnSurfacePrimary,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 12.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = SheetHorizontalPadding)
+                    .padding(bottom = 12.dp)
             )
 
             Text(
                 text = "Vault Category",
                 style = VaultTypography.labelMedium,
                 color = SecondarySlate,
-                modifier = Modifier.padding(bottom = 10.dp, start = 4.dp)
-            )
-            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
+                    .padding(horizontal = SheetHorizontalPadding)
+                    .padding(bottom = 10.dp)
+            )
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = SheetHorizontalPadding),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                categories.forEach { cat ->
+                items(categories) { cat ->
                     val isCatSelected = cat.equals(category, ignoreCase = true)
                     Box(
                         modifier = Modifier
@@ -211,11 +218,15 @@ fun CredentialBottomSheet(
                 text = "Website or Service",
                 style = VaultTypography.labelMedium,
                 color = SecondarySlate,
-                modifier = Modifier.padding(bottom = 10.dp, start = 4.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = SheetHorizontalPadding)
+                    .padding(bottom = 10.dp)
             )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = SheetHorizontalPadding)
                     .height(52.dp)
                     .sheetFieldWell()
                     .padding(horizontal = 14.dp),
@@ -272,11 +283,15 @@ fun CredentialBottomSheet(
                 text = "Username or Email",
                 style = VaultTypography.labelMedium,
                 color = SecondarySlate,
-                modifier = Modifier.padding(bottom = 10.dp, start = 4.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = SheetHorizontalPadding)
+                    .padding(bottom = 10.dp)
             )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = SheetHorizontalPadding)
                     .height(52.dp)
                     .sheetFieldWell()
                     .padding(horizontal = 14.dp),
@@ -332,7 +347,8 @@ fun CredentialBottomSheet(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 10.dp, start = 4.dp, end = 4.dp),
+                    .padding(horizontal = SheetHorizontalPadding)
+                    .padding(bottom = 10.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -361,6 +377,7 @@ fun CredentialBottomSheet(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = SheetHorizontalPadding)
                     .height(52.dp)
                     .sheetFieldWell()
                     .padding(horizontal = 14.dp),
@@ -461,7 +478,8 @@ fun CredentialBottomSheet(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 8.dp, start = 4.dp, end = 4.dp)
+                    .padding(horizontal = SheetHorizontalPadding)
+                    .padding(top = 8.dp)
             ) {
                 val fraction = (entropyBits / 128f).coerceIn(0.05f, 1f)
                 val barColor = if (entropyBits >= 90) SecurityTertiaryBright else if (entropyBits >= 60) Color(0xFFF59E0B) else Color(0xFFBA1A1A)
@@ -508,6 +526,7 @@ fun CredentialBottomSheet(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(horizontal = SheetHorizontalPadding)
                     .height(56.dp)
                     .clip(RoundedCornerShape(20.dp))
                     .background(ElectricPrimaryBright, RoundedCornerShape(20.dp))
