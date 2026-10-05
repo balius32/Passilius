@@ -11,3 +11,6 @@ data object GeneratorRoute : NavKey
 
 @Serializable
 data object SettingsRoute : NavKey
+
+@Serializable
+data object CategoriesRoute : NavKey

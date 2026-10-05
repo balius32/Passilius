@@ -1,13 +1,7 @@
 package com.example.core.components
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitEachGesture
@@ -28,8 +22,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,19 +36,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import kotlin.math.roundToInt
 import com.example.core.designsystem.ElectricPrimaryBright
 import com.example.core.designsystem.OnPrimary
 import com.example.core.designsystem.OnSurfacePrimary
-import com.example.core.designsystem.SecondarySlate
 import com.example.core.designsystem.SurfaceContainerLowest
 import com.example.core.designsystem.VaultTypography
 import com.example.core.designsystem.neuFlat
@@ -277,51 +266,6 @@ fun TactileSlider(
                         backgroundColor = Color.White
                     )
             )
-        }
-    }
-}
-
-/**
- * Delightful Floating Toast Pill.
- */
-@Composable
-fun TactileToastPill(
-    message: String,
-    visible: Boolean,
-    modifier: Modifier = Modifier
-) {
-    AnimatedVisibility(
-        visible = visible,
-        enter = fadeIn(tween(200)) + slideInVertically(initialOffsetY = { -40 }),
-        exit = fadeOut(tween(200)) + slideOutVertically(targetOffsetY = { -40 }),
-        modifier = modifier
-    ) {
-        Box(
-            modifier = Modifier
-                .neuFlat(
-                    shape = RoundedCornerShape(20.dp),
-                    cornerRadius = 20.dp,
-                    backgroundColor = SurfaceContainerLowest
-                )
-                .padding(horizontal = 16.dp, vertical = 10.dp)
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.CheckCircle,
-                    contentDescription = null,
-                    tint = ElectricPrimaryBright,
-                    modifier = Modifier.size(18.dp)
-                )
-                Text(
-                    text = message,
-                    style = VaultTypography.bodySmall,
-                    color = OnSurfacePrimary,
-                    fontWeight = FontWeight.Medium
-                )
-            }
         }
     }
 }

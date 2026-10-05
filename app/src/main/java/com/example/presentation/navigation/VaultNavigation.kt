@@ -64,6 +64,9 @@ import com.example.core.components.NotchedCapsuleShape
 import com.example.core.designsystem.SoftStroke
 import com.example.core.designsystem.SurfaceCanvas
 import com.example.core.designsystem.VaultTypography
+import com.example.presentation.category.CategoryBottomSheet
+import com.example.presentation.category.ManageCategoriesScreen
+import com.example.presentation.category.ManageCategoriesViewModel
 import com.example.presentation.credential.CredentialBottomSheet
 import com.example.presentation.generator.GeneratorScreen
 import com.example.presentation.generator.GeneratorViewModel
@@ -114,7 +117,8 @@ private fun selectTopLevelTab(backStack: NavBackStack<NavKey>, destination: NavK
 @Composable
 fun VaultApp(
     vaultViewModel: VaultViewModel,
-    generatorViewModel: GeneratorViewModel
+    generatorViewModel: GeneratorViewModel,
+    manageCategoriesViewModel: ManageCategoriesViewModel
 ) {
     val vaultState by vaultViewModel.uiState.collectAsStateWithLifecycle()
     val backStack = rememberNavBackStack(VaultRoute)
@@ -126,7 +130,7 @@ fun VaultApp(
         )
     } else {
         val currentKey = backStack.lastOrNull()
-        val showBottomBar = currentKey != SettingsRoute
+        val showBottomBar = currentKey != SettingsRoute && currentKey != CategoriesRoute
         val hazeState = rememberHazeState()
 
         Scaffold(
@@ -215,7 +219,26 @@ fun VaultApp(
                                             backStack.removeLastOrNull()
                                         }
                                     },
-                                    onLockVault = { vaultViewModel.handleIntent(VaultUiIntent.LockVault) }
+                                    onLockVault = { vaultViewModel.handleIntent(VaultUiIntent.LockVault) },
+                                    onManageCategories = { backStack.add(CategoriesRoute) }
+                                )
+                            }
+                            entry<CategoriesRoute>(
+                                metadata = metadata {
+                                    put(NavDisplay.TransitionKey) { profileForwardTransition() }
+                                    put(NavDisplay.PopTransitionKey) { profilePopTransition() }
+                                    put(NavDisplay.PredictivePopTransitionKey) { _: Int ->
+                                        profilePopTransition()
+                                    }
+                                }
+                            ) {
+                                ManageCategoriesScreen(
+                                    viewModel = manageCategoriesViewModel,
+                                    onBack = {
+                                        if (backStack.size > 1) {
+                                            backStack.removeLastOrNull()
+                                        }
+                                    }
                                 )
                             }
                         }
@@ -244,8 +267,18 @@ fun VaultApp(
                     key(vaultState.bottomSheetSessionId) {
                         CredentialBottomSheet(
                             initialCredential = vaultState.editingCredential,
+                            categories = vaultState.selectableCategories,
                             onDismiss = { vaultViewModel.handleIntent(VaultUiIntent.CloseBottomSheet) },
                             onSave = { vaultViewModel.handleIntent(VaultUiIntent.SaveCredential(it)) }
+                        )
+                    }
+                }
+
+                if (vaultState.isCategorySheetOpen) {
+                    key(vaultState.categorySheetSessionId) {
+                        CategoryBottomSheet(
+                            onDismiss = { vaultViewModel.handleIntent(VaultUiIntent.CloseCategorySheet) },
+                            onSave = { vaultViewModel.handleIntent(VaultUiIntent.CreateCategory(it)) }
                         )
                     }
                 }

@@ -19,6 +19,7 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
@@ -125,6 +126,7 @@ fun CategoryPillStrip(
     categories: List<String>,
     selectedCategory: String,
     onSelectCategory: (String) -> Unit,
+    onAddCategory: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val scrollState = rememberScrollState()
@@ -185,6 +187,37 @@ fun CategoryPillStrip(
                                 .background(Color.White, CircleShape)
                         )
                     }
+                }
+            }
+        }
+
+        if (onAddCategory != null) {
+            Box(
+                modifier = Modifier
+                    .testTag("category_chip_add")
+                    .neuFlat(
+                        shape = RoundedCornerShape(20.dp),
+                        cornerRadius = 20.dp,
+                        backgroundColor = SurfaceContainerLowest
+                    )
+                    .clickable(onClick = onAddCategory)
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add category",
+                        tint = ElectricPrimaryBright,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = "Add",
+                        style = VaultTypography.labelSmall,
+                        color = ElectricPrimaryBright,
+                        fontWeight = FontWeight.SemiBold
+                    )
                 }
             }
         }

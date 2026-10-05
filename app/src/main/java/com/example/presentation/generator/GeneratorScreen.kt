@@ -25,7 +25,6 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.remember
@@ -41,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.components.TactileSlider
-import com.example.core.components.TactileToastPill
 import com.example.core.components.TactileToggleSwitch
 import com.example.core.designsystem.ElectricPrimaryBright
 import com.example.core.designsystem.OnSurfacePrimary
@@ -53,7 +51,6 @@ import com.example.core.designsystem.VaultTypography
 import com.example.core.util.rememberScreenContentPadding
 import com.example.core.designsystem.neuFlat
 import com.example.core.designsystem.neuPressed
-import kotlinx.coroutines.delay
 
 @Composable
 fun GeneratorScreen(
@@ -70,14 +67,6 @@ fun GeneratorScreen(
         animationSpec = tween(durationMillis = 350),
         label = "refreshAnim"
     )
-
-    // Auto-clear toast
-    LaunchedEffect(uiState.toastMessage) {
-        if (uiState.toastMessage != null) {
-            delay(2500)
-            viewModel.handleIntent(GeneratorUiIntent.ClearToast)
-        }
-    }
 
     Box(
         modifier = modifier
@@ -422,15 +411,6 @@ fun GeneratorScreen(
                 }
             }
         }
-
-        // Floating Toast Pill
-        TactileToastPill(
-            message = uiState.toastMessage ?: "",
-            visible = uiState.toastMessage != null,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 70.dp)
-        )
     }
 }
 

@@ -5,17 +5,17 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.util.ClipboardHelper
 import com.example.domain.model.Credential
+import com.example.domain.usecase.AddCategoryUseCase
 import com.example.domain.usecase.DeleteCredentialUseCase
 import com.example.domain.usecase.GetVaultCredentialsUseCase
+import com.example.domain.usecase.ObserveCategoriesUseCase
 import com.example.domain.usecase.SaveCredentialUseCase
 import com.example.domain.usecase.ToggleFavoriteUseCase
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -24,19 +24,20 @@ class VaultViewModel(
     private val getVaultCredentialsUseCase: GetVaultCredentialsUseCase,
     private val saveCredentialUseCase: SaveCredentialUseCase,
     private val deleteCredentialUseCase: DeleteCredentialUseCase,
-    private val toggleFavoriteUseCase: ToggleFavoriteUseCase
+    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
+    private val observeCategoriesUseCase: ObserveCategoriesUseCase,
+    private val addCategoryUseCase: AddCategoryUseCase
 ) : AndroidViewModel(application) {
 
     private val _uiState = MutableStateFlow(VaultUiState())
     val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()
 
-    private val _eventChannel = Channel<VaultUiSingleEvent>()
-    val events = _eventChannel.receiveAsFlow()
-
     private var searchJob: Job? = null
     private var sheetOpenJob: Job? = null
+    private var categorySheetJob: Job? = null
 
     init {
+        observeCategories()
         loadCredentials()
     }
 
@@ -63,20 +64,16 @@ class VaultViewModel(
             is VaultUiIntent.CopyPassword -> {
                 ClipboardHelper.copyToClipboard(
                     context = getApplication(),
-                    label = "${intent.service} Password",
                     text = intent.password,
                     isSensitive = true
                 )
-                showToast("Password copied to clipboard")
             }
             is VaultUiIntent.CopyUsername -> {
                 ClipboardHelper.copyToClipboard(
                     context = getApplication(),
-                    label = "Username",
                     text = intent.username,
-                    isSensitive = false
+                    isSensitive = true
                 )
-                showToast("Username copied to clipboard")
             }
             is VaultUiIntent.OpenCreate -> {
                 openBottomSheet(editingCredential = null)
@@ -91,13 +88,11 @@ class VaultViewModel(
                 viewModelScope.launch {
                     saveCredentialUseCase(intent.credential)
                     closeBottomSheet()
-                    showToast("${intent.credential.service} account encrypted & saved")
                 }
             }
             is VaultUiIntent.DeleteCredential -> {
                 viewModelScope.launch {
                     deleteCredentialUseCase(intent.id)
-                    showToast("Credential removed from vault")
                 }
             }
             is VaultUiIntent.ToggleFavorite -> {
@@ -105,14 +100,45 @@ class VaultViewModel(
                     toggleFavoriteUseCase(intent.id, intent.isFavorite)
                 }
             }
-            is VaultUiIntent.ClearToast -> {
-                _uiState.update { it.copy(toastMessage = null) }
+            is VaultUiIntent.OpenCreateCategory -> {
+                openCategorySheet()
+            }
+            is VaultUiIntent.CloseCategorySheet -> {
+                closeCategorySheet()
+            }
+            is VaultUiIntent.CreateCategory -> {
+                viewModelScope.launch {
+                    val ok = addCategoryUseCase(intent.name)
+                    if (ok) {
+                        closeCategorySheet()
+                    }
+                }
             }
             is VaultUiIntent.LockVault -> {
                 _uiState.update { it.copy(isLocked = true) }
             }
             is VaultUiIntent.UnlockVault -> {
                 _uiState.update { it.copy(isLocked = false) }
+            }
+        }
+    }
+
+    private fun observeCategories() {
+        viewModelScope.launch {
+            observeCategoriesUseCase().collect { names ->
+                val selected = _uiState.value.selectedCategory
+                val stillValid = selected == "All Vaults" ||
+                    names.any { it.equals(selected, ignoreCase = true) }
+                _uiState.update {
+                    it.copy(
+                        selectableCategories = names,
+                        categories = listOf("All Vaults") + names,
+                        selectedCategory = if (stillValid) selected else "All Vaults"
+                    )
+                }
+                if (!stillValid) {
+                    loadCredentials()
+                }
             }
         }
     }
@@ -127,7 +153,6 @@ class VaultViewModel(
     private fun openBottomSheet(editingCredential: Credential?) {
         sheetOpenJob?.cancel()
         sheetOpenJob = viewModelScope.launch {
-            // Always dispose any existing/stuck sheet before remounting a fresh session.
             _uiState.update {
                 it.copy(isBottomSheetOpen = false, editingCredential = null)
             }
@@ -137,6 +162,25 @@ class VaultViewModel(
                     editingCredential = editingCredential,
                     isBottomSheetOpen = true,
                     bottomSheetSessionId = it.bottomSheetSessionId + 1
+                )
+            }
+        }
+    }
+
+    private fun closeCategorySheet() {
+        categorySheetJob?.cancel()
+        _uiState.update { it.copy(isCategorySheetOpen = false) }
+    }
+
+    private fun openCategorySheet() {
+        categorySheetJob?.cancel()
+        categorySheetJob = viewModelScope.launch {
+            _uiState.update { it.copy(isCategorySheetOpen = false) }
+            delay(64)
+            _uiState.update {
+                it.copy(
+                    isCategorySheetOpen = true,
+                    categorySheetSessionId = it.categorySheetSessionId + 1
                 )
             }
         }
@@ -152,13 +196,6 @@ class VaultViewModel(
             ).collect { list ->
                 _uiState.update { it.copy(credentials = list, isLoading = false) }
             }
-        }
-    }
-
-    private fun showToast(msg: String) {
-        _uiState.update { it.copy(toastMessage = msg) }
-        viewModelScope.launch {
-            _eventChannel.send(VaultUiSingleEvent.ShowToast(msg))
         }
     }
 }

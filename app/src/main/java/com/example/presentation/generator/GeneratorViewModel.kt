@@ -2,13 +2,16 @@ package com.example.presentation.generator
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import com.example.core.crypto.PasswordGenerator
+import androidx.lifecycle.viewModelScope
 import com.example.core.util.ClipboardHelper
 import com.example.domain.usecase.GeneratePasswordUseCase
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 class GeneratorViewModel(
     application: Application,
@@ -17,6 +20,8 @@ class GeneratorViewModel(
 
     private val _uiState = MutableStateFlow(GeneratorUiState())
     val uiState: StateFlow<GeneratorUiState> = _uiState.asStateFlow()
+
+    private var copiedResetJob: Job? = null
 
     init {
         generate()
@@ -66,10 +71,12 @@ class GeneratorViewModel(
                     text = pw,
                     isSensitive = true
                 )
-                _uiState.update { it.copy(isCopied = true, toastMessage = "Password copied to clipboard") }
-            }
-            is GeneratorUiIntent.ClearToast -> {
-                _uiState.update { it.copy(toastMessage = null, isCopied = false) }
+                _uiState.update { it.copy(isCopied = true) }
+                copiedResetJob?.cancel()
+                copiedResetJob = viewModelScope.launch {
+                    delay(2000)
+                    _uiState.update { it.copy(isCopied = false) }
+                }
             }
         }
     }

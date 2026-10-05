@@ -27,7 +27,6 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,7 +38,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.core.components.CategoryPillStrip
 import com.example.core.components.NeumorphicSearchBar
 import com.example.core.components.PasswordCard
-import com.example.core.components.TactileToastPill
 import com.example.core.designsystem.ElectricPrimaryBright
 import com.example.core.designsystem.OnSurfacePrimary
 import com.example.core.designsystem.OnSurfaceSecondary
@@ -50,7 +48,6 @@ import com.example.core.designsystem.VaultTypography
 import com.example.core.designsystem.neuFlat
 import com.example.core.designsystem.neuPressed
 import com.example.core.util.rememberScreenContentPadding
-import kotlinx.coroutines.delay
 
 @Composable
 fun VaultScreen(
@@ -60,14 +57,6 @@ fun VaultScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val contentPadding = rememberScreenContentPadding()
-
-    // Auto-clear toast after 2.5 seconds
-    LaunchedEffect(uiState.toastMessage) {
-        if (uiState.toastMessage != null) {
-            delay(2500)
-            viewModel.handleIntent(VaultUiIntent.ClearToast)
-        }
-    }
 
     Box(
         modifier = modifier
@@ -169,7 +158,8 @@ fun VaultScreen(
                 CategoryPillStrip(
                     categories = uiState.categories,
                     selectedCategory = uiState.selectedCategory,
-                    onSelectCategory = { viewModel.handleIntent(VaultUiIntent.SelectCategory(it)) }
+                    onSelectCategory = { viewModel.handleIntent(VaultUiIntent.SelectCategory(it)) },
+                    onAddCategory = { viewModel.handleIntent(VaultUiIntent.OpenCreateCategory) }
                 )
             }
 
@@ -223,15 +213,5 @@ fun VaultScreen(
                 }
             }
         }
-
-        // Floating Toast Pill Notification
-        TactileToastPill(
-            message = uiState.toastMessage ?: "",
-            visible = uiState.toastMessage != null,
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(top = 70.dp)
-        )
-
     }
 }

@@ -14,4 +14,9 @@ interface VaultRepository {
     suspend fun toggleFavorite(id: Long, isFavorite: Boolean)
     suspend fun getSecurityReport(): SecurityReport
     suspend fun seedInitialDataIfEmpty()
+
+    fun observeCategories(): Flow<List<String>>
+    suspend fun addCategory(name: String): Boolean
+    suspend fun renameCategory(oldName: String, newName: String): Boolean
+    suspend fun deleteCategory(name: String): Boolean
 }

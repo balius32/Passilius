@@ -28,7 +28,10 @@ class ExampleRobolectricTest {
     fun `database initial seeding and read test`() = runBlocking {
         val context = ApplicationProvider.getApplicationContext<Context>()
         val database = VaultDatabase.getInstance(context)
-        val repository = VaultRepositoryImpl(database.credentialDao())
+        val repository = VaultRepositoryImpl(
+            credentialDao = database.credentialDao(),
+            categoryDao = database.categoryDao()
+        )
 
         repository.seedInitialDataIfEmpty()
         val list = repository.getAllCredentials().first()

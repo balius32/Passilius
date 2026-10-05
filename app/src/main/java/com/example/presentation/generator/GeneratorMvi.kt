@@ -14,8 +14,7 @@ data class GeneratorUiState(
     val generatedPassword: String = "",
     val entropyBits: Int = 104,
     val strengthLevel: PasswordStrengthLevel = PasswordStrengthLevel.VERY_STRONG,
-    val isCopied: Boolean = false,
-    val toastMessage: String? = null
+    val isCopied: Boolean = false
 )
 
 sealed interface GeneratorUiIntent {
@@ -26,5 +25,4 @@ sealed interface GeneratorUiIntent {
     data class ToggleSymbols(val enabled: Boolean) : GeneratorUiIntent
     object Regenerate : GeneratorUiIntent
     object CopyPassword : GeneratorUiIntent
-    object ClearToast : GeneratorUiIntent
 }

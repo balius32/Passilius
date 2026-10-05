@@ -18,6 +18,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Security
@@ -56,6 +58,7 @@ import com.example.core.designsystem.neuPressed
 fun SettingsScreen(
     onBack: () -> Unit,
     onLockVault: () -> Unit,
+    onManageCategories: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     var biometricEnabled by remember { mutableStateOf(true) }
@@ -313,6 +316,57 @@ fun SettingsScreen(
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("manage_categories_row")
+                        .neuFlat(
+                            shape = RoundedCornerShape(24.dp),
+                            cornerRadius = 24.dp,
+                            backgroundColor = SurfaceContainerLowest
+                        )
+                        .clickable { onManageCategories() }
+                        .padding(18.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Category,
+                                contentDescription = null,
+                                tint = ElectricPrimaryBright,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = "Categories",
+                                    style = VaultTypography.bodyMedium,
+                                    color = OnSurfacePrimary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Text(
+                                    text = "Add, rename, or remove",
+                                    style = VaultTypography.bodySmall,
+                                    color = SecondarySlate,
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = SecondarySlate,
+                            modifier = Modifier.size(22.dp)
+                        )
                     }
                 }
             }

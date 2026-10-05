@@ -16,9 +16,8 @@ data class Credential(
 )
 
 data class VaultCategory(
-    val id: String,
-    val name: String,
-    val iconName: String
+    val id: Long = 0,
+    val name: String
 )
 
 data class SecurityReport(

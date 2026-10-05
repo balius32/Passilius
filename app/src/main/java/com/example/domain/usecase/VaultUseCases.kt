@@ -49,3 +49,28 @@ class GeneratePasswordUseCase {
         return PasswordGenerator.generate(config)
     }
 }
+
+class ObserveCategoriesUseCase(
+    private val repository: VaultRepository
+) {
+    operator fun invoke(): Flow<List<String>> = repository.observeCategories()
+}
+
+class AddCategoryUseCase(
+    private val repository: VaultRepository
+) {
+    suspend operator fun invoke(name: String): Boolean = repository.addCategory(name)
+}
+
+class RenameCategoryUseCase(
+    private val repository: VaultRepository
+) {
+    suspend operator fun invoke(oldName: String, newName: String): Boolean =
+        repository.renameCategory(oldName, newName)
+}
+
+class DeleteCategoryUseCase(
+    private val repository: VaultRepository
+) {
+    suspend operator fun invoke(name: String): Boolean = repository.deleteCategory(name)
+}

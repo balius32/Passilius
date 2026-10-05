@@ -7,44 +7,55 @@ import android.os.Build
 import android.os.PersistableBundle
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 object ClipboardHelper {
 
+    private const val ExtraIsSensitive = "android.content.extra.IS_SENSITIVE"
+
+    private var autoClearJob: Job? = null
+
     fun copyToClipboard(
         context: Context,
-        label: String,
+        label: String = "",
         text: String,
         isSensitive: Boolean = true,
         autoClearSeconds: Int = 30
     ) {
         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
-        val clip = ClipData.newPlainText(label, text)
+        // Empty label reduces what OEM clipboard banners display.
+        val clip = ClipData.newPlainText(label.ifBlank { " " }, text)
 
-        if (isSensitive && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val bundle = PersistableBundle().apply {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    putBoolean("android.content.extra.IS_SENSITIVE", true)
-                }
+        if (isSensitive) {
+            // Hides clipboard content preview in Android 13+ system copy UI.
+            clip.description.extras = PersistableBundle().apply {
+                putBoolean(ExtraIsSensitive, true)
             }
-            clip.description.extras = bundle
         }
 
         clipboard.setPrimaryClip(clip)
 
-        // Sensitive auto-clear coroutine
+        autoClearJob?.cancel()
         if (isSensitive && autoClearSeconds > 0) {
-            CoroutineScope(Dispatchers.Main).launch {
+            autoClearJob = CoroutineScope(Dispatchers.Main).launch {
                 delay(autoClearSeconds * 1000L)
-                val currentClip = clipboard.primaryClip
-                if (currentClip != null && currentClip.itemCount > 0) {
-                    val currentText = currentClip.getItemAt(0).text?.toString()
-                    if (currentText == text) {
-                        clipboard.setPrimaryClip(ClipData.newPlainText("", ""))
-                    }
-                }
+                clearIfStillMatching(clipboard, text)
             }
+        }
+    }
+
+    private fun clearIfStillMatching(clipboard: ClipboardManager, text: String) {
+        val currentClip = clipboard.primaryClip
+        if (currentClip == null || currentClip.itemCount == 0) return
+        val currentText = currentClip.getItemAt(0).text?.toString() ?: return
+        if (currentText != text) return
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            clipboard.clearPrimaryClip()
+        } else {
+            clipboard.setPrimaryClip(ClipData.newPlainText("", ""))
         }
     }
 }

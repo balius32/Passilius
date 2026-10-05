@@ -44,4 +44,7 @@ interface CredentialDao {
 
     @Query("UPDATE credentials SET isFavorite = :isFavorite WHERE id = :id")
     suspend fun updateFavorite(id: Long, isFavorite: Boolean)
+
+    @Query("UPDATE credentials SET category = :newCategory WHERE category = :oldCategory")
+    suspend fun reassignCategory(oldCategory: String, newCategory: String)
 }

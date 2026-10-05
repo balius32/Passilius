@@ -1,9 +1,5 @@
 package com.example.presentation.credential
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -29,10 +25,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Visibility
@@ -60,7 +54,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.core.crypto.GeneratorConfig
 import com.example.core.crypto.PasswordGenerator
 import com.example.core.designsystem.ElectricPrimaryBright
@@ -89,22 +82,24 @@ private fun Modifier.sheetIconButton(): Modifier = this
     .background(SurfaceCanvas, CircleShape)
     .border(1.dp, SheetFieldBorder, CircleShape)
 
-private fun Modifier.sheetCard(): Modifier = this
-    .clip(RoundedCornerShape(18.dp))
-    .background(SurfaceCanvas, RoundedCornerShape(18.dp))
-    .border(1.dp, SheetFieldBorder, RoundedCornerShape(18.dp))
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CredentialBottomSheet(
     initialCredential: Credential?,
+    categories: List<String>,
     onDismiss: () -> Unit,
     onSave: (Credential) -> Unit
 ) {
     var service by remember { mutableStateOf(initialCredential?.service ?: "") }
     var username by remember { mutableStateOf(initialCredential?.username ?: "") }
     var password by remember { mutableStateOf(initialCredential?.password ?: "") }
-    var category by remember { mutableStateOf(initialCredential?.category ?: "Personal") }
+    var category by remember {
+        mutableStateOf(
+            initialCredential?.category
+                ?: categories.firstOrNull()
+                ?: "Personal"
+        )
+    }
     var websiteUrl by remember { mutableStateOf(initialCredential?.websiteUrl ?: "") }
     var notes by remember { mutableStateOf(initialCredential?.notes ?: "") }
 
@@ -112,7 +107,11 @@ fun CredentialBottomSheet(
     var isSaving by remember { mutableStateOf(false) }
     var entropyBits by remember { mutableIntStateOf(0) }
 
-    val categories = listOf("Personal", "Work", "Finance", "Entertainment", "Social")
+    LaunchedEffect(categories) {
+        if (categories.isNotEmpty() && categories.none { it.equals(category, ignoreCase = true) }) {
+            category = categories.first()
+        }
+    }
 
     LaunchedEffect(password) {
         entropyBits = PasswordGenerator.calculateEntropy(password)

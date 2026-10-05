@@ -4,17 +4,20 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.data.local.dao.CategoryDao
 import com.example.data.local.dao.CredentialDao
+import com.example.data.local.entity.CategoryEntity
 import com.example.data.local.entity.CredentialEntity
 
 @Database(
-    entities = [CredentialEntity::class],
-    version = 2,
+    entities = [CredentialEntity::class, CategoryEntity::class],
+    version = 3,
     exportSchema = false
 )
 abstract class VaultDatabase : RoomDatabase() {
 
     abstract fun credentialDao(): CredentialDao
+    abstract fun categoryDao(): CategoryDao
 
     companion object {
         @Volatile

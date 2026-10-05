@@ -2,7 +2,9 @@ package com.example.data.repository
 
 import com.example.core.crypto.CryptoManager
 import com.example.core.crypto.PasswordGenerator
+import com.example.data.local.dao.CategoryDao
 import com.example.data.local.dao.CredentialDao
+import com.example.data.local.entity.CategoryEntity
 import com.example.data.local.entity.CredentialEntity
 import com.example.domain.model.Credential
 import com.example.domain.model.SecurityReport
@@ -11,8 +13,20 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
 class VaultRepositoryImpl(
-    private val credentialDao: CredentialDao
+    private val credentialDao: CredentialDao,
+    private val categoryDao: CategoryDao
 ) : VaultRepository {
+
+    companion object {
+        const val DEFAULT_CATEGORY = "Personal"
+        private val DEFAULT_CATEGORIES = listOf(
+            "Personal",
+            "Work",
+            "Finance",
+            "Entertainment",
+            "Social"
+        )
+    }
 
     override fun getAllCredentials(): Flow<List<Credential>> {
         return credentialDao.getAllCredentials().map { list ->
@@ -94,7 +108,56 @@ class VaultRepositoryImpl(
         )
     }
 
+    override fun observeCategories(): Flow<List<String>> {
+        return categoryDao.observeAll().map { list -> list.map { it.name } }
+    }
+
+    override suspend fun addCategory(name: String): Boolean {
+        val trimmed = name.trim()
+        if (trimmed.isBlank()) return false
+        if (trimmed.equals("All Vaults", ignoreCase = true) || trimmed.equals("All", ignoreCase = true)) {
+            return false
+        }
+        if (categoryDao.getByName(trimmed) != null) return false
+
+        val nextOrder = categoryDao.getMaxSortOrder() + 1
+        val id = categoryDao.insert(
+            CategoryEntity(name = trimmed, sortOrder = nextOrder)
+        )
+        return id != -1L
+    }
+
+    override suspend fun renameCategory(oldName: String, newName: String): Boolean {
+        val trimmedOld = oldName.trim()
+        val trimmedNew = newName.trim()
+        if (trimmedOld.isBlank() || trimmedNew.isBlank()) return false
+        if (trimmedOld.equals(DEFAULT_CATEGORY, ignoreCase = true)) return false
+        if (trimmedNew.equals("All Vaults", ignoreCase = true) || trimmedNew.equals("All", ignoreCase = true)) {
+            return false
+        }
+        if (trimmedOld.equals(trimmedNew, ignoreCase = true)) return true
+        if (categoryDao.getByName(trimmedOld) == null) return false
+        if (categoryDao.getByName(trimmedNew) != null) return false
+
+        categoryDao.rename(trimmedOld, trimmedNew)
+        credentialDao.reassignCategory(trimmedOld, trimmedNew)
+        return true
+    }
+
+    override suspend fun deleteCategory(name: String): Boolean {
+        val trimmed = name.trim()
+        if (trimmed.isBlank()) return false
+        if (trimmed.equals(DEFAULT_CATEGORY, ignoreCase = true)) return false
+        if (categoryDao.getByName(trimmed) == null) return false
+
+        credentialDao.reassignCategory(trimmed, DEFAULT_CATEGORY)
+        categoryDao.deleteByName(trimmed)
+        return true
+    }
+
     override suspend fun seedInitialDataIfEmpty() {
+        seedCategoriesIfEmpty()
+
         if (credentialDao.getCount() > 0) return
 
         val initialItems = listOf(
@@ -184,6 +247,15 @@ class VaultRepositoryImpl(
         }
 
         credentialDao.insertAll(entities)
+    }
+
+    private suspend fun seedCategoriesIfEmpty() {
+        if (categoryDao.getCount() > 0) return
+        categoryDao.insertAll(
+            DEFAULT_CATEGORIES.mapIndexed { index, name ->
+                CategoryEntity(name = name, sortOrder = index)
+            }
+        )
     }
 
     private fun CredentialEntity.toDomain(): Credential {
