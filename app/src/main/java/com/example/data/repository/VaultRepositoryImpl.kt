@@ -46,9 +46,6 @@ class VaultRepositoryImpl(
 
     override suspend fun saveCredential(credential: Credential): Long {
         val encryptedPassword = CryptoManager.encrypt(credential.password)
-        val encryptedTotp = if (credential.totpSecret.isNotBlank()) {
-            CryptoManager.encrypt(credential.totpSecret)
-        } else ""
 
         val entropy = if (credential.entropyBits > 0) {
             credential.entropyBits
@@ -63,7 +60,6 @@ class VaultRepositoryImpl(
             encryptedPassword = encryptedPassword,
             category = credential.category,
             websiteUrl = credential.websiteUrl.trim(),
-            encryptedTotpSecret = encryptedTotp,
             notes = credential.notes.trim(),
             iconKey = credential.iconKey.ifBlank { resolveIconKey(credential.service) },
             createdAt = if (credential.createdAt == 0L) System.currentTimeMillis() else credential.createdAt,
@@ -89,15 +85,11 @@ class VaultRepositoryImpl(
     }
 
     override suspend fun getSecurityReport(): SecurityReport {
-        // Compute report based on entropy, reused passwords, and 2FA coverage
-        val entities = mutableListOf<Credential>()
-        // In-memory quick computation
         return SecurityReport(
             totalCount = 24,
             strongCount = 18,
             weakCount = 2,
             reusedCount = 1,
-            with2faCount = 14,
             securityScorePercentage = 94
         )
     }
@@ -112,8 +104,7 @@ class VaultRepositoryImpl(
                 password = "nK9\$vL72#mQp",
                 category = "Personal",
                 websiteUrl = "https://accounts.google.com",
-                iconKey = "google",
-                totpSecret = "JBSWY3DPEHPK3PXP"
+                iconKey = "google"
             ),
             InitialSeed(
                 service = "GitHub",
@@ -121,8 +112,7 @@ class VaultRepositoryImpl(
                 password = "ghp_9u02!bVaKx9",
                 category = "Work",
                 websiteUrl = "https://github.com",
-                iconKey = "github",
-                totpSecret = "K5QWY3DPEHPK3PXQ"
+                iconKey = "github"
             ),
             InitialSeed(
                 service = "Spotify",
@@ -146,8 +136,7 @@ class VaultRepositoryImpl(
                 password = "V3ct0r&Pix3l\$42",
                 category = "Work",
                 websiteUrl = "https://figma.com",
-                iconKey = "figma",
-                totpSecret = "HXDMVJECJJWSRB3H"
+                iconKey = "figma"
             ),
             InitialSeed(
                 service = "Slack",
@@ -177,7 +166,6 @@ class VaultRepositoryImpl(
 
         val entities = initialItems.mapIndexed { index, item ->
             val encryptedPw = CryptoManager.encrypt(item.password)
-            val encryptedTotp = if (item.totpSecret.isNotBlank()) CryptoManager.encrypt(item.totpSecret) else ""
             val entropy = PasswordGenerator.calculateEntropy(item.password)
             CredentialEntity(
                 id = 0L,
@@ -186,7 +174,6 @@ class VaultRepositoryImpl(
                 encryptedPassword = encryptedPw,
                 category = item.category,
                 websiteUrl = item.websiteUrl,
-                encryptedTotpSecret = encryptedTotp,
                 notes = "Auto-generated secure vault record for ${item.service}.",
                 iconKey = item.iconKey,
                 createdAt = System.currentTimeMillis() - (index * 86400000L),
@@ -201,9 +188,6 @@ class VaultRepositoryImpl(
 
     private fun CredentialEntity.toDomain(): Credential {
         val decryptedPw = CryptoManager.decrypt(encryptedPassword)
-        val decryptedTotp = if (encryptedTotpSecret.isNotBlank()) {
-            CryptoManager.decrypt(encryptedTotpSecret)
-        } else ""
 
         return Credential(
             id = id,
@@ -212,7 +196,6 @@ class VaultRepositoryImpl(
             password = decryptedPw,
             category = category,
             websiteUrl = websiteUrl,
-            totpSecret = decryptedTotp,
             notes = notes,
             iconKey = iconKey,
             createdAt = createdAt,
@@ -246,7 +229,6 @@ class VaultRepositoryImpl(
         val password: String,
         val category: String,
         val websiteUrl: String,
-        val iconKey: String,
-        val totpSecret: String = ""
+        val iconKey: String
     )
 }

@@ -20,7 +20,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.PhonelinkLock
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Timer
@@ -189,7 +188,6 @@ fun SettingsScreen(
                             MetricItem("Accounts", "24")
                             MetricItem("Strong", "21")
                             MetricItem("Reused", "0")
-                            MetricItem("2FA Active", "14")
                         }
                     }
                 }

@@ -14,12 +14,12 @@ This module is the installable **Vault** password manager (`applicationId`: `com
 | Settings & lock | `presentation/settings/SettingsScreen.kt` |
 | Navigation & bottom bar | `presentation/navigation/VaultNavigation.kt` |
 | Persistence | `data/local/` (Room), `data/repository/VaultRepositoryImpl.kt` |
-| Encryption & TOTP | `core/crypto/CryptoManager.kt`, `TotpManager.kt`, `PasswordGenerator.kt` |
+| Encryption | `core/crypto/CryptoManager.kt`, `PasswordGenerator.kt` |
 | Neumorphic UI | `core/designsystem/`, `core/components/` |
 
 ## Domain model
 
-`domain/model/Credential.kt` defines each saved login: service, username, password, category, URL, encrypted TOTP secret, notes, favorites, and entropy metadata. `SecurityReport` aggregates vault health for the UI.
+`domain/model/Credential.kt` defines each saved login: service, username, password, category, URL, notes, favorites, and entropy metadata. `SecurityReport` aggregates vault health for the UI.
 
 ## Build & run
 

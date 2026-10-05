@@ -3,7 +3,6 @@ package com.example.domain.usecase
 import com.example.core.crypto.GeneratedSecret
 import com.example.core.crypto.GeneratorConfig
 import com.example.core.crypto.PasswordGenerator
-import com.example.core.crypto.TotpManager
 import com.example.domain.model.Credential
 import com.example.domain.model.SecurityReport
 import com.example.domain.repository.VaultRepository
@@ -48,13 +47,5 @@ class ToggleFavoriteUseCase(
 class GeneratePasswordUseCase {
     operator fun invoke(config: GeneratorConfig): GeneratedSecret {
         return PasswordGenerator.generate(config)
-    }
-}
-
-class GetTotpCodeUseCase {
-    operator fun invoke(secret: String): Pair<String, Int> {
-        val code = TotpManager.getCurrentTotpCode(secret)
-        val remaining = TotpManager.getRemainingSeconds()
-        return Pair(code, remaining)
     }
 }

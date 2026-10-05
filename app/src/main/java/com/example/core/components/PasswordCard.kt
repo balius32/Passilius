@@ -23,7 +23,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Key
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -44,12 +43,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.core.crypto.TotpManager
 import com.example.core.designsystem.ElectricPrimaryBright
 import com.example.core.designsystem.OnSurfacePrimary
 import com.example.core.designsystem.OnSurfaceSecondary
 import com.example.core.designsystem.SecondarySlate
-import com.example.core.designsystem.SecurityTertiaryBright
 import com.example.core.designsystem.SurfaceCanvas
 import com.example.core.designsystem.SurfaceContainerLowest
 import com.example.core.designsystem.VaultTypography
@@ -70,25 +67,12 @@ fun PasswordCard(
 ) {
     var isRevealed by remember { mutableStateOf(false) }
     var isExpanded by remember { mutableStateOf(false) }
-    var totpRemaining by remember { mutableStateOf(TotpManager.getRemainingSeconds()) }
-    var currentTotp by remember { mutableStateOf("") }
 
     // Auto-hide password after 8 seconds for security
     LaunchedEffect(isRevealed) {
         if (isRevealed) {
             delay(8000)
             isRevealed = false
-        }
-    }
-
-    // Refresh TOTP timer if present
-    LaunchedEffect(credential.totpSecret, isExpanded) {
-        if (credential.totpSecret.isNotBlank() && isExpanded) {
-            while (true) {
-                currentTotp = TotpManager.getCurrentTotpCode(credential.totpSecret)
-                totpRemaining = TotpManager.getRemainingSeconds()
-                delay(1000)
-            }
         }
     }
 
@@ -262,49 +246,6 @@ fun PasswordCard(
                     )
 
                     Spacer(modifier = Modifier.height(12.dp))
-
-                    if (credential.totpSecret.isNotBlank()) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .neuPressed(
-                                    shape = RoundedCornerShape(14.dp),
-                                    cornerRadius = 14.dp,
-                                    backgroundColor = Color(0xFFF1F5F9)
-                                )
-                                .padding(horizontal = 12.dp, vertical = 8.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = Icons.Default.Key,
-                                    contentDescription = null,
-                                    tint = SecurityTertiaryBright,
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(6.dp))
-                                Text(
-                                    text = "2FA TOTP: ",
-                                    style = VaultTypography.bodySmall,
-                                    color = SecondarySlate
-                                )
-                                Text(
-                                    text = currentTotp.ifBlank { "••••••" },
-                                    style = VaultTypography.labelLarge,
-                                    color = SecurityTertiaryBright,
-                                    fontWeight = FontWeight.Bold,
-                                    letterSpacing = 2.sp
-                                )
-                            }
-                            Text(
-                                text = "${totpRemaining}s",
-                                style = VaultTypography.labelSmall,
-                                color = SecondarySlate
-                            )
-                        }
-                        Spacer(modifier = Modifier.height(12.dp))
-                    }
 
                     Row(
                         modifier = Modifier.fillMaxWidth(),

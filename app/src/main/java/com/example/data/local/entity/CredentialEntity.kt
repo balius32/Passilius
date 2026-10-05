@@ -12,7 +12,6 @@ data class CredentialEntity(
     val encryptedPassword: String,
     val category: String,
     val websiteUrl: String,
-    val encryptedTotpSecret: String,
     val notes: String,
     val iconKey: String,
     val createdAt: Long,

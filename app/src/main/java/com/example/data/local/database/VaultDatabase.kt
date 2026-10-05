@@ -9,7 +9,7 @@ import com.example.data.local.entity.CredentialEntity
 
 @Database(
     entities = [CredentialEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class VaultDatabase : RoomDatabase() {

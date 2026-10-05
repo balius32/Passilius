@@ -3,10 +3,7 @@ package com.example
 import com.example.core.crypto.GeneratorConfig
 import com.example.core.crypto.PasswordGenerator
 import com.example.core.crypto.PasswordStrengthLevel
-import com.example.core.crypto.TotpManager
 import org.junit.Assert.assertEquals
-import org.junit.Assert.assertFalse
-import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
@@ -40,16 +37,5 @@ class VaultCoreUnitTest {
         assertTrue(strongEntropy >= 90)
         assertEquals(PasswordStrengthLevel.WEAK, PasswordGenerator.evaluateStrength(weakEntropy))
         assertEquals(PasswordStrengthLevel.VERY_STRONG, PasswordGenerator.evaluateStrength(strongEntropy))
-    }
-
-    @Test
-    fun testTotpGeneration() {
-        val sampleSecret = "JBSWY3DPEHPK3PXP"
-        val code = TotpManager.getCurrentTotpCode(sampleSecret, 1600000000L)
-        val remaining = TotpManager.getRemainingSeconds(1600000000L)
-
-        assertNotNull(code)
-        assertEquals(6, code.length)
-        assertTrue(remaining in 1..30)
     }
 }

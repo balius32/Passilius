@@ -7,7 +7,6 @@ data class Credential(
     val password: String, // Plaintext when decrypted in domain layer
     val category: String = "Personal",
     val websiteUrl: String = "",
-    val totpSecret: String = "",
     val notes: String = "",
     val iconKey: String = "",
     val createdAt: Long = System.currentTimeMillis(),
@@ -27,6 +26,5 @@ data class SecurityReport(
     val strongCount: Int = 0,
     val weakCount: Int = 0,
     val reusedCount: Int = 0,
-    val with2faCount: Int = 0,
     val securityScorePercentage: Int = 100
 )

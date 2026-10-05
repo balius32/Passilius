@@ -34,7 +34,6 @@ import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.EnhancedEncryption
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.PhonelinkLock
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
@@ -105,7 +104,6 @@ fun CredentialBottomSheet(
     var username by remember { mutableStateOf(initialCredential?.username ?: "") }
     var password by remember { mutableStateOf(initialCredential?.password ?: "") }
     var category by remember { mutableStateOf(initialCredential?.category ?: "Personal") }
-    var totpSecret by remember { mutableStateOf(initialCredential?.totpSecret ?: "") }
     var websiteUrl by remember { mutableStateOf(initialCredential?.websiteUrl ?: "") }
     var notes by remember { mutableStateOf(initialCredential?.notes ?: "") }
 
@@ -551,81 +549,6 @@ fun CredentialBottomSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
-
-            // Field 5: Time-Based OTP (2FA) Key
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .sheetCard()
-                    .padding(14.dp)
-            ) {
-                Column {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Box(
-                                modifier = Modifier
-                                    .size(32.dp)
-                                    .sheetIconButton(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.PhonelinkLock,
-                                    contentDescription = null,
-                                    tint = ElectricPrimaryBright,
-                                    modifier = Modifier.size(17.dp)
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(10.dp))
-                            Column {
-                                Text(
-                                    text = "Time-based OTP (2FA)",
-                                    style = VaultTypography.bodySmall,
-                                    color = OnSurfacePrimary,
-                                    fontWeight = FontWeight.SemiBold
-                                )
-                                Text(
-                                    text = "Auto-fill authenticator key",
-                                    style = VaultTypography.labelSmall,
-                                    color = SecondarySlate
-                                )
-                            }
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    BasicTextField(
-                        value = totpSecret,
-                        onValueChange = { totpSecret = it },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(SheetFieldBackground, RoundedCornerShape(10.dp))
-                            .border(1.dp, SheetFieldBorder, RoundedCornerShape(10.dp))
-                            .padding(horizontal = 12.dp, vertical = 8.dp)
-                            .testTag("totp_input"),
-                        textStyle = VaultTypography.labelSmall.copy(color = OnSurfacePrimary),
-                        cursorBrush = SolidColor(ElectricPrimaryBright),
-                        singleLine = true,
-                        decorationBox = { inner ->
-                            if (totpSecret.isEmpty()) {
-                                Text(
-                                    text = "Paste Base32 Key (e.g. JBSWY3DPEHPK3PXP)",
-                                    style = VaultTypography.labelSmall,
-                                    color = OutlineColor
-                                )
-                            }
-                            inner()
-                        }
-                    )
-                }
-            }
-
             Spacer(modifier = Modifier.height(24.dp))
 
             // Action Buttons: Encrypt & Save
@@ -643,7 +566,6 @@ fun CredentialBottomSheet(
                             username = username.trim(),
                             password = password,
                             category = category,
-                            totpSecret = totpSecret.trim(),
                             websiteUrl = websiteUrl.trim(),
                             notes = notes.trim(),
                             isFavorite = initialCredential?.isFavorite ?: false,

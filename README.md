@@ -2,19 +2,18 @@
 
 **Passilius** is an Android password manager focused on local storage, strong encryption, and a tactile neumorphic UI. The app is branded **Vault** on device.
 
-Credentials stay on the phone: passwords and TOTP secrets are encrypted before they are written to the database. Unlock the vault with a master PIN and optional biometrics.
+Credentials stay on the phone: passwords are encrypted before they are written to the database. Unlock the vault with a master PIN and optional biometrics.
 
 Repository: [github.com/balius32/Passilius](https://github.com/balius32/Passilius)
 
 ## What the app does
 
 - **Vault** — Browse, search, and filter saved logins by category; mark favorites; copy usernames and passwords to the clipboard.
-- **Credentials** — Add and edit entries (service, username, password, website, notes, category, TOTP secret) from a bottom sheet.
+- **Credentials** — Add and edit entries (service, username, password, website, notes, category) from a bottom sheet.
 - **Password generator** — Create strong passwords with configurable length and character sets; entropy is calculated and stored with each credential.
-- **TOTP / 2FA** — Generate time-based one-time codes from stored secrets (30-second window, 6 digits).
 - **Master unlock** — PIN pad to open the vault; **fingerprint / face** unlock when biometrics are available.
 - **Settings** — Security overview, lock vault, and app preferences (neumorphic settings UI).
-- **Security insights** — Tracks strength signals such as weak, reused, and 2FA-enabled entries for a vault security score.
+- **Security insights** — Tracks strength signals such as weak and reused entries for a vault security score.
 
 ## Technology stack
 
@@ -28,7 +27,6 @@ Repository: [github.com/balius32/Passilius](https://github.com/balius32/Passiliu
 | Async | Kotlin Coroutines, `Flow`, Lifecycle-aware collection |
 | Encryption | Android Keystore, AES-GCM; PBKDF2 where applicable (`CryptoManager`) |
 | Biometrics | AndroidX Biometric library |
-| TOTP | HMAC-SHA1 OTP (`TotpManager`) |
 | Build | Gradle Kotlin DSL, AGP 9.x, `compileSdk` / `targetSdk` 37, `minSdk` 24 |
 | Testing | JUnit, Robolectric, AndroidX Test |
 
