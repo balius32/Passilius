@@ -165,11 +165,11 @@ fun CredentialBottomSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = SheetHorizontalPadding)
-                    .padding(bottom = 12.dp)
+                    .padding(bottom = 22.dp)
             )
 
             Text(
-                text = "Vault Category",
+                text = "Category",
                 style = VaultTypography.labelMedium,
                 color = SecondarySlate,
                 modifier = Modifier
@@ -214,15 +214,6 @@ fun CredentialBottomSheet(
             Spacer(modifier = Modifier.height(20.dp))
 
             // Field 1: Website or Service
-            Text(
-                text = "Website or Service",
-                style = VaultTypography.labelMedium,
-                color = SecondarySlate,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = SheetHorizontalPadding)
-                    .padding(bottom = 10.dp)
-            )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -279,15 +270,6 @@ fun CredentialBottomSheet(
             Spacer(modifier = Modifier.height(20.dp))
 
             // Field 2: Username or Email
-            Text(
-                text = "Username or Email",
-                style = VaultTypography.labelMedium,
-                color = SecondarySlate,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = SheetHorizontalPadding)
-                    .padding(bottom = 10.dp)
-            )
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -344,16 +326,6 @@ fun CredentialBottomSheet(
             Spacer(modifier = Modifier.height(20.dp))
 
             // Field 3: Password / Secret
-            Text(
-                text = "Password / Secret",
-                style = VaultTypography.labelMedium,
-                color = SecondarySlate,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = SheetHorizontalPadding)
-                    .padding(bottom = 10.dp)
-            )
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -421,36 +393,6 @@ fun CredentialBottomSheet(
                             modifier = Modifier.size(16.dp)
                         )
                     }
-
-                    Spacer(modifier = Modifier.width(8.dp))
-
-                    // Quick Gen Button
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFFDBE1FF), RoundedCornerShape(12.dp))
-                            .clickable {
-                                val generated = PasswordGenerator.generate(GeneratorConfig(length = 20))
-                                password = generated.password
-                            }
-                            .padding(horizontal = 10.dp, vertical = 6.dp)
-                    ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.AutoAwesome,
-                                contentDescription = null,
-                                tint = ElectricPrimaryBright,
-                                modifier = Modifier.size(13.dp)
-                            )
-                            Spacer(modifier = Modifier.width(3.dp))
-                            Text(
-                                text = "Gen",
-                                style = VaultTypography.labelSmall,
-                                color = ElectricPrimaryBright,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-                    }
                 }
             }
 
@@ -480,13 +422,46 @@ fun CredentialBottomSheet(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(6.dp))
+                Spacer(modifier = Modifier.height(10.dp))
 
-                Text(
-                    text = "${password.length} characters",
-                    style = VaultTypography.labelSmall,
-                    color = SecondarySlate
-                )
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "${password.length} characters",
+                        style = VaultTypography.labelSmall,
+                        color = SecondarySlate
+                    )
+
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color(0xFFDBE1FF), RoundedCornerShape(12.dp))
+                            .clickable {
+                                val generated = PasswordGenerator.generate(GeneratorConfig(length = 20))
+                                password = generated.password
+                            }
+                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.AutoAwesome,
+                                contentDescription = null,
+                                tint = ElectricPrimaryBright,
+                                modifier = Modifier.size(13.dp)
+                            )
+                            Spacer(modifier = Modifier.width(3.dp))
+                            Text(
+                                text = "Gen",
+                                style = VaultTypography.labelSmall,
+                                color = ElectricPrimaryBright,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+                    }
+                }
             }
 
             Spacer(modifier = Modifier.height(40.dp))
