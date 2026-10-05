@@ -30,8 +30,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AlternateEmail
 import androidx.compose.material.icons.filled.AutoAwesome
-import androidx.compose.material.icons.filled.Close
-import androidx.compose.material.icons.filled.EnhancedEncryption
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Public
@@ -120,19 +118,6 @@ fun CredentialBottomSheet(
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    fun dismissSheet() {
-        scope.launch {
-            try {
-                if (sheetState.isVisible) {
-                    sheetState.hide()
-                }
-            } finally {
-                // Always clear parent flag — never leave a Hidden sheet stuck "open".
-                onDismiss()
-            }
-        }
-    }
-
     fun saveAndDismiss(credential: Credential) {
         scope.launch {
             try {
@@ -170,51 +155,63 @@ fun CredentialBottomSheet(
                 .navigationBarsPadding()
                 .imePadding()
         ) {
-            // Sheet Header
+            Text(
+                text = if (initialCredential == null) "New Credential" else "Edit Credential",
+                style = VaultTypography.headlineMedium,
+                color = OnSurfacePrimary,
+                fontWeight = FontWeight.Bold,
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+
+            Text(
+                text = "Vault Category",
+                style = VaultTypography.labelMedium,
+                color = SecondarySlate,
+                modifier = Modifier.padding(bottom = 10.dp, start = 4.dp)
+            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 18.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = if (initialCredential == null) "New Credential" else "Edit Credential",
-                        style = VaultTypography.headlineMedium,
-                        color = OnSurfacePrimary,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = "Securely store encrypted secret inside Swiss-tier vault",
-                        style = VaultTypography.bodySmall,
-                        color = SecondarySlate,
-                        modifier = Modifier.padding(top = 2.dp)
-                    )
-                }
-
-                Box(
-                    modifier = Modifier
-                        .size(36.dp)
-                        .sheetIconButton()
-                        .clickable { dismissSheet() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Close,
-                        contentDescription = "Close",
-                        tint = SecondarySlate,
-                        modifier = Modifier.size(18.dp)
-                    )
+                categories.forEach { cat ->
+                    val isCatSelected = cat.equals(category, ignoreCase = true)
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(14.dp))
+                            .background(
+                                if (isCatSelected) ElectricPrimaryBright else SurfaceCanvas,
+                                RoundedCornerShape(14.dp)
+                            )
+                            .then(
+                                if (!isCatSelected) {
+                                    Modifier.border(1.dp, SheetFieldBorder, RoundedCornerShape(14.dp))
+                                } else {
+                                    Modifier
+                                }
+                            )
+                            .clickable { category = cat }
+                            .padding(horizontal = 14.dp, vertical = 7.dp)
+                    ) {
+                        Text(
+                            text = cat,
+                            style = VaultTypography.labelSmall,
+                            color = if (isCatSelected) OnPrimary else SecondarySlate,
+                            fontWeight = if (isCatSelected) FontWeight.Bold else FontWeight.Medium
+                        )
+                    }
                 }
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Field 1: Website or Service
             Text(
                 text = "Website or Service",
                 style = VaultTypography.labelMedium,
                 color = SecondarySlate,
-                modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+                modifier = Modifier.padding(bottom = 10.dp, start = 4.dp)
             )
             Box(
                 modifier = Modifier
@@ -232,13 +229,13 @@ fun CredentialBottomSheet(
                         modifier = Modifier
                             .size(32.dp)
                             .clip(RoundedCornerShape(10.dp))
-                            .background(Color(0xFFD5E0F8)),
+                            .background(Color(0xFFEBEEF3)),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
                             imageVector = Icons.Default.Public,
                             contentDescription = null,
-                            tint = ElectricPrimaryBright,
+                            tint = SecondarySlate,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -257,7 +254,7 @@ fun CredentialBottomSheet(
                         decorationBox = { inner ->
                             if (service.isEmpty()) {
                                 Text(
-                                    text = "e.g. Figma Enterprise, Stripe, Google",
+                                    text = "Website name",
                                     style = VaultTypography.bodyMedium,
                                     color = OutlineColor
                                 )
@@ -268,14 +265,14 @@ fun CredentialBottomSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Field 2: Username or Email
             Text(
                 text = "Username or Email",
                 style = VaultTypography.labelMedium,
                 color = SecondarySlate,
-                modifier = Modifier.padding(bottom = 6.dp, start = 4.dp)
+                modifier = Modifier.padding(bottom = 10.dp, start = 4.dp)
             )
             Box(
                 modifier = Modifier
@@ -318,7 +315,7 @@ fun CredentialBottomSheet(
                         decorationBox = { inner ->
                             if (username.isEmpty()) {
                                 Text(
-                                    text = "name@domain.com or handle",
+                                    text = "Email or username",
                                     style = VaultTypography.bodyMedium,
                                     color = OutlineColor
                                 )
@@ -329,13 +326,13 @@ fun CredentialBottomSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(20.dp))
 
             // Field 3: Password / Secret
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom = 6.dp, start = 4.dp, end = 4.dp),
+                    .padding(bottom = 10.dp, start = 4.dp, end = 4.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -505,53 +502,9 @@ fun CredentialBottomSheet(
                 }
             }
 
-            Spacer(modifier = Modifier.height(18.dp))
-
-            // Field 4: Vault Category Tags Selector
-            Text(
-                text = "Vault Category",
-                style = VaultTypography.labelMedium,
-                color = SecondarySlate,
-                modifier = Modifier.padding(bottom = 8.dp, start = 4.dp)
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                categories.forEach { cat ->
-                    val isCatSelected = cat.equals(category, ignoreCase = true)
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(
-                                if (isCatSelected) ElectricPrimaryBright else SurfaceCanvas,
-                                RoundedCornerShape(14.dp)
-                            )
-                            .then(
-                                if (!isCatSelected) {
-                                    Modifier.border(1.dp, SheetFieldBorder, RoundedCornerShape(14.dp))
-                                } else {
-                                    Modifier
-                                }
-                            )
-                            .clickable { category = cat }
-                            .padding(horizontal = 14.dp, vertical = 7.dp)
-                    ) {
-                        Text(
-                            text = cat,
-                            style = VaultTypography.labelSmall,
-                            color = if (isCatSelected) OnPrimary else SecondarySlate,
-                            fontWeight = if (isCatSelected) FontWeight.Bold else FontWeight.Medium
-                        )
-                    }
-                }
-            }
-
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Action Buttons: Encrypt & Save
+            // Save
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -575,38 +528,13 @@ fun CredentialBottomSheet(
                     },
                 contentAlignment = Alignment.Center
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.EnhancedEncryption,
-                        contentDescription = null,
-                        tint = OnPrimary,
-                        modifier = Modifier.size(20.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text(
-                        text = "Encrypt & Save",
-                        style = VaultTypography.headlineSmall,
-                        color = OnPrimary,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
+                Text(
+                    text = "Save",
+                    style = VaultTypography.headlineSmall,
+                    color = OnPrimary,
+                    fontWeight = FontWeight.SemiBold
+                )
             }
-
-            Spacer(modifier = Modifier.height(10.dp))
-
-            // Discard Changes Button
-            Text(
-                text = "Discard Changes",
-                style = VaultTypography.bodyMedium,
-                color = SecondarySlate,
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .clickable { dismissSheet() }
-                    .padding(8.dp)
-            )
         }
     }
 }
