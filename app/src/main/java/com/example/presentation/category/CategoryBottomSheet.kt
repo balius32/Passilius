@@ -138,7 +138,7 @@ fun CategoryBottomSheet(
                 )
             }
 
-            Spacer(modifier = Modifier.height(40.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             Box(
                 modifier = Modifier

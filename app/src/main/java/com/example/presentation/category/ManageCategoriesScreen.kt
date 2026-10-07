@@ -4,12 +4,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -90,19 +90,13 @@ fun ManageCategoriesScreen(
 
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = "Categories",
-                            style = VaultTypography.headlineLarge,
-                            color = OnSurfacePrimary,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Organize vault entries",
-                            style = VaultTypography.labelSmall,
-                            color = SecondarySlate
-                        )
-                    }
+                    Text(
+                        text = "Categories",
+                        style = VaultTypography.headlineLarge,
+                        color = OnSurfacePrimary,
+                        fontWeight = FontWeight.Bold,
+                        modifier = Modifier.weight(1f)
+                    )
 
                     Box(
                         modifier = Modifier
@@ -132,12 +126,14 @@ fun ManageCategoriesScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .heightIn(min = 64.dp)
                         .neuFlat(
                             shape = RoundedCornerShape(20.dp),
                             cornerRadius = 20.dp,
                             backgroundColor = SurfaceContainerLowest
                         )
-                        .padding(horizontal = 16.dp, vertical = 14.dp)
+                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                    contentAlignment = Alignment.CenterStart
                 ) {
                     Row(
                         modifier = Modifier.fillMaxWidth(),
