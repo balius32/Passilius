@@ -1,0 +1,362 @@
+{
+  "app/build.gradle.kts": {
+    "mtime": 1791140063.0495892,
+    "seen": 1791362199.908718,
+    "ast_hash": "c64107d1c7295b770c807cec68bd92e2",
+    "semantic_hash": "c64107d1c7295b770c807cec68bd92e2"
+  },
+  "app/src/androidTest/java/com/example/ExampleInstrumentedTest.kt": {
+    "mtime": 1791045491.2004082,
+    "seen": 1791362199.908718,
+    "ast_hash": "54a736584753df87aaf9bf6de22517f2",
+    "semantic_hash": "54a736584753df87aaf9bf6de22517f2"
+  },
+  "app/src/main/java/com/example/MainActivity.kt": {
+    "mtime": 1791201616.4917426,
+    "seen": 1791362199.908718,
+    "ast_hash": "745c47ed8ba55e11e5c6a84fe152eaf5",
+    "semantic_hash": "745c47ed8ba55e11e5c6a84fe152eaf5"
+  },
+  "app/src/main/java/com/example/core/biometric/BiometricPromptManager.kt": {
+    "mtime": 1791045491.2034078,
+    "seen": 1791362199.908718,
+    "ast_hash": "3537ce221d3ac8f8b3cc9950eba383a3",
+    "semantic_hash": "3537ce221d3ac8f8b3cc9950eba383a3"
+  },
+  "app/src/main/java/com/example/core/components/BrandIconWell.kt": {
+    "mtime": 1791138277.1565065,
+    "seen": 1791362199.908718,
+    "ast_hash": "7084008776babdd8f780eaf5c44852b7",
+    "semantic_hash": "7084008776babdd8f780eaf5c44852b7"
+  },
+  "app/src/main/java/com/example/core/components/NeumorphicSearchBar.kt": {
+    "mtime": 1791202383.9601696,
+    "seen": 1791362199.908718,
+    "ast_hash": "99963d50c09402e9905e9b66d4905378",
+    "semantic_hash": "99963d50c09402e9905e9b66d4905378"
+  },
+  "app/src/main/java/com/example/core/components/NotchedCapsuleShape.kt": {
+    "mtime": 1791045491.206409,
+    "seen": 1791362199.908718,
+    "ast_hash": "b78e6dd08bc27fab34c59effa155f641",
+    "semantic_hash": "b78e6dd08bc27fab34c59effa155f641"
+  },
+  "app/src/main/java/com/example/core/components/PasswordCard.kt": {
+    "mtime": 1791179003.5819924,
+    "seen": 1791362199.908718,
+    "ast_hash": "c98c977a71ecc038dcd658bac6c3ead3",
+    "semantic_hash": "c98c977a71ecc038dcd658bac6c3ead3"
+  },
+  "app/src/main/java/com/example/core/components/TactileControls.kt": {
+    "mtime": 1791196426.1758404,
+    "seen": 1791362199.908718,
+    "ast_hash": "32f3d8f77717d31912299cb8819419a1",
+    "semantic_hash": "32f3d8f77717d31912299cb8819419a1"
+  },
+  "app/src/main/java/com/example/core/crypto/CryptoManager.kt": {
+    "mtime": 1791045491.2084074,
+    "seen": 1791362199.908718,
+    "ast_hash": "55bc2c9ba522f8a7bb8f27bd69d1c71e",
+    "semantic_hash": "55bc2c9ba522f8a7bb8f27bd69d1c71e"
+  },
+  "app/src/main/java/com/example/core/crypto/PasswordGenerator.kt": {
+    "mtime": 1791045491.209407,
+    "seen": 1791362199.908718,
+    "ast_hash": "8b8b9916454cf08a374c37c7cab2c901",
+    "semantic_hash": "8b8b9916454cf08a374c37c7cab2c901"
+  },
+  "app/src/main/java/com/example/core/designsystem/Color.kt": {
+    "mtime": 1791140065.0596182,
+    "seen": 1791362199.908718,
+    "ast_hash": "ab95c76c09a6bcf6810012de126225d1",
+    "semantic_hash": "ab95c76c09a6bcf6810012de126225d1"
+  },
+  "app/src/main/java/com/example/core/designsystem/Neumorphism.kt": {
+    "mtime": 1791138323.5283384,
+    "seen": 1791362199.908718,
+    "ast_hash": "6c8659986bfa6440af47912dce433a4f",
+    "semantic_hash": "6c8659986bfa6440af47912dce433a4f"
+  },
+  "app/src/main/java/com/example/core/designsystem/Theme.kt": {
+    "mtime": 1791045491.2124083,
+    "seen": 1791362199.908718,
+    "ast_hash": "80b5bd32940b6b44babb74e726628546",
+    "semantic_hash": "80b5bd32940b6b44babb74e726628546"
+  },
+  "app/src/main/java/com/example/core/designsystem/Type.kt": {
+    "mtime": 1791045491.2134092,
+    "seen": 1791362199.908718,
+    "ast_hash": "3f7fb43b3d847b593f79bbd11cea9bf8",
+    "semantic_hash": "3f7fb43b3d847b593f79bbd11cea9bf8"
+  },
+  "app/src/main/java/com/example/core/util/ClipboardHelper.kt": {
+    "mtime": 1791202271.389449,
+    "seen": 1791362199.908718,
+    "ast_hash": "5aa7432fd5d232ac2f50c8651f1f87aa",
+    "semantic_hash": "5aa7432fd5d232ac2f50c8651f1f87aa"
+  },
+  "app/src/main/java/com/example/core/util/ScreenInsets.kt": {
+    "mtime": 1791045491.215412,
+    "seen": 1791362199.908718,
+    "ast_hash": "892a7c825b074c6ea556517731ed757d",
+    "semantic_hash": "892a7c825b074c6ea556517731ed757d"
+  },
+  "app/src/main/java/com/example/data/local/dao/CategoryDao.kt": {
+    "mtime": 1791201584.8658087,
+    "seen": 1791362199.908718,
+    "ast_hash": "1179fec3b70a8ba1a1b42e7627f60a2d",
+    "semantic_hash": "1179fec3b70a8ba1a1b42e7627f60a2d"
+  },
+  "app/src/main/java/com/example/data/local/dao/CredentialDao.kt": {
+    "mtime": 1791201585.8552127,
+    "seen": 1791362199.908718,
+    "ast_hash": "9ab38f61e18f244ca3cd2f41cd5fb220",
+    "semantic_hash": "9ab38f61e18f244ca3cd2f41cd5fb220"
+  },
+  "app/src/main/java/com/example/data/local/database/VaultDatabase.kt": {
+    "mtime": 1791201587.139456,
+    "seen": 1791362199.908718,
+    "ast_hash": "17ea33bc30e5f2c77c42cf40c613ae52",
+    "semantic_hash": "17ea33bc30e5f2c77c42cf40c613ae52"
+  },
+  "app/src/main/java/com/example/data/local/entity/CategoryEntity.kt": {
+    "mtime": 1791201576.2139263,
+    "seen": 1791362199.908718,
+    "ast_hash": "d6d48a0a83506b1aa79a176bac4db4e4",
+    "semantic_hash": "d6d48a0a83506b1aa79a176bac4db4e4"
+  },
+  "app/src/main/java/com/example/data/local/entity/CredentialEntity.kt": {
+    "mtime": 1791179005.17124,
+    "seen": 1791362199.908718,
+    "ast_hash": "f0484e0b0001e12ad13373e43bf3f477",
+    "semantic_hash": "f0484e0b0001e12ad13373e43bf3f477"
+  },
+  "app/src/main/java/com/example/data/repository/VaultRepositoryImpl.kt": {
+    "mtime": 1791201605.557732,
+    "seen": 1791362199.908718,
+    "ast_hash": "c652d679c3e6a2cd7784915616fbb8d5",
+    "semantic_hash": "c652d679c3e6a2cd7784915616fbb8d5"
+  },
+  "app/src/main/java/com/example/domain/model/Credential.kt": {
+    "mtime": 1791201588.020112,
+    "seen": 1791362199.908718,
+    "ast_hash": "e909595f2178bed1bbbbc3bd2186984b",
+    "semantic_hash": "e909595f2178bed1bbbbc3bd2186984b"
+  },
+  "app/src/main/java/com/example/domain/repository/VaultRepository.kt": {
+    "mtime": 1791201589.5721247,
+    "seen": 1791362199.908718,
+    "ast_hash": "0a667a587130eebc15a7a251644fa048",
+    "semantic_hash": "0a667a587130eebc15a7a251644fa048"
+  },
+  "app/src/main/java/com/example/domain/usecase/VaultUseCases.kt": {
+    "mtime": 1791201607.791037,
+    "seen": 1791362199.908718,
+    "ast_hash": "c7ed687e13a919a1eb8d0bcad562625c",
+    "semantic_hash": "c7ed687e13a919a1eb8d0bcad562625c"
+  },
+  "app/src/main/java/com/example/presentation/category/CategoryBottomSheet.kt": {
+    "mtime": 1791357733.0850089,
+    "seen": 1791362199.908718,
+    "ast_hash": "9b44a46566710930e335c93b28043c0c",
+    "semantic_hash": "9b44a46566710930e335c93b28043c0c"
+  },
+  "app/src/main/java/com/example/presentation/category/ManageCategoriesScreen.kt": {
+    "mtime": 1791357738.2263868,
+    "seen": 1791362199.908718,
+    "ast_hash": "4294b5d3ad8cd4dd13a43bec41ac0249",
+    "semantic_hash": "4294b5d3ad8cd4dd13a43bec41ac0249"
+  },
+  "app/src/main/java/com/example/presentation/category/ManageCategoriesViewModel.kt": {
+    "mtime": 1791201697.0754766,
+    "seen": 1791362199.908718,
+    "ast_hash": "e203bb139cb96e9808d8a312fb984b3f",
+    "semantic_hash": "e203bb139cb96e9808d8a312fb984b3f"
+  },
+  "app/src/main/java/com/example/presentation/credential/CredentialBottomSheet.kt": {
+    "mtime": 1791201732.0496948,
+    "seen": 1791362199.908718,
+    "ast_hash": "6b33e9cf7641bdfe445622cad5f3e6b7",
+    "semantic_hash": "6b33e9cf7641bdfe445622cad5f3e6b7"
+  },
+  "app/src/main/java/com/example/presentation/generator/GeneratorMvi.kt": {
+    "mtime": 1791196377.1627507,
+    "seen": 1791362199.908718,
+    "ast_hash": "4f2192b3254a955adc7fc755cde9ba21",
+    "semantic_hash": "4f2192b3254a955adc7fc755cde9ba21"
+  },
+  "app/src/main/java/com/example/presentation/generator/GeneratorScreen.kt": {
+    "mtime": 1791196411.3301299,
+    "seen": 1791362199.908718,
+    "ast_hash": "f1937d309bcd61e7ea40ae60fd9cda59",
+    "semantic_hash": "f1937d309bcd61e7ea40ae60fd9cda59"
+  },
+  "app/src/main/java/com/example/presentation/generator/GeneratorViewModel.kt": {
+    "mtime": 1791196381.006706,
+    "seen": 1791362199.908718,
+    "ast_hash": "9b69bf5f9eaad765d01b41ecbca8ec41",
+    "semantic_hash": "9b69bf5f9eaad765d01b41ecbca8ec41"
+  },
+  "app/src/main/java/com/example/presentation/navigation/VaultNavigation.kt": {
+    "mtime": 1791201714.6131117,
+    "seen": 1791362199.908718,
+    "ast_hash": "fee97e65c6282ca6a5eef28f9c4bccd1",
+    "semantic_hash": "fee97e65c6282ca6a5eef28f9c4bccd1"
+  },
+  "app/src/main/java/com/example/presentation/navigation/VaultRoutes.kt": {
+    "mtime": 1791201702.1619434,
+    "seen": 1791362199.908718,
+    "ast_hash": "c4ebdb899eb0c863e145dc1e72f8a464",
+    "semantic_hash": "c4ebdb899eb0c863e145dc1e72f8a464"
+  },
+  "app/src/main/java/com/example/presentation/settings/SettingsScreen.kt": {
+    "mtime": 1791201706.2243075,
+    "seen": 1791362199.908718,
+    "ast_hash": "20caff45efbdb937e2d10be70cfbcb0c",
+    "semantic_hash": "20caff45efbdb937e2d10be70cfbcb0c"
+  },
+  "app/src/main/java/com/example/presentation/unlock/MasterUnlockScreen.kt": {
+    "mtime": 1791138304.2411659,
+    "seen": 1791362199.908718,
+    "ast_hash": "725b1019eaa046e5be077b24a48c270f",
+    "semantic_hash": "725b1019eaa046e5be077b24a48c270f"
+  },
+  "app/src/main/java/com/example/presentation/vault/VaultMvi.kt": {
+    "mtime": 1791201661.180972,
+    "seen": 1791362199.908718,
+    "ast_hash": "401b38a92d783f6f7e266ebd045567ee",
+    "semantic_hash": "401b38a92d783f6f7e266ebd045567ee"
+  },
+  "app/src/main/java/com/example/presentation/vault/VaultScreen.kt": {
+    "mtime": 1791202386.01473,
+    "seen": 1791362199.908718,
+    "ast_hash": "5bbc8c80f78c9ba68af6dc245f9a465c",
+    "semantic_hash": "5bbc8c80f78c9ba68af6dc245f9a465c"
+  },
+  "app/src/main/java/com/example/presentation/vault/VaultViewModel.kt": {
+    "mtime": 1791201672.5145288,
+    "seen": 1791362199.908718,
+    "ast_hash": "015a121f04fd15ac0d3965a6e9ffc439",
+    "semantic_hash": "015a121f04fd15ac0d3965a6e9ffc439"
+  },
+  "app/src/main/java/com/example/ui/theme/Color.kt": {
+    "mtime": 1791045491.2374105,
+    "seen": 1791362199.908718,
+    "ast_hash": "fac3591baae9ba139cc96babcdf4e0d2",
+    "semantic_hash": "fac3591baae9ba139cc96babcdf4e0d2"
+  },
+  "app/src/main/java/com/example/ui/theme/Theme.kt": {
+    "mtime": 1791045491.2374105,
+    "seen": 1791362199.908718,
+    "ast_hash": "849773da9c374e233d1442d36ccb5836",
+    "semantic_hash": "849773da9c374e233d1442d36ccb5836"
+  },
+  "app/src/main/java/com/example/ui/theme/Type.kt": {
+    "mtime": 1791045491.2384112,
+    "seen": 1791362199.908718,
+    "ast_hash": "7dee5935c375a37e4ef0c6f5aa48b891",
+    "semantic_hash": "7dee5935c375a37e4ef0c6f5aa48b891"
+  },
+  "app/src/test/java/com/example/ExampleRobolectricTest.kt": {
+    "mtime": 1791201620.099771,
+    "seen": 1791362199.908718,
+    "ast_hash": "4f094fa931f1cd2d194cfb4a8fa05d3b",
+    "semantic_hash": "4f094fa931f1cd2d194cfb4a8fa05d3b"
+  },
+  "app/src/test/java/com/example/ExampleUnitTest.kt": {
+    "mtime": 1791179015.1817653,
+    "seen": 1791362199.908718,
+    "ast_hash": "bbdd9456d2f8b3d5ea58d1e13a590dcf",
+    "semantic_hash": "bbdd9456d2f8b3d5ea58d1e13a590dcf"
+  },
+  "build.gradle.kts": {
+    "mtime": 1791045491.2524111,
+    "seen": 1791362199.908718,
+    "ast_hash": "afae714121d0626da73dff7eb91b9f7f",
+    "semantic_hash": "afae714121d0626da73dff7eb91b9f7f"
+  },
+  "metadata.json": {
+    "mtime": 1791179018.379555,
+    "seen": 1791362199.908718,
+    "ast_hash": "25db480c672014fbc73d51fb8ffaccd7",
+    "semantic_hash": "25db480c672014fbc73d51fb8ffaccd7"
+  },
+  "settings.gradle.kts": {
+    "mtime": 1791045491.2574122,
+    "seen": 1791362199.908718,
+    "ast_hash": "61824c691bdbd1913afc1df513423f8b",
+    "semantic_hash": "61824c691bdbd1913afc1df513423f8b"
+  },
+  "README.md": {
+    "mtime": 1791179017.3551307,
+    "seen": 1791362199.908718,
+    "ast_hash": "31817c0a77dac08d78d2c85cee879344",
+    "semantic_hash": "31817c0a77dac08d78d2c85cee879344"
+  },
+  "app/README.md": {
+    "mtime": 1791179017.8836117,
+    "seen": 1791362199.908718,
+    "ast_hash": "3b63ebdba5f6e5234b4762d86a30a9e0",
+    "semantic_hash": "3b63ebdba5f6e5234b4762d86a30a9e0"
+  },
+  "app/src/main/res/mipmap-hdpi/ic_launcher.webp": {
+    "mtime": 1791045698.0,
+    "seen": 1791362199.908718,
+    "ast_hash": "39d9bb21eb48f128a71c3f01ad3cd427",
+    "semantic_hash": "39d9bb21eb48f128a71c3f01ad3cd427"
+  },
+  "app/src/main/res/mipmap-hdpi/ic_launcher_round.webp": {
+    "mtime": 1791045698.0,
+    "seen": 1791362199.908718,
+    "ast_hash": "70d6f58af3c76ee221c829b1ce9daa04",
+    "semantic_hash": "70d6f58af3c76ee221c829b1ce9daa04"
+  },
+  "app/src/main/res/mipmap-mdpi/ic_launcher.webp": {
+    "mtime": 1791045698.0,
+    "seen": 1791362199.908718,
+    "ast_hash": "d2acce71c7b46e5e9540d23a9f7b2166",
+    "semantic_hash": "d2acce71c7b46e5e9540d23a9f7b2166"
+  },
+  "app/src/main/res/mipmap-mdpi/ic_launcher_round.webp": {
+    "mtime": 1791045698.0,
+    "seen": 1791362199.908718,
+    "ast_hash": "6376acb48f96a855ee95c113cd7fd616",
+    "semantic_hash": "6376acb48f96a855ee95c113cd7fd616"
+  },
+  "app/src/main/res/mipmap-xhdpi/ic_launcher.webp": {
+    "mtime": 1791045698.0,
+    "seen": 1791362199.908718,
+    "ast_hash": "bd087d80b70bec05a43c745f29dc3ffc",
+    "semantic_hash": "bd087d80b70bec05a43c745f29dc3ffc"
+  },
+  "app/src/main/res/mipmap-xhdpi/ic_launcher_round.webp": {
+    "mtime": 1791045698.0,
+    "seen": 1791362199.908718,
+    "ast_hash": "7479edd56ab712609f030054bffd7263",
+    "semantic_hash": "7479edd56ab712609f030054bffd7263"
+  },
+  "app/src/main/res/mipmap-xxhdpi/ic_launcher.webp": {
+    "mtime": 1791045698.0,
+    "seen": 1791362199.908718,
+    "ast_hash": "ea180e8d1a2e8300cc998b987266b736",
+    "semantic_hash": "ea180e8d1a2e8300cc998b987266b736"
+  },
+  "app/src/main/res/mipmap-xxhdpi/ic_launcher_round.webp": {
+    "mtime": 1791045698.0,
+    "seen": 1791362199.908718,
+    "ast_hash": "947842742b29eeda80ee0805e1600366",
+    "semantic_hash": "947842742b29eeda80ee0805e1600366"
+  },
+  "app/src/main/res/mipmap-xxxhdpi/ic_launcher.webp": {
+    "mtime": 1791045698.0,
+    "seen": 1791362199.908718,
+    "ast_hash": "54ab624970c86c2146e76b93f27586f7",
+    "semantic_hash": "54ab624970c86c2146e76b93f27586f7"
+  },
+  "app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.webp": {
+    "mtime": 1791045698.0,
+    "seen": 1791362199.908718,
+    "ast_hash": "9ee591be72fb336861a8044086054daa",
+    "semantic_hash": "9ee591be72fb336861a8044086054daa"
+  }
+}

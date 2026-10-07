@@ -1,8 +1,8 @@
 # Passilius (Vault)
 
-**Passilius** is an Android password manager focused on local storage, strong encryption, and a tactile neumorphic UI. The app is branded **Vault** on device.
+**Passilius** is a password manager focused on local storage, strong encryption, and a tactile neumorphic UI. It runs on **Android** and **Windows desktop** via Compose Multiplatform.
 
-Credentials stay on the phone: passwords are encrypted before they are written to the database. Unlock the vault with a master PIN and optional biometrics.
+Credentials stay on the device: passwords are encrypted before they are written to the database. Unlock the vault with a master PIN (and optional biometrics on Android).
 
 Repository: [github.com/balius32/Passilius](https://github.com/balius32/Passilius)
 
@@ -20,44 +20,46 @@ Repository: [github.com/balius32/Passilius](https://github.com/balius32/Passiliu
 | Area | Technology |
 |------|------------|
 | Language | Kotlin |
-| UI | Jetpack Compose, Material 3, Material Icons |
+| UI | Compose Multiplatform, Material 3, Material Icons |
 | Architecture | Clean Architecture (`data` / `domain` / `presentation`), use cases, MVI-style ViewModels |
-| Navigation | Navigation 3 (`androidx.navigation3`) |
-| Local database | Room (SQLite) with KSP code generation |
+| Navigation | Sealed routes + in-memory back stack |
+| Local database | Room KMP (SQLite) with KSP + bundled driver |
 | Async | Kotlin Coroutines, `Flow`, Lifecycle-aware collection |
-| Encryption | Android Keystore, AES-GCM; PBKDF2 where applicable (`CryptoManager`) |
-| Biometrics | AndroidX Biometric library |
-| Build | Gradle Kotlin DSL, AGP 9.x, `compileSdk` / `targetSdk` 37, `minSdk` 24 |
-| Testing | JUnit, Robolectric, AndroidX Test |
+| Encryption | AES-GCM (`CryptoManager`: Android Keystore / desktop file key) |
+| Biometrics | AndroidX Biometric (Android only; desktop is PIN-only) |
+| Build | Gradle Kotlin DSL, CMP 1.12, AGP 9.x, `compileSdk` / `targetSdk` 37, `minSdk` 24 |
 
 ## Project layout
 
 ```
 vault/
-├── app/                    # Android application module (see app/README.md)
+├── composeApp/             # CMP module (Android + Windows desktop)
 ├── gradle/                 # Version catalog (libs.versions.toml)
 ├── build.gradle.kts
 └── settings.gradle.kts
 ```
 
-Inside `app/src/main/java/com/example/`:
+Inside `composeApp/src/commonMain/kotlin/com/example/`:
 
-- `core/` — Crypto, biometrics, design system (neumorphism), shared UI components
+- `core/` — Crypto expect API, design system (neumorphism), shared UI components
 - `data/` — Room entities, DAO, repository implementations
 - `domain/` — Models, repository contracts, use cases
 - `presentation/` — Screens, navigation, ViewModels (vault, generator, unlock, settings)
 
 ## Getting started
 
-**Prerequisites:** [Android Studio](https://developer.android.com/studio) with a recent JDK (project uses Java 11 bytecode).
+**Prerequisites:** JDK 17+ and [Android Studio](https://developer.android.com/studio) (for Android), or any JDK 17+ for desktop.
 
-1. Clone the repository and open the `vault` folder in Android Studio.
-2. Let Gradle sync finish.
-3. Run the **app** configuration on an emulator or device (API 24+).
+1. Clone the repository and open the `vault` folder.
+2. Let Gradle sync finish (`gradlew.bat` is included).
+3. **Android:** run the `composeApp` configuration (API 24+).
+4. **Windows:** `gradlew.bat :composeApp:run`
+
+See [composeApp/README.md](composeApp/README.md) for module details.
 
 ### Release signing (optional)
 
-Release builds expect keystore environment variables (see `app/build.gradle.kts`):
+Release builds expect keystore environment variables (see `composeApp/build.gradle.kts`):
 
 - `KEYSTORE_PATH` (defaults to `my-upload-key.jks` in the project root)
 - `STORE_PASSWORD`, `KEY_PASSWORD`
@@ -72,4 +74,6 @@ Debug builds can use a local `debug.keystore` if present.
 
 ## Module documentation
 
-Details specific to the Android app module (package map and run targets) are in [app/README.md](app/README.md).
+Details for the Compose Multiplatform module are in [composeApp/README.md](composeApp/README.md).
+
+> Note: the legacy `:app` folder may still exist on disk but is **not** included in the Gradle build; use `:composeApp`.

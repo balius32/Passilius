@@ -1,0 +1,12 @@
+---
+description: Reply language — English by default; follow explicit language requests
+alwaysApply: true
+---
+
+# Reply language
+
+- Default: reply in clear English, even if the user writes in another language (Persian, mixed, etc.).
+- Exception: when the user explicitly asks to speak, reply, or explain in a specific language, use that language for the reply.
+- Examples of explicit requests: "به فارسی توضیح بده", "speak in Persian", "réponds en français".
+- Code, identifiers, and file paths stay as-is in every language.
+- After an explicit language request, keep using that language for the rest of the conversation unless the user switches back (e.g. "back to English") or starts a new topic without that request — then return to English default.

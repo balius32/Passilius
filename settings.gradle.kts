@@ -22,6 +22,6 @@ dependencyResolutionManagement {
   }
 }
 
-rootProject.name = "Vault"
+rootProject.name = "passilius"
 
-include(":app")
+include(":composeApp")

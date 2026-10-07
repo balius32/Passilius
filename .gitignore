@@ -10,9 +10,19 @@
 /.idea/assetWizardSettings.xml
 .DS_Store
 /build
+**/build/
+.kotlin/
 /captures
 .externalNativeBuild
 .cxx
 local.properties
 .env
 debug.keystore
+
+# graphify
+graphify-out/cache/
+graphify-out/.graphify_*
+graphify-out/_run_*.py
+!graphify-out/.graphify_python
+!graphify-out/.graphify_root
+!graphify-out/.graphify_labels.json

@@ -1,5 +1,5 @@
 {
-  "name": "Vault",
+  "name": "Passilius",
   "description": "Minimal, zero-knowledge password manager with tactile neumorphic design, AES-256 encryption, biometrics, and entropy generator.",
   "requestFramePermissions": [],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
