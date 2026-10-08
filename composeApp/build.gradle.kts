@@ -27,6 +27,7 @@ kotlin {
       implementation(compose.material3)
       implementation(compose.materialIconsExtended)
       implementation(compose.ui)
+      implementation(libs.compose.ui.backhandler)
       implementation(compose.components.resources)
       implementation(libs.androidx.lifecycle.viewmodel)
       implementation(libs.androidx.lifecycle.viewmodel.compose)
@@ -36,6 +37,8 @@ kotlin {
       implementation(libs.haze)
       implementation(libs.kotlinx.coroutines.core)
       implementation(libs.kotlinx.serialization.json)
+      implementation(libs.ktor.client.core)
+      implementation(libs.ktor.client.cio)
     }
 
     androidMain.dependencies {
@@ -43,17 +46,29 @@ kotlin {
       implementation(libs.androidx.core.ktx)
       implementation(libs.androidx.biometric)
       implementation(libs.kotlinx.coroutines.android)
+      implementation(libs.zxing.android.embedded)
+      implementation(libs.zxing.core)
     }
 
     val desktopMain by getting {
       dependencies {
         implementation(compose.desktop.currentOs)
         implementation(libs.kotlinx.coroutines.swing)
+        implementation(libs.ktor.server.core)
+        implementation(libs.ktor.server.cio)
+        implementation(libs.zxing.core)
       }
     }
 
     commonTest.dependencies {
       implementation(libs.kotlinx.coroutines.core)
+      implementation(kotlin("test"))
+    }
+
+    val desktopTest by getting {
+      dependencies {
+        implementation(kotlin("test"))
+      }
     }
   }
 }

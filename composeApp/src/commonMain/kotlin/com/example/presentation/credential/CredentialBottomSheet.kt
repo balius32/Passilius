@@ -477,6 +477,7 @@ fun CredentialBottomSheet(
                         isSaving = true
                         val cred = Credential(
                             id = initialCredential?.id ?: 0L,
+                            syncId = initialCredential?.syncId.orEmpty(),
                             service = service.trim(),
                             username = username.trim(),
                             password = password,

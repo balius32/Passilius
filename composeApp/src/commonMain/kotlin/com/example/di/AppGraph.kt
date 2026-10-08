@@ -1,18 +1,23 @@
 package com.example.di
 
+import com.example.core.sync.SyncClient
+import com.example.core.sync.SyncHost
 import com.example.data.local.database.createVaultDatabase
 import com.example.data.repository.VaultRepositoryImpl
 import com.example.domain.usecase.AddCategoryUseCase
+import com.example.domain.usecase.BuildVaultSnapshotUseCase
 import com.example.domain.usecase.DeleteCategoryUseCase
 import com.example.domain.usecase.DeleteCredentialUseCase
 import com.example.domain.usecase.GeneratePasswordUseCase
 import com.example.domain.usecase.GetVaultCredentialsUseCase
+import com.example.domain.usecase.MergeVaultSnapshotUseCase
 import com.example.domain.usecase.ObserveCategoriesUseCase
 import com.example.domain.usecase.RenameCategoryUseCase
 import com.example.domain.usecase.SaveCredentialUseCase
 import com.example.domain.usecase.ToggleFavoriteUseCase
 import com.example.presentation.category.ManageCategoriesViewModel
 import com.example.presentation.generator.GeneratorViewModel
+import com.example.presentation.sync.SyncViewModel
 import com.example.presentation.vault.VaultViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -35,6 +40,8 @@ class AppGraph private constructor() {
     private val renameCategoryUseCase = RenameCategoryUseCase(repository)
     private val deleteCategoryUseCase = DeleteCategoryUseCase(repository)
     private val generatePasswordUseCase = GeneratePasswordUseCase()
+    private val buildVaultSnapshotUseCase = BuildVaultSnapshotUseCase(repository)
+    private val mergeVaultSnapshotUseCase = MergeVaultSnapshotUseCase(repository)
 
     val vaultViewModel = VaultViewModel(
         getVaultCredentialsUseCase = getCredentialsUseCase,
@@ -54,6 +61,14 @@ class AppGraph private constructor() {
 
     val generatorViewModel = GeneratorViewModel(
         generatePasswordUseCase = generatePasswordUseCase
+    )
+
+    val syncViewModel = SyncViewModel(
+        buildSnapshot = buildVaultSnapshotUseCase,
+        mergeSnapshot = mergeVaultSnapshotUseCase,
+        syncHost = SyncHost(),
+        syncClient = SyncClient(),
+        masterPinProvider = { vaultViewModel.uiState.value.masterPin }
     )
 
     init {

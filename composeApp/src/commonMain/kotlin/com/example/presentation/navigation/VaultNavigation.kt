@@ -1,5 +1,7 @@
 package com.example.presentation.navigation
 
+import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -65,6 +67,8 @@ import com.example.presentation.credential.CredentialBottomSheet
 import com.example.presentation.generator.GeneratorScreen
 import com.example.presentation.generator.GeneratorViewModel
 import com.example.presentation.settings.SettingsScreen
+import com.example.presentation.sync.SyncScreen
+import com.example.presentation.sync.SyncViewModel
 import com.example.presentation.unlock.MasterUnlockScreen
 import com.example.presentation.vault.VaultScreen
 import com.example.presentation.vault.VaultUiIntent
@@ -90,11 +94,13 @@ private fun selectTopLevelTab(
     backStack.add(destination)
 }
 
+@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun VaultApp(
     vaultViewModel: VaultViewModel,
     generatorViewModel: GeneratorViewModel,
-    manageCategoriesViewModel: ManageCategoriesViewModel
+    manageCategoriesViewModel: ManageCategoriesViewModel,
+    syncViewModel: SyncViewModel
 ) {
     val vaultState by vaultViewModel.uiState.collectAsStateWithLifecycle()
     val backStack = remember { mutableStateListOf<VaultDestination>(VaultRoute) }
@@ -106,8 +112,14 @@ fun VaultApp(
         )
     } else {
         val currentKey = backStack.lastOrNull()
-        val showBottomBar = currentKey != SettingsRoute && currentKey != CategoriesRoute
+        val showBottomBar = currentKey != SettingsRoute &&
+            currentKey != CategoriesRoute &&
+            currentKey != SyncRoute
         val hazeState = rememberHazeState()
+
+        BackHandler(enabled = backStack.size > 1) {
+            backStack.removeAt(backStack.lastIndex)
+        }
 
         Scaffold(
             containerColor = SurfaceCanvas,
@@ -127,7 +139,8 @@ fun VaultApp(
                         targetState = currentKey,
                         transitionSpec = {
                             val forward = targetState == SettingsRoute ||
-                                targetState == CategoriesRoute
+                                targetState == CategoriesRoute ||
+                                targetState == SyncRoute
                             if (forward) {
                                 slideInHorizontally(
                                     initialOffsetX = { it },
@@ -159,10 +172,17 @@ fun VaultApp(
                                 onLockVault = {
                                     vaultViewModel.handleIntent(VaultUiIntent.LockVault)
                                 },
-                                onManageCategories = { backStack.add(CategoriesRoute) }
+                                onManageCategories = { backStack.add(CategoriesRoute) },
+                                onSyncDevices = { backStack.add(SyncRoute) }
                             )
                             CategoriesRoute -> ManageCategoriesScreen(
                                 viewModel = manageCategoriesViewModel,
+                                onBack = {
+                                    if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+                                }
+                            )
+                            SyncRoute -> SyncScreen(
+                                viewModel = syncViewModel,
                                 onBack = {
                                     if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
                                 }

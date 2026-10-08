@@ -17,7 +17,8 @@ fun App(appGraph: AppGraph) {
             VaultApp(
                 vaultViewModel = appGraph.vaultViewModel,
                 generatorViewModel = appGraph.generatorViewModel,
-                manageCategoriesViewModel = appGraph.manageCategoriesViewModel
+                manageCategoriesViewModel = appGraph.manageCategoriesViewModel,
+                syncViewModel = appGraph.syncViewModel
             )
         }
     }

@@ -3,13 +3,17 @@ package com.example.data.repository
 import com.example.core.crypto.CryptoManager
 import com.example.core.crypto.PasswordGenerator
 import com.example.core.platform.currentTimeMillis
+import com.example.core.platform.newSyncId
 import com.example.data.local.dao.CategoryDao
 import com.example.data.local.dao.CredentialDao
 import com.example.data.local.entity.CategoryEntity
 import com.example.data.local.entity.CredentialEntity
 import com.example.domain.model.Credential
 import com.example.domain.model.SecurityReport
+import com.example.domain.model.VaultCategory
 import com.example.domain.repository.VaultRepository
+import com.example.domain.sync.MergeResult
+import com.example.domain.sync.VaultSnapshot
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
@@ -59,6 +63,21 @@ class VaultRepositoryImpl(
         return credentialDao.getCredentialById(id)?.toDomain()
     }
 
+    override suspend fun listCredentials(): List<Credential> {
+        return credentialDao.getAllCredentialsOnce().map { it.toDomain() }
+    }
+
+    override suspend fun listCategories(): List<VaultCategory> {
+        return categoryDao.getAllOnce().map {
+            VaultCategory(
+                id = it.id,
+                syncId = it.syncId.ifBlank { newSyncId() },
+                name = it.name,
+                sortOrder = it.sortOrder
+            )
+        }
+    }
+
     override suspend fun saveCredential(credential: Credential): Long {
         val encryptedPassword = CryptoManager.encrypt(credential.password)
 
@@ -68,8 +87,10 @@ class VaultRepositoryImpl(
             PasswordGenerator.calculateEntropy(credential.password)
         }
 
+        val syncId = credential.syncId.ifBlank { newSyncId() }
         val entity = CredentialEntity(
             id = credential.id,
+            syncId = syncId,
             service = credential.service.trim(),
             username = credential.username.trim(),
             encryptedPassword = encryptedPassword,
@@ -123,7 +144,7 @@ class VaultRepositoryImpl(
 
         val nextOrder = categoryDao.getMaxSortOrder() + 1
         val id = categoryDao.insert(
-            CategoryEntity(name = trimmed, sortOrder = nextOrder)
+            CategoryEntity(syncId = newSyncId(), name = trimmed, sortOrder = nextOrder)
         )
         return id != -1L
     }
@@ -154,6 +175,109 @@ class VaultRepositoryImpl(
         credentialDao.reassignCategory(trimmed, DEFAULT_CATEGORY)
         categoryDao.deleteByName(trimmed)
         return true
+    }
+
+    override suspend fun mergeSnapshot(snapshot: VaultSnapshot): MergeResult {
+        var categoriesAdded = 0
+        var categoriesUpdated = 0
+        var credentialsAdded = 0
+        var credentialsUpdated = 0
+        var credentialsSkipped = 0
+
+        val syncIdToName = linkedMapOf<String, String>()
+
+        for (remote in snapshot.categories) {
+            val bySync = categoryDao.getBySyncId(remote.syncId)
+            val byName = categoryDao.getByName(remote.name)
+            when {
+                bySync != null -> {
+                    if (bySync.name != remote.name || bySync.sortOrder != remote.sortOrder) {
+                        categoryDao.update(
+                            bySync.copy(name = remote.name, sortOrder = remote.sortOrder)
+                        )
+                        categoriesUpdated++
+                    }
+                    syncIdToName[remote.syncId] = remote.name
+                }
+                byName != null -> {
+                    categoryDao.update(
+                        byName.copy(syncId = remote.syncId, sortOrder = remote.sortOrder)
+                    )
+                    categoriesUpdated++
+                    syncIdToName[remote.syncId] = byName.name
+                }
+                else -> {
+                    categoryDao.upsert(
+                        CategoryEntity(
+                            syncId = remote.syncId,
+                            name = remote.name,
+                            sortOrder = remote.sortOrder
+                        )
+                    )
+                    categoriesAdded++
+                    syncIdToName[remote.syncId] = remote.name
+                }
+            }
+        }
+
+        for (local in categoryDao.getAllOnce()) {
+            syncIdToName.putIfAbsent(local.syncId, local.name)
+        }
+
+        for (remote in snapshot.credentials) {
+            val categoryName = syncIdToName[remote.categorySyncId]
+                ?: categoryDao.getBySyncId(remote.categorySyncId)?.name
+                ?: DEFAULT_CATEGORY
+            val existing = credentialDao.getCredentialBySyncId(remote.syncId)
+            if (existing != null) {
+                if (remote.updatedAt > existing.updatedAt) {
+                    credentialDao.update(
+                        existing.copy(
+                            service = remote.service,
+                            username = remote.username,
+                            encryptedPassword = CryptoManager.encrypt(remote.password),
+                            category = categoryName,
+                            websiteUrl = remote.websiteUrl,
+                            notes = remote.notes,
+                            iconKey = remote.iconKey.ifBlank { resolveIconKey(remote.service) },
+                            createdAt = remote.createdAt,
+                            updatedAt = remote.updatedAt,
+                            isFavorite = remote.isFavorite,
+                            entropyBits = remote.entropyBits
+                        )
+                    )
+                    credentialsUpdated++
+                } else {
+                    credentialsSkipped++
+                }
+            } else {
+                credentialDao.insert(
+                    CredentialEntity(
+                        syncId = remote.syncId,
+                        service = remote.service,
+                        username = remote.username,
+                        encryptedPassword = CryptoManager.encrypt(remote.password),
+                        category = categoryName,
+                        websiteUrl = remote.websiteUrl,
+                        notes = remote.notes,
+                        iconKey = remote.iconKey.ifBlank { resolveIconKey(remote.service) },
+                        createdAt = remote.createdAt,
+                        updatedAt = remote.updatedAt,
+                        isFavorite = remote.isFavorite,
+                        entropyBits = remote.entropyBits
+                    )
+                )
+                credentialsAdded++
+            }
+        }
+
+        return MergeResult(
+            categoriesAdded = categoriesAdded,
+            categoriesUpdated = categoriesUpdated,
+            credentialsAdded = credentialsAdded,
+            credentialsUpdated = credentialsUpdated,
+            credentialsSkipped = credentialsSkipped
+        )
     }
 
     override suspend fun seedInitialDataIfEmpty() {
@@ -233,6 +357,7 @@ class VaultRepositoryImpl(
             val entropy = PasswordGenerator.calculateEntropy(item.password)
             CredentialEntity(
                 id = 0L,
+                syncId = newSyncId(),
                 service = item.service,
                 username = item.username,
                 encryptedPassword = encryptedPw,
@@ -254,7 +379,7 @@ class VaultRepositoryImpl(
         if (categoryDao.getCount() > 0) return
         categoryDao.insertAll(
             DEFAULT_CATEGORIES.mapIndexed { index, name ->
-                CategoryEntity(name = name, sortOrder = index)
+                CategoryEntity(syncId = newSyncId(), name = name, sortOrder = index)
             }
         )
     }
@@ -264,6 +389,7 @@ class VaultRepositoryImpl(
 
         return Credential(
             id = id,
+            syncId = syncId,
             service = service,
             username = username,
             password = decryptedPw,

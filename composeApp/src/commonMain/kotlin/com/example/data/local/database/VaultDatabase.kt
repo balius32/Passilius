@@ -13,7 +13,7 @@ import kotlinx.coroutines.Dispatchers
 
 @Database(
     entities = [CredentialEntity::class, CategoryEntity::class],
-    version = 3,
+    version = 4,
     exportSchema = true
 )
 @ConstructedBy(VaultDatabaseConstructor::class)

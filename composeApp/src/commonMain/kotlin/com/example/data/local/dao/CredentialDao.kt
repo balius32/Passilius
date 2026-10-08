@@ -15,8 +15,14 @@ interface CredentialDao {
     @Query("SELECT * FROM credentials ORDER BY updatedAt DESC")
     fun getAllCredentials(): Flow<List<CredentialEntity>>
 
+    @Query("SELECT * FROM credentials ORDER BY updatedAt DESC")
+    suspend fun getAllCredentialsOnce(): List<CredentialEntity>
+
     @Query("SELECT * FROM credentials WHERE id = :id LIMIT 1")
     suspend fun getCredentialById(id: Long): CredentialEntity?
+
+    @Query("SELECT * FROM credentials WHERE syncId = :syncId LIMIT 1")
+    suspend fun getCredentialBySyncId(syncId: String): CredentialEntity?
 
     @Query("SELECT * FROM credentials WHERE category = :category ORDER BY updatedAt DESC")
     fun getCredentialsByCategory(category: String): Flow<List<CredentialEntity>>

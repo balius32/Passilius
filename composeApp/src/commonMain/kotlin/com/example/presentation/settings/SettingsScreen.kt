@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Shield
+import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.Icon
@@ -60,12 +61,12 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onLockVault: () -> Unit,
     onManageCategories: () -> Unit,
+    onSyncDevices: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val supportsBiometrics = LocalPlatformCapabilities.current.supportsBiometricUnlock
     var biometricEnabled by remember { mutableStateOf(supportsBiometrics) }
     var autoClearClipboard by remember { mutableStateOf(true) }
-    var zeroKnowledgeSync by remember { mutableStateOf(false) }
     val contentPadding = rememberScreenContentPadding(bottom = 60.dp)
 
     Box(
@@ -107,19 +108,12 @@ fun SettingsScreen(
 
                     Spacer(modifier = Modifier.width(16.dp))
 
-                    Column {
-                        Text(
-                            text = "Security Profile",
-                            style = VaultTypography.headlineLarge,
-                            color = OnSurfacePrimary,
-                            fontWeight = FontWeight.Bold
-                        )
-                        Text(
-                            text = "Swiss Zero-Knowledge Architecture",
-                            style = VaultTypography.labelSmall,
-                            color = SecondarySlate
-                        )
-                    }
+                    Text(
+                        text = "Profile",
+                        style = VaultTypography.headlineLarge,
+                        color = OnSurfacePrimary,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
@@ -210,9 +204,9 @@ fun SettingsScreen(
                         )
                         .padding(18.dp)
                 ) {
-                    Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Column(verticalArrangement = Arrangement.spacedBy(22.dp)) {
                         Text(
-                            text = "Hardware Encryption & Access",
+                            text = "Security",
                             style = VaultTypography.headlineSmall,
                             color = OnSurfacePrimary,
                             fontWeight = FontWeight.SemiBold
@@ -320,6 +314,57 @@ fun SettingsScreen(
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("sync_devices_row")
+                        .neuFlat(
+                            shape = RoundedCornerShape(24.dp),
+                            cornerRadius = 24.dp,
+                            backgroundColor = SurfaceContainerLowest
+                        )
+                        .clickable { onSyncDevices() }
+                        .padding(18.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Sync,
+                                contentDescription = null,
+                                tint = ElectricPrimaryBright,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = "Sync devices",
+                                    style = VaultTypography.bodyMedium,
+                                    color = OnSurfacePrimary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Text(
+                                    text = "QR or USB — local only, phone must approve",
+                                    style = VaultTypography.bodySmall,
+                                    color = SecondarySlate,
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = SecondarySlate,
+                            modifier = Modifier.size(22.dp)
+                        )
                     }
                 }
             }

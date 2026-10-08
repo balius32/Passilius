@@ -4,6 +4,7 @@ import com.example.core.platform.currentTimeMillis
 
 data class Credential(
     val id: Long = 0,
+    val syncId: String = "",
     val service: String,
     val username: String,
     val password: String, // Plaintext when decrypted in domain layer
@@ -19,7 +20,9 @@ data class Credential(
 
 data class VaultCategory(
     val id: Long = 0,
-    val name: String
+    val syncId: String = "",
+    val name: String,
+    val sortOrder: Int = 0
 )
 
 data class SecurityReport(

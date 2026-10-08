@@ -1,65 +1,129 @@
 # Graph Report - vault  (2026-10-07)
 
 ## Corpus Check
-- Corpus is ~17,381 words - fits in a single context window. You may not need a graph.
+- 137 files · ~41,394 words
+- Verdict: corpus is large enough that graph structure adds value.
+- Unclassified: 34 file(s) not represented in the graph (top: .xml 20, .properties 3, (none) 2)
 
 ## Summary
-- 663 nodes · 1517 edges · 38 communities (22 shown, 16 thin omitted)
-- Extraction: 98% EXTRACTED · 2% INFERRED · 0% AMBIGUOUS · INFERRED: 30 edges (avg confidence: 0.86)
+- 1462 nodes · 3414 edges · 95 communities (45 shown, 50 thin omitted)
+- Extraction: 96% EXTRACTED · 4% INFERRED · 0% AMBIGUOUS · INFERRED: 122 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
+## Graph Freshness
+- Built from commit: `c517bc5a`
+- Run `git rev-parse HEAD` and compare to check if the graph is stale.
+- Run `graphify update .` after code changes (no API cost).
+
 ## Community Hubs (Navigation)
-- Use Cases Clipboard
-- Vault Repository
-- Category Room DAO
-- Password Generator
-- Biometric Unlock
-- App Architecture Concepts
-- Neumorphic Design System
-- CryptoManager Encryption
-- Tactile Controls
-- Brand Icon Wells
-- Vault List Components
-- Notched Capsule Shape
-- Screen Insets Helpers
-- Vault App Shell
-- Instrumented Tests
-- Navigation Routes
-- Xxxhdpi Round Icon
-- Manage Categories UI
-- Hdpi Launcher Icon
-- Mdpi Launcher Icon
-- Xhdpi Launcher Icon
-- Xxhdpi Launcher Icon
-- Xxhdpi Round Icon
-- Xxxhdpi Launcher Icon
-- Hdpi Round Icon
-- Mdpi Round Icon
-- Xhdpi Round Icon
-- Generator Screen UI
-- Settings Metrics UI
-- Master Unlock Screen
+- java/com/example/domain/usecase/VaultUseCases.kt
+- VaultUiIntent
+- CredentialDao
+- ExampleRobolectricTest.kt
+- BiometricPromptManager.kt
+- CryptoManager
+- SyncUiIntent
+- CategoryDao
+- launch
+- java/com/example/core/designsystem/Neumorphism.kt
+- java/com/example/core/crypto/CryptoManager.kt
+- GeneratorScreen
+- java/com/example/core/components/BrandIconWell.kt
+- SyncViewModel
+- VaultScreen
+- SyncTransport.desktop.kt
+- rememberScreenContentPadding
+- VaultApp
+- ExampleInstrumentedTest.kt
+- java/com/example/presentation/navigation/VaultRoutes.kt
+- Android Round Launcher Icon (ic_launcher_round)
+- ManageCategoriesScreen
+- Android App Launcher Icon (hdpi)
+- Android Launcher Icon (ic_launcher)
+- Android Launcher Icon (ic_launcher)
+- Android App Launcher Icon (xxhdpi)
+- Android Round App Launcher Icon (xxhdpi)
+- Android Launcher Icon (ic_launcher)
+- Android Bugdroid Head Silhouette
+- Round App Launcher Icon
+- Round Android Launcher Icon
+- newSyncId
+- AppGraph
+- CredentialDao
+- java/com/example/MainActivity.kt
+- java/com/example/core/designsystem/Theme.kt
+- java/com/example/presentation/category/ManageCategoriesViewModel.kt
+- java/com/example/presentation/vault/VaultViewModel.kt
+- CategoryEntity
+- VaultRepository
+- kotlin/com/example/presentation/category/ManageCategoriesViewModel.kt
+- VaultViewModel
+- VaultUiIntent
+- java/com/example/data/local/database/VaultDatabase.kt
+- VaultRepository
+- kotlin/com/example/data/local/database/VaultDatabase.kt
+- VaultSnapshot
+- VaultRepositoryImpl
+- kotlin/com/example/MainActivity.kt
+- java/com/example/core/crypto/PasswordGenerator.kt
+- SyncPairingInfo
+- VaultRepositoryImpl
+- kotlin/com/example/presentation/generator/GeneratorViewModel.kt
+- GeneratorUiIntent
+- java/com/example/presentation/generator/GeneratorViewModel.kt
+- VaultScreen
+- VaultApp
+- GeneratorUiIntent
+- ClipboardHelper
+- QrImageBitmap.desktop.kt
+- .start
+- ExampleUnitTest.kt
+- SyncPairingTest.kt
+- BiometricUnlockResult
+- CredentialBottomSheet
+- App.kt
+- SyncHostSession
+- CategoryEntity
+- CryptoManager
+- SettingsScreen
+- .exchange
+- .generate
+- Main.kt
+- SyncQrScanner.android.kt
+- PasswordStrengthLevel
+- PasswordStrengthLevel
+- SyncEnvelope
+- kotlin/com/example/domain/model/Credential.kt
+- CredentialEntity
+- java/com/example/domain/model/Credential.kt
+- BiometricUnlock
+- QrImageBitmap.kt
+- ClipboardHelper
+- SyncQrScanner.desktop.kt
+- AGENTS.md
+- currentTimeMillis
+- currentTimeMillis
 
 ## God Nodes (most connected - your core abstractions)
-1. `Credential` - 27 edges
-2. `VaultRepositoryImpl` - 26 edges
-3. `VaultRepository` - 25 edges
-4. `VaultViewModel` - 24 edges
-5. `ManageCategoriesViewModel` - 20 edges
-6. `VaultUiIntent` - 19 edges
-7. `CredentialDao` - 18 edges
-8. `CredentialEntity` - 17 edges
-9. `VaultApp()` - 16 edges
-10. `GeneratorViewModel` - 15 edges
+1. `VaultRepositoryImpl` - 25 edges
+2. `AppGraph` - 24 edges
+3. `SyncViewModel` - 24 edges
+4. `VaultRepositoryImpl` - 23 edges
+5. `VaultViewModel` - 19 edges
+6. `VaultViewModel` - 18 edges
+7. `VaultUiIntent` - 17 edges
+8. `VaultRepository` - 17 edges
+9. `VaultSnapshot` - 17 edges
+10. `VaultApp()` - 17 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `Vault app module` --semantically_similar_to--> `Vault`  [INFERRED] [semantically similar]
+- `Credential` --semantically_similar_to--> `Credentials`  [INFERRED] [semantically similar]
+  app/README.md → README.md
+- `CryptoManager` --semantically_similar_to--> `CryptoManager`  [INFERRED] [semantically similar]
   app/README.md → README.md
 - `MasterUnlockScreen` --semantically_similar_to--> `Master unlock`  [INFERRED] [semantically similar]
   app/README.md → README.md
 - `PasswordGenerator` --semantically_similar_to--> `Password generator`  [INFERRED] [semantically similar]
-  app/README.md → README.md
-- `Credential` --semantically_similar_to--> `Credentials`  [INFERRED] [semantically similar]
   app/README.md → README.md
 - `SecurityReport` --semantically_similar_to--> `Security insights`  [INFERRED] [semantically similar]
   app/README.md → README.md
@@ -68,127 +132,219 @@
 - None detected.
 
 ## Hyperedges (group relationships)
-- **Vault security model** — readme_encryption, readme_cryptomanager, readme_android_keystore, readme_aes_gcm, readme_master_unlock, readme_biometrics [INFERRED 0.85]
-- **Clean Architecture layers** — readme_clean_architecture, readme_data_layer, readme_domain_layer, readme_presentation_layer, readme_core_layer [EXTRACTED 1.00]
 - **App module feature surface** — app_readme_mainactivity, app_readme_credentialbottomsheet, app_readme_passwordgenerator, app_readme_masterunlockscreen, app_readme_settingsscreen, app_readme_vaultnavigation [EXTRACTED 1.00]
 - **Default Android Launcher Icon Composition** — app_src_main_res_mipmap_mdpi_ic_launcher, app_src_main_res_mipmap_mdpi_ic_launcher_android_robot_head, app_src_main_res_mipmap_mdpi_ic_launcher_long_shadow, app_src_main_res_mipmap_mdpi_ic_launcher_green_grid_background [EXTRACTED 1.00]
 - **Round Launcher Icon Visual Composition** — app_src_main_res_mipmap_mdpi_ic_launcher_round, app_src_main_res_mipmap_mdpi_ic_launcher_round_android_bugdroid, app_src_main_res_mipmap_mdpi_ic_launcher_round_material_green_circle, app_src_main_res_mipmap_mdpi_ic_launcher_round_long_shadow [EXTRACTED 1.00]
 - **Default Android Launcher Icon Composition** — app_src_main_res_mipmap_xhdpi_ic_launcher, app_src_main_res_mipmap_xhdpi_ic_launcher_android_robot_head, app_src_main_res_mipmap_xhdpi_ic_launcher_long_shadow, app_src_main_res_mipmap_xhdpi_ic_launcher_green_grid_background [EXTRACTED 1.00]
-- **Round Launcher Visual System** — app_src_main_res_mipmap_xhdpi_ic_launcher_round_round_launcher_icon, app_src_main_res_mipmap_xhdpi_ic_launcher_round_android_robot_head, app_src_main_res_mipmap_xhdpi_ic_launcher_round_green_grid_background, app_src_main_res_mipmap_xhdpi_ic_launcher_round_material_long_shadow [INFERRED 0.85]
 - **Default Android Studio Launcher Icon Composition** — app_src_main_res_mipmap_xxhdpi_ic_launcher_android_robot, app_src_main_res_mipmap_xxhdpi_ic_launcher_green_grid_background, app_src_main_res_mipmap_xxhdpi_ic_launcher_material_long_shadow, app_src_main_res_mipmap_xxhdpi_ic_launcher_squircle_mask [EXTRACTED 1.00]
 - **Default Android Studio Round Launcher Icon Composition** — app_src_main_res_mipmap_xxhdpi_ic_launcher_round_android_robot, app_src_main_res_mipmap_xxhdpi_ic_launcher_round_green_grid_background, app_src_main_res_mipmap_xxhdpi_ic_launcher_round_material_long_shadow, app_src_main_res_mipmap_xxhdpi_ic_launcher_round_circular_mask [EXTRACTED 1.00]
 - **Default Android App Icon Branding** — app_src_main_res_mipmap_xxxhdpi_ic_launcher_android_launcher_icon, app_src_main_res_mipmap_xxxhdpi_ic_launcher_bugdroid_head, app_src_main_res_mipmap_xxxhdpi_ic_launcher_green_grid_background, app_src_main_res_mipmap_xxxhdpi_ic_launcher_long_shadow_style [EXTRACTED 1.00]
 - **Default Android Round App Icon Branding** — app_src_main_res_mipmap_xxxhdpi_ic_launcher_round_android_round_launcher_icon, app_src_main_res_mipmap_xxxhdpi_ic_launcher_round_bugdroid_head, app_src_main_res_mipmap_xxxhdpi_ic_launcher_round_green_grid_background, app_src_main_res_mipmap_xxxhdpi_ic_launcher_round_long_shadow_style [EXTRACTED 1.00]
+- **Clean Architecture layers** — readme_clean_architecture, readme_data_layer, readme_domain_layer, readme_presentation_layer, readme_core_layer [EXTRACTED 1.00]
+- **Round Launcher Visual System** — app_src_main_res_mipmap_xhdpi_ic_launcher_round_round_launcher_icon, app_src_main_res_mipmap_xhdpi_ic_launcher_round_android_robot_head, app_src_main_res_mipmap_xhdpi_ic_launcher_round_green_grid_background, app_src_main_res_mipmap_xhdpi_ic_launcher_round_material_long_shadow [INFERRED 0.85]
+- **Vault security model** — readme_encryption, readme_cryptomanager, readme_android_keystore, readme_aes_gcm, readme_master_unlock, readme_biometrics [INFERRED 0.85]
 
-## Communities (38 total, 16 thin omitted)
+## Communities (95 total, 50 thin omitted)
 
-### Community 0 - "Use Cases Clipboard"
-Cohesion: 0.05
-Nodes (21): ClipboardHelper, AddCategoryUseCase, DeleteCategoryUseCase, DeleteCredentialUseCase, GeneratePasswordUseCase, GetVaultCredentialsUseCase, ObserveCategoriesUseCase, RenameCategoryUseCase (+13 more)
+### Community 0 - "java/com/example/domain/usecase/VaultUseCases.kt"
+Cohesion: 0.14
+Nodes (9): AddCategoryUseCase, DeleteCategoryUseCase, DeleteCredentialUseCase, GeneratePasswordUseCase, GetVaultCredentialsUseCase, ObserveCategoriesUseCase, RenameCategoryUseCase, SaveCredentialUseCase (+1 more)
 
-### Community 1 - "Vault Repository"
-Cohesion: 0.06
-Nodes (24): InitialSeed, VaultRepositoryImpl, Credential, SecurityReport, VaultCategory, VaultRepository, CloseBottomSheet, CloseCategorySheet (+16 more)
+### Community 1 - "VaultUiIntent"
+Cohesion: 0.12
+Nodes (18): CloseBottomSheet, CloseCategorySheet, CopyPassword, CopyUsername, CreateCategory, DeleteCredential, LockVault, OpenCreate (+10 more)
 
-### Community 2 - "Category Room DAO"
+### Community 4 - "BiometricPromptManager.kt"
 Cohesion: 0.07
-Nodes (5): CategoryDao, CredentialDao, VaultDatabase, CategoryEntity, CredentialEntity
-
-### Community 3 - "Password Generator"
-Cohesion: 0.06
-Nodes (22): GeneratedSecret, GeneratorConfig, PasswordGenerator, PasswordStrengthLevel, FAIR, STRONG, VERY_STRONG, WEAK (+14 more)
-
-### Community 4 - "Biometric Unlock"
-Cohesion: 0.06
 Nodes (11): AuthenticationError, AuthenticationFailed, AuthenticationSuccess, BiometricPromptManager, AuthenticationCallback, BiometricResult, FeatureUnavailable, HardwareUnavailable (+3 more)
 
-### Community 6 - "App Architecture Concepts"
-Cohesion: 0.07
-Nodes (37): Credential, CredentialBottomSheet, CryptoManager, MainActivity, MasterUnlockScreen, PasswordGenerator, SecurityReport, SettingsScreen (+29 more)
+### Community 6 - "CryptoManager"
+Cohesion: 0.06
+Nodes (42): Credential, CredentialBottomSheet, CryptoManager, MainActivity, MasterUnlockScreen, PasswordGenerator, SecurityReport, SettingsScreen (+34 more)
 
-### Community 10 - "Neumorphic Design System"
-Cohesion: 0.16
-Nodes (3): neuClickable(), neuFlat(), neuPressed()
+### Community 7 - "SyncUiIntent"
+Cohesion: 0.05
+Nodes (41): QrCodec, QrCodec, QrImage, AuthCancelled, AwaitingAuth, BackToIdle, ConfirmAuthAndSync, ConnectWithManualUri (+33 more)
 
-### Community 12 - "Tactile Controls"
-Cohesion: 0.14
-Nodes (3): NeumorphicButton(), TactileSlider(), TactileToggleSwitch()
-
-### Community 13 - "Brand Icon Wells"
-Cohesion: 0.25
-Nodes (7): AppleLogo(), BrandIconWell(), FigmaLogo(), GitHubLogo(), GoogleLogo(), SlackLogo(), SpotifyLogo()
-
-### Community 15 - "Vault List Components"
+### Community 10 - "java/com/example/core/designsystem/Neumorphism.kt"
 Cohesion: 0.24
+Nodes (6): neuClickable(), neuFlat(), neuPressed(), neuClickable(), neuFlat(), neuPressed()
+
+### Community 11 - "java/com/example/core/crypto/CryptoManager.kt"
+Cohesion: 0.06
+Nodes (7): CryptoManager, CryptoManager, secureRandomBytes(), SyncEnvelope, CryptoManager, secureRandomBytes(), SyncEnvelope
+
+### Community 12 - "GeneratorScreen"
+Cohesion: 0.21
+Nodes (5): NeumorphicButton(), TactileSlider(), TactileToggleSwitch(), AttributeRow(), GeneratorScreen()
+
+### Community 13 - "java/com/example/core/components/BrandIconWell.kt"
+Cohesion: 0.11
+Nodes (16): AppleLogo(), BrandIconWell(), FigmaLogo(), GitHubLogo(), GoogleLogo(), SlackLogo(), SpotifyLogo(), NotchedCapsuleShape (+8 more)
+
+### Community 15 - "VaultScreen"
+Cohesion: 0.20
 Nodes (4): CategoryPillStrip(), NeumorphicSearchBar(), PasswordCard(), VaultScreen()
 
-### Community 18 - "Vault App Shell"
-Cohesion: 0.32
-Nodes (3): selectTopLevelTab(), VaultApp(), VaultBottomNavigationBar()
+### Community 18 - "VaultApp"
+Cohesion: 0.16
+Nodes (4): selectTopLevelTab(), VaultApp(), VaultBottomNavigationBar(), MasterUnlockScreen()
 
-### Community 20 - "Navigation Routes"
+### Community 20 - "java/com/example/presentation/navigation/VaultRoutes.kt"
 Cohesion: 0.67
 Nodes (4): CategoriesRoute, GeneratorRoute, SettingsRoute, VaultRoute
 
-### Community 21 - "Xxxhdpi Round Icon"
+### Community 21 - "Android Round Launcher Icon (ic_launcher_round)"
 Cohesion: 0.33
 Nodes (7): Android Round Launcher Icon (ic_launcher_round), Android Bugdroid Head Silhouette, Circular Round Icon Mask, Default Android Studio Placeholder Icon, Green Grid Circular Background, Long Shadow Material Style, mipmap-xxxhdpi Density Bucket
 
-### Community 23 - "Hdpi Launcher Icon"
+### Community 23 - "Android App Launcher Icon (hdpi)"
 Cohesion: 0.40
 Nodes (6): Android App Launcher Icon (hdpi), Android Bugdroid Head Silhouette, Green Gridded Background, Home Screen Launcher Affordance, Material Design Drop Shadow, Squircle Icon Container
 
-### Community 24 - "Mdpi Launcher Icon"
+### Community 24 - "Android Launcher Icon (ic_launcher)"
 Cohesion: 0.40
 Nodes (6): Android Launcher Icon (ic_launcher), Android Robot Head Silhouette, Green Grid Background, Long Shadow Design Effect, mipmap-mdpi Density Resource, Rounded Square Icon Mask
 
-### Community 25 - "Xhdpi Launcher Icon"
+### Community 25 - "Android Launcher Icon (ic_launcher)"
 Cohesion: 0.40
 Nodes (6): Android Launcher Icon (ic_launcher), Android Robot Head Silhouette, Green Grid Background, Long Shadow Design Effect, mipmap-xhdpi Density Resource, Rounded Square Icon Mask
 
-### Community 26 - "Xxhdpi Launcher Icon"
+### Community 26 - "Android App Launcher Icon (xxhdpi)"
 Cohesion: 0.40
 Nodes (6): Android App Launcher Icon (xxhdpi), Android Robot (Bugdroid) Head, Default Android Studio Placeholder Branding, Mint Green Grid Background, Material Design Long Shadow, Squircle Icon Mask
 
-### Community 27 - "Xxhdpi Round Icon"
+### Community 27 - "Android Round App Launcher Icon (xxhdpi)"
 Cohesion: 0.40
 Nodes (6): Android Round App Launcher Icon (xxhdpi), Android Robot (Bugdroid) Head, Circular Round Icon Mask, Default Android Studio Placeholder Branding, Mint Green Grid Background, Material Design Long Shadow
 
-### Community 28 - "Xxxhdpi Launcher Icon"
+### Community 28 - "Android Launcher Icon (ic_launcher)"
 Cohesion: 0.40
 Nodes (6): Android Launcher Icon (ic_launcher), Android Bugdroid Head Silhouette, Default Android Studio Placeholder Icon, Green Grid Background, Long Shadow Material Style, mipmap-xxxhdpi Density Bucket
 
-### Community 29 - "Hdpi Round Icon"
+### Community 29 - "Android Bugdroid Head Silhouette"
 Cohesion: 0.50
 Nodes (5): Android Bugdroid Head Silhouette, Diagonal Drop Shadow, Green Circular Grid Background, Material Design Adaptive Icon Style, Round Android Launcher Icon
 
-### Community 30 - "Mdpi Round Icon"
+### Community 30 - "Round App Launcher Icon"
 Cohesion: 0.60
 Nodes (5): Round App Launcher Icon, Android Bugdroid Mascot Head, Long Shadow Effect, Material Design Green Circle Background, MDPI Mipmap Density Resource
 
-### Community 31 - "Xhdpi Round Icon"
+### Community 31 - "Round Android Launcher Icon"
 Cohesion: 0.50
 Nodes (5): Android Robot Head, Green Grid Background, Material Design Long Shadow, mipmap-xhdpi Launcher Asset, Round Android Launcher Icon
 
+### Community 32 - "newSyncId"
+Cohesion: 0.19
+Nodes (4): currentTimeMillis(), secureRandomBytes(), newSyncId(), InitialSeed
+
+### Community 33 - "AppGraph"
+Cohesion: 0.13
+Nodes (12): AppGraph, BuildVaultSnapshotUseCase, MergeVaultSnapshotUseCase, AddCategoryUseCase, DeleteCategoryUseCase, DeleteCredentialUseCase, GeneratePasswordUseCase, GetVaultCredentialsUseCase (+4 more)
+
+### Community 39 - "java/com/example/core/designsystem/Theme.kt"
+Cohesion: 0.13
+Nodes (3): VaultTheme(), MyApplicationTheme(), VaultTheme()
+
+### Community 40 - "java/com/example/presentation/category/ManageCategoriesViewModel.kt"
+Cohesion: 0.15
+Nodes (8): CloseSheet, DeleteCategory, ManageCategoriesUiIntent, ManageCategoriesUiState, ManageCategoriesViewModel, OpenCreate, OpenRename, SaveCategory
+
+### Community 44 - "kotlin/com/example/presentation/category/ManageCategoriesViewModel.kt"
+Cohesion: 0.15
+Nodes (8): CloseSheet, DeleteCategory, ManageCategoriesUiIntent, ManageCategoriesUiState, ManageCategoriesViewModel, OpenCreate, OpenRename, SaveCategory
+
+### Community 46 - "VaultUiIntent"
+Cohesion: 0.12
+Nodes (18): CloseBottomSheet, CloseCategorySheet, CopyPassword, CopyUsername, CreateCategory, DeleteCredential, LockVault, OpenCreate (+10 more)
+
+### Community 49 - "kotlin/com/example/data/local/database/VaultDatabase.kt"
+Cohesion: 0.20
+Nodes (4): createVaultDatabase(), createVaultDatabaseBuilder(), VaultDatabase, VaultDatabaseConstructor
+
+### Community 51 - "VaultSnapshot"
+Cohesion: 0.31
+Nodes (6): SyncClient, SyncExchangeResult, CategorySnapshot, CredentialSnapshot, MergeResult, VaultSnapshot
+
+### Community 53 - "kotlin/com/example/MainActivity.kt"
+Cohesion: 0.18
+Nodes (3): bindVaultDatabaseContext(), createVaultDatabaseBuilder(), MainActivity
+
+### Community 54 - "java/com/example/core/crypto/PasswordGenerator.kt"
+Cohesion: 0.20
+Nodes (4): GeneratedSecret, GeneratorConfig, PasswordGenerator, secureRandomInt()
+
+### Community 55 - "SyncPairingInfo"
+Cohesion: 0.19
+Nodes (3): base64UrlToBytes(), bytesToBase64Url(), SyncPairingInfo
+
+### Community 58 - "GeneratorUiIntent"
+Cohesion: 0.20
+Nodes (9): CopyPassword, GeneratorUiIntent, GeneratorUiState, Regenerate, ToggleLowercase, ToggleNumbers, ToggleSymbols, ToggleUppercase (+1 more)
+
+### Community 60 - "VaultScreen"
+Cohesion: 0.20
+Nodes (4): CategoryPillStrip(), NeumorphicSearchBar(), PasswordCard(), VaultScreen()
+
+### Community 61 - "VaultApp"
+Cohesion: 0.05
+Nodes (22): NeumorphicButton(), TactileSlider(), TactileToggleSwitch(), CategoryBottomSheet(), ManageCategoriesScreen(), CredentialBottomSheet(), sheetFieldWell(), sheetIconButton() (+14 more)
+
+### Community 62 - "GeneratorUiIntent"
+Cohesion: 0.20
+Nodes (9): CopyPassword, GeneratorUiIntent, GeneratorUiState, Regenerate, ToggleLowercase, ToggleNumbers, ToggleSymbols, ToggleUppercase (+1 more)
+
+### Community 68 - "BiometricUnlockResult"
+Cohesion: 0.25
+Nodes (5): BiometricUnlock, BiometricUnlockResult, Error, Success, Unavailable
+
+### Community 69 - "CredentialBottomSheet"
+Cohesion: 0.33
+Nodes (3): CredentialBottomSheet(), sheetFieldWell(), sheetIconButton()
+
+### Community 70 - "App.kt"
+Cohesion: 0.15
+Nodes (4): platformCapabilities(), App(), PlatformCapabilities, platformCapabilities()
+
+### Community 71 - "SyncHostSession"
+Cohesion: 0.29
+Nodes (3): SyncHost, SyncHost, SyncHostSession
+
+### Community 81 - "PasswordStrengthLevel"
+Cohesion: 0.40
+Nodes (5): PasswordStrengthLevel, FAIR, STRONG, VERY_STRONG, WEAK
+
+### Community 82 - "PasswordStrengthLevel"
+Cohesion: 0.40
+Nodes (5): PasswordStrengthLevel, FAIR, STRONG, VERY_STRONG, WEAK
+
+### Community 84 - "kotlin/com/example/domain/model/Credential.kt"
+Cohesion: 0.40
+Nodes (3): Credential, SecurityReport, VaultCategory
+
+### Community 87 - "java/com/example/domain/model/Credential.kt"
+Cohesion: 0.50
+Nodes (3): Credential, SecurityReport, VaultCategory
+
 ## Knowledge Gaps
-- **71 isolated node(s):** `HardwareUnavailable`, `FeatureUnavailable`, `NoneEnrolled`, `AuthenticationSuccess`, `AuthenticationFailed` (+66 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 207 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **16 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **132 isolated node(s):** `HardwareUnavailable`, `FeatureUnavailable`, `NoneEnrolled`, `AuthenticationSuccess`, `AuthenticationFailed` (+127 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 309 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **50 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `Credential` connect `Vault Repository` to `Use Cases Clipboard`, `Password Generator`, `Vault UI Screens`, `Credential Bottom Sheets`, `Vault List Components`?**
-  _High betweenness centrality (0.093) - this node is a cross-community bridge._
-- **Why does `VaultRepositoryImpl` connect `Vault Repository` to `Use Cases Clipboard`, `Category Room DAO`, `Password Generator`?**
-  _High betweenness centrality (0.081) - this node is a cross-community bridge._
-- **Why does `BiometricPromptManager` connect `Biometric Unlock` to `Unlock Settings UI`?**
-  _High betweenness centrality (0.042) - this node is a cross-community bridge._
+- **Why does `AppGraph` connect `AppGraph` to `java/com/example/MainActivity.kt`, `App.kt`, `kotlin/com/example/presentation/category/ManageCategoriesViewModel.kt`, `VaultViewModel`, `SyncViewModel`, `Main.kt`, `kotlin/com/example/data/local/database/VaultDatabase.kt`, `kotlin/com/example/MainActivity.kt`, `VaultRepositoryImpl`, `kotlin/com/example/presentation/generator/GeneratorViewModel.kt`?**
+  _High betweenness centrality (0.084) - this node is a cross-community bridge._
+- **Why does `SyncViewModel` connect `SyncViewModel` to `AppGraph`, `java/com/example/presentation/navigation/VaultNavigation.kt`, `java/com/example/MainActivity.kt`, `SyncUiIntent`, `SyncPairingInfo`, `VaultApp`?**
+  _High betweenness centrality (0.083) - this node is a cross-community bridge._
+- **Why does `main()` connect `Main.kt` to `App.kt`, `CryptoManager`?**
+  _High betweenness centrality (0.055) - this node is a cross-community bridge._
 - **What connects `HardwareUnavailable`, `FeatureUnavailable`, `NoneEnrolled` to the rest of the system?**
-  _71 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Use Cases Clipboard` be split into smaller, more focused modules?**
-  _Cohesion score 0.05048766494549627 - nodes in this community are weakly interconnected._
-- **Should `Vault Repository` be split into smaller, more focused modules?**
-  _Cohesion score 0.055523085914669784 - nodes in this community are weakly interconnected._
-- **Should `Category Room DAO` be split into smaller, more focused modules?**
-  _Cohesion score 0.0726764500349406 - nodes in this community are weakly interconnected._
+  _132 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `java/com/example/domain/usecase/VaultUseCases.kt` be split into smaller, more focused modules?**
+  _Cohesion score 0.13675213675213677 - nodes in this community are weakly interconnected._
+- **Should `VaultUiIntent` be split into smaller, more focused modules?**
+  _Cohesion score 0.11578947368421053 - nodes in this community are weakly interconnected._
+- **Should `BiometricPromptManager.kt` be split into smaller, more focused modules?**
+  _Cohesion score 0.07394957983193277 - nodes in this community are weakly interconnected._
