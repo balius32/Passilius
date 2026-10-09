@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.biometric.BiometricUnlock
 import com.example.core.biometric.BiometricUnlockResult
+import com.example.core.crypto.VaultKeyStore
 import com.example.core.platform.platformCapabilities
 import com.example.core.sync.QrCodec
 import com.example.core.sync.SyncClient
@@ -25,8 +26,7 @@ class SyncViewModel(
     private val buildSnapshot: BuildVaultSnapshotUseCase,
     private val mergeSnapshot: MergeVaultSnapshotUseCase,
     private val syncHost: SyncHost = SyncHost(),
-    private val syncClient: SyncClient = SyncClient(),
-    private val masterPinProvider: () -> String = { "1234" }
+    private val syncClient: SyncClient = SyncClient()
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(
@@ -58,21 +58,7 @@ class SyncViewModel(
                 }
             }
             is SyncUiIntent.PinChanged -> _uiState.update { it.copy(pinInput = intent.value) }
-            SyncUiIntent.SubmitPinFallback -> {
-                val pin = _uiState.value.pinInput
-                if (pin == masterPinProvider() || pin == "0000" || pin == "1234") {
-                    _uiState.update { it.copy(pinFallbackVisible = false, pinInput = "") }
-                    runClientSync()
-                } else {
-                    _uiState.update {
-                        it.copy(
-                            phase = SyncPhase.Error("Incorrect PIN"),
-                            pinFallbackVisible = false,
-                            pinInput = ""
-                        )
-                    }
-                }
-            }
+            SyncUiIntent.SubmitPinFallback -> submitMasterPassword()
             SyncUiIntent.DismissPinFallback -> {
                 pendingPairing = null
                 _uiState.update {
@@ -196,6 +182,24 @@ class SyncViewModel(
                     qrImage = null,
                     lanAddresses = emptyList()
                 )
+            }
+        }
+    }
+
+    private fun submitMasterPassword() {
+        val password = _uiState.value.pinInput
+        viewModelScope.launch {
+            val opened = VaultKeyStore.unlock(password)
+            if (opened) {
+                _uiState.update { it.copy(pinFallbackVisible = false, pinInput = "") }
+                runClientSync()
+            } else {
+                _uiState.update {
+                    it.copy(
+                        phase = SyncPhase.Error("Incorrect master password"),
+                        pinInput = ""
+                    )
+                }
             }
         }
     }

@@ -114,8 +114,18 @@ fun VaultApp(
 
     if (vaultState.isLocked) {
         MasterUnlockScreen(
-            onUnlocked = { vaultViewModel.handleIntent(VaultUiIntent.UnlockVault) },
-            masterPin = vaultState.masterPin
+            needsSetup = vaultState.needsMasterSetup,
+            isUnlocking = vaultState.isUnlocking,
+            errorMessage = vaultState.unlockError,
+            onCreateMasterPassword = { password, confirm ->
+                vaultViewModel.handleIntent(VaultUiIntent.CreateMasterPassword(password, confirm))
+            },
+            onSubmitMasterPassword = { password ->
+                vaultViewModel.handleIntent(VaultUiIntent.SubmitMasterPassword(password))
+            },
+            onBiometricUnlocked = {
+                vaultViewModel.handleIntent(VaultUiIntent.UnlockWithBiometric)
+            }
         )
     } else {
         val currentKey = backStack.lastOrNull()

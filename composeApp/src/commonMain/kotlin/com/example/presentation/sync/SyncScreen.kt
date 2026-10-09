@@ -285,14 +285,15 @@ private fun PinFallbackCard(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text(
-            text = "Biometrics unavailable — enter master PIN to allow sync",
+            text = "Enter the master password to allow sync",
             style = VaultTypography.bodyMedium,
             color = OnSurfacePrimary,
             fontWeight = FontWeight.Medium
         )
         BasicTextField(
             value = pin,
-            onValueChange = { if (it.length <= 8) onPinChanged(it.filter { c -> c.isDigit() }) },
+            onValueChange = onPinChanged,
+            visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
             textStyle = VaultTypography.headlineSmall.copy(color = OnSurfacePrimary),
             cursorBrush = SolidColor(ElectricPrimaryBright),
             modifier = Modifier.fillMaxWidth()

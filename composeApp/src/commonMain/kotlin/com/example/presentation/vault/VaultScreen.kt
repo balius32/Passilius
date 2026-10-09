@@ -143,6 +143,16 @@ fun VaultScreen(
                 }
             }
 
+            if (uiState.legacyFailures > 0) {
+                item {
+                    Text(
+                        text = "${uiState.legacyFailures} older item(s) could not be re-encrypted and were left unchanged.",
+                        style = VaultTypography.bodySmall,
+                        color = SecondarySlate
+                    )
+                }
+            }
+
             // Search Filter Recessed Bar (Toggled state)
             if (uiState.isSearchVisible) {
                 item {

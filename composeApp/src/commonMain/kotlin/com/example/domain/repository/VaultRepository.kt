@@ -18,6 +18,7 @@ interface VaultRepository {
     suspend fun deleteCredential(id: Long)
     suspend fun getSecurityReport(): SecurityReport
     suspend fun seedInitialDataIfEmpty()
+    suspend fun migrateLegacySecrets(): Int
     suspend fun mergeSnapshot(snapshot: VaultSnapshot): MergeResult
 
     fun observeCategories(): Flow<List<String>>

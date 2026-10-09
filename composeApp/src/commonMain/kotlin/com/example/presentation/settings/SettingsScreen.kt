@@ -43,6 +43,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.core.biometric.BiometricSettings
+import com.example.core.crypto.BiometricVaultKey
 import com.example.core.biometric.BiometricUnlock
 import com.example.core.biometric.BiometricUnlockResult
 import com.example.core.components.TactileToggleSwitch
@@ -264,9 +265,16 @@ fun SettingsScreen(
                                             ) { result ->
                                                 when (result) {
                                                     BiometricUnlockResult.Success -> {
-                                                        biometricEnabled = true
-                                                        biometricMessage = null
-                                                        BiometricSettings.setUnlockEnabled(true)
+                                                        try {
+                                                            BiometricVaultKey.enroll()
+                                                            biometricEnabled = true
+                                                            biometricMessage = null
+                                                            BiometricSettings.setUnlockEnabled(true)
+                                                        } catch (error: Exception) {
+                                                            biometricEnabled = false
+                                                            biometricMessage = error.message
+                                                                ?: "Could not enable biometric unlock"
+                                                        }
                                                     }
                                                     BiometricUnlockResult.Unavailable -> {
                                                         biometricEnabled = false
@@ -282,6 +290,7 @@ fun SettingsScreen(
                                         } else {
                                             biometricEnabled = false
                                             biometricMessage = null
+                                            BiometricVaultKey.clear()
                                             BiometricSettings.setUnlockEnabled(false)
                                         }
                                     }

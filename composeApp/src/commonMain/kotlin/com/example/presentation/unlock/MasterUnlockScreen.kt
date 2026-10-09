@@ -1,17 +1,10 @@
 package com.example.presentation.unlock
 
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -19,10 +12,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Backspace
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -34,78 +27,62 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.core.biometric.BiometricSettings
 import com.example.core.biometric.BiometricUnlock
 import com.example.core.biometric.BiometricUnlockResult
+import com.example.core.crypto.BiometricVaultKey
+import com.example.core.crypto.VaultKeyStore
 import com.example.core.designsystem.ElectricPrimaryBright
 import com.example.core.designsystem.OnSurfacePrimary
 import com.example.core.designsystem.SecondarySlate
 import com.example.core.designsystem.SecurityDanger
 import com.example.core.designsystem.SurfaceCanvas
+import com.example.core.designsystem.SurfaceContainerLowest
 import com.example.core.designsystem.VaultTypography
 import com.example.core.designsystem.neuFlat
-import com.example.core.designsystem.neuPressed
 import com.example.core.platform.LocalPlatformCapabilities
 
 @Composable
 fun MasterUnlockScreen(
-    onUnlocked: () -> Unit,
-    masterPin: String = "1234",
+    needsSetup: Boolean,
+    isUnlocking: Boolean,
+    errorMessage: String?,
+    onCreateMasterPassword: (password: String, confirm: String) -> Unit,
+    onSubmitMasterPassword: (password: String) -> Unit,
+    onBiometricUnlocked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val supportsBiometrics = LocalPlatformCapabilities.current.supportsBiometricUnlock &&
-        BiometricSettings.isUnlockEnabled()
-    var enteredPin by remember { mutableStateOf("") }
-    var errorMessage by remember { mutableStateOf<String?>(null) }
-
-    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
-    val pulseScale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.08f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(1400, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulseScale"
-    )
+        BiometricSettings.isUnlockEnabled() &&
+        BiometricVaultKey.isEnrolled()
+    var password by remember { mutableStateOf("") }
+    var confirm by remember { mutableStateOf("") }
+    var localError by remember { mutableStateOf<String?>(null) }
 
     fun triggerBiometrics() {
-        if (!supportsBiometrics) return
+        if (!supportsBiometrics || needsSetup) return
         BiometricUnlock.authenticate(
             title = "Unlock Vault",
             subtitle = "Touch sensor or verify identity"
         ) { result ->
             when (result) {
-                BiometricUnlockResult.Success -> onUnlocked()
-                is BiometricUnlockResult.Error -> errorMessage = result.message
-                BiometricUnlockResult.Unavailable -> {
-                    errorMessage = "Biometrics unavailable"
-                }
+                BiometricUnlockResult.Success -> onBiometricUnlocked()
+                is BiometricUnlockResult.Error -> localError = result.message.ifBlank { null }
+                BiometricUnlockResult.Unavailable -> localError = "Biometrics unavailable"
             }
         }
     }
 
-    LaunchedEffect(supportsBiometrics) {
-        if (supportsBiometrics) {
-            triggerBiometrics()
-        }
+    LaunchedEffect(supportsBiometrics, needsSetup) {
+        if (supportsBiometrics && !needsSetup) triggerBiometrics()
     }
 
-    LaunchedEffect(enteredPin) {
-        if (enteredPin.length == 4) {
-            if (enteredPin == masterPin || enteredPin == "0000" || enteredPin == "1234") {
-                onUnlocked()
-            } else {
-                errorMessage = "Incorrect Master PIN"
-                enteredPin = ""
-            }
-        }
-    }
+    val shownError = errorMessage ?: localError
 
     Box(
         modifier = modifier
@@ -117,156 +94,126 @@ fun MasterUnlockScreen(
         contentAlignment = Alignment.Center
     ) {
         Column(
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxWidth()
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            if (supportsBiometrics) {
-                Box(
-                    modifier = Modifier
-                        .scale(pulseScale)
-                        .size(80.dp)
-                        .neuFlat(
-                            shape = CircleShape,
-                            cornerRadius = 40.dp,
-                            backgroundColor = SurfaceCanvas
-                        )
-                        .clickable { triggerBiometrics() },
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Fingerprint,
-                        contentDescription = "Biometrics",
-                        tint = ElectricPrimaryBright,
-                        modifier = Modifier.size(42.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
             Text(
-                text = "Vault is Locked",
-                style = VaultTypography.headlineMedium,
+                text = if (needsSetup) "Create master password" else "Unlock vault",
+                style = VaultTypography.headlineLarge,
                 color = OnSurfacePrimary,
                 fontWeight = FontWeight.Bold
             )
-
             Text(
-                text = if (supportsBiometrics) {
-                    "Authenticate via Biometrics or Master PIN (default: 1234)"
+                text = if (needsSetup) {
+                    "At least ${VaultKeyStore.MIN_PASSWORD_LENGTH} characters. This password encrypts the vault."
                 } else {
-                    "Enter Master PIN (default: 1234)"
+                    "Enter the master password that encrypts this vault."
                 },
                 style = VaultTypography.bodySmall,
-                color = SecondarySlate,
-                modifier = Modifier.padding(top = 4.dp)
+                color = SecondarySlate
             )
-
-            Spacer(modifier = Modifier.height(28.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(14.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                repeat(4) { index ->
-                    val isFilled = index < enteredPin.length
-                    Box(
-                        modifier = Modifier
-                            .size(16.dp)
-                            .then(
-                                if (isFilled) {
-                                    Modifier.neuPressed(
-                                        shape = CircleShape,
-                                        cornerRadius = 8.dp,
-                                        backgroundColor = ElectricPrimaryBright
-                                    )
-                                } else {
-                                    Modifier.neuPressed(
-                                        shape = CircleShape,
-                                        cornerRadius = 8.dp,
-                                        backgroundColor = Color(0xFFDFE3E8)
-                                    )
-                                }
-                            )
-                    )
-                }
-            }
-
-            if (errorMessage != null) {
-                Text(
-                    text = errorMessage ?: "",
-                    style = VaultTypography.labelSmall,
-                    color = SecurityDanger,
-                    modifier = Modifier.padding(top = 10.dp)
+            PasswordField(
+                value = password,
+                onValueChange = {
+                    password = it
+                    localError = null
+                },
+                hint = "Master password"
+            )
+            if (needsSetup) {
+                PasswordField(
+                    value = confirm,
+                    onValueChange = {
+                        confirm = it
+                        localError = null
+                    },
+                    hint = "Confirm password"
                 )
             }
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            val keys = listOf(
-                listOf("1", "2", "3"),
-                listOf("4", "5", "6"),
-                listOf("7", "8", "9"),
-                listOf(if (supportsBiometrics) "bio" else "", "0", "del")
-            )
-
-            Column(
-                verticalArrangement = Arrangement.spacedBy(14.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                keys.forEach { row ->
-                    Row(horizontalArrangement = Arrangement.spacedBy(20.dp)) {
-                        row.forEach { key ->
-                            if (key.isEmpty()) {
-                                Spacer(modifier = Modifier.size(64.dp))
-                                return@forEach
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .size(64.dp)
-                                    .testTag("pin_key_$key")
-                                    .neuFlat(
-                                        shape = CircleShape,
-                                        cornerRadius = 32.dp,
-                                        backgroundColor = SurfaceCanvas
-                                    )
-                                    .clickable {
-                                        when (key) {
-                                            "bio" -> triggerBiometrics()
-                                            "del" -> if (enteredPin.isNotEmpty()) {
-                                                enteredPin = enteredPin.dropLast(1)
-                                            }
-                                            else -> if (enteredPin.length < 4) enteredPin += key
-                                        }
-                                        errorMessage = null
-                                    },
-                                contentAlignment = Alignment.Center
-                            ) {
-                                when (key) {
-                                    "bio" -> Icon(
-                                        imageVector = Icons.Default.Fingerprint,
-                                        contentDescription = "Biometrics",
-                                        tint = ElectricPrimaryBright,
-                                        modifier = Modifier.size(24.dp)
-                                    )
-                                    "del" -> Icon(
-                                        imageVector = Icons.AutoMirrored.Filled.Backspace,
-                                        contentDescription = "Delete",
-                                        tint = SecondarySlate,
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                    else -> Text(
-                                        text = key,
-                                        style = VaultTypography.headlineMedium,
-                                        color = OnSurfacePrimary,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                }
-                            }
-                        }
-                    }
+            if (!shownError.isNullOrBlank()) {
+                Text(
+                    text = shownError,
+                    style = VaultTypography.bodySmall,
+                    color = SecurityDanger
+                )
+            }
+            UnlockButton(
+                label = when {
+                    isUnlocking -> "Working…"
+                    needsSetup -> "Create vault"
+                    else -> "Unlock"
+                },
+                enabled = !isUnlocking,
+                onClick = {
+                    if (needsSetup) onCreateMasterPassword(password, confirm)
+                    else onSubmitMasterPassword(password)
                 }
+            )
+            if (supportsBiometrics && !needsSetup) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Icon(
+                    imageVector = Icons.Default.Fingerprint,
+                    contentDescription = "Unlock with biometrics",
+                    tint = ElectricPrimaryBright,
+                    modifier = Modifier.clickable(enabled = !isUnlocking) { triggerBiometrics() }
+                )
             }
         }
+    }
+}
+
+@Composable
+private fun PasswordField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    hint: String
+) {
+    Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
+        Text(text = hint, style = VaultTypography.labelSmall, color = SecondarySlate)
+        BasicTextField(
+            value = value,
+            onValueChange = onValueChange,
+            singleLine = true,
+            visualTransformation = PasswordVisualTransformation(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+            textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary),
+            cursorBrush = SolidColor(ElectricPrimaryBright),
+            modifier = Modifier
+                .fillMaxWidth()
+                .neuFlat(
+                    shape = RoundedCornerShape(18.dp),
+                    cornerRadius = 18.dp,
+                    backgroundColor = SurfaceContainerLowest
+                )
+                .padding(horizontal = 16.dp, vertical = 14.dp)
+        )
+    }
+}
+
+@Composable
+private fun UnlockButton(
+    label: String,
+    enabled: Boolean,
+    onClick: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .neuFlat(
+                shape = RoundedCornerShape(18.dp),
+                cornerRadius = 18.dp,
+                backgroundColor = SurfaceContainerLowest
+            )
+            .clickable(enabled = enabled, onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = label,
+            style = VaultTypography.bodyMedium,
+            color = ElectricPrimaryBright,
+            fontWeight = FontWeight.SemiBold
+        )
     }
 }

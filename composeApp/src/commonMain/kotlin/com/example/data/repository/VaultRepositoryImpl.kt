@@ -1,7 +1,9 @@
 package com.example.data.repository
 
 import com.example.core.crypto.CryptoManager
+import com.example.core.crypto.LegacyVaultCrypto
 import com.example.core.crypto.PasswordGenerator
+import com.example.core.crypto.VaultCryptoException
 import com.example.core.platform.currentTimeMillis
 import com.example.core.platform.newSyncId
 import com.example.data.local.dao.CategoryDao
@@ -50,11 +52,12 @@ class VaultRepositoryImpl(
     }
 
     override fun searchCredentials(query: String): Flow<List<Credential>> {
-        return if (query.isBlank()) {
-            getAllCredentials()
-        } else {
-            credentialDao.searchCredentials(query.trim()).map { list ->
-                list.map { it.toDomain() }
+        val needle = query.trim()
+        if (needle.isBlank()) return getAllCredentials()
+        return credentialDao.getAllCredentials().map { list ->
+            list.map { it.toDomain() }.filter { credential ->
+                credential.service.contains(needle, ignoreCase = true) ||
+                    credential.username.contains(needle, ignoreCase = true)
             }
         }
     }
@@ -79,7 +82,7 @@ class VaultRepositoryImpl(
     }
 
     override suspend fun saveCredential(credential: Credential): Long {
-        val encryptedPassword = CryptoManager.encrypt(credential.password)
+        val encryptedPassword = seal(credential.password)
 
         val entropy = if (credential.entropyBits > 0) {
             credential.entropyBits
@@ -92,11 +95,11 @@ class VaultRepositoryImpl(
             id = credential.id,
             syncId = syncId,
             service = credential.service.trim(),
-            username = credential.username.trim(),
+            username = seal(credential.username.trim()),
             encryptedPassword = encryptedPassword,
             category = credential.category,
-            websiteUrl = credential.websiteUrl.trim(),
-            notes = credential.notes.trim(),
+            websiteUrl = seal(credential.websiteUrl.trim()),
+            notes = seal(credential.notes.trim()),
             iconKey = credential.iconKey.ifBlank { resolveIconKey(credential.service) },
             createdAt = if (credential.createdAt == 0L) currentTimeMillis() else credential.createdAt,
             updatedAt = currentTimeMillis(),
@@ -230,11 +233,11 @@ class VaultRepositoryImpl(
                     credentialDao.update(
                         existing.copy(
                             service = remote.service,
-                            username = remote.username,
-                            encryptedPassword = CryptoManager.encrypt(remote.password),
+                            username = seal(remote.username),
+                            encryptedPassword = seal(remote.password),
                             category = categoryName,
-                            websiteUrl = remote.websiteUrl,
-                            notes = remote.notes,
+                            websiteUrl = seal(remote.websiteUrl),
+                            notes = seal(remote.notes),
                             iconKey = remote.iconKey.ifBlank { resolveIconKey(remote.service) },
                             createdAt = remote.createdAt,
                             updatedAt = remote.updatedAt,
@@ -251,11 +254,11 @@ class VaultRepositoryImpl(
                     CredentialEntity(
                         syncId = remote.syncId,
                         service = remote.service,
-                        username = remote.username,
-                        encryptedPassword = CryptoManager.encrypt(remote.password),
+                        username = seal(remote.username),
+                        encryptedPassword = seal(remote.password),
                         category = categoryName,
-                        websiteUrl = remote.websiteUrl,
-                        notes = remote.notes,
+                        websiteUrl = seal(remote.websiteUrl),
+                        notes = seal(remote.notes),
                         iconKey = remote.iconKey.ifBlank { resolveIconKey(remote.service) },
                         createdAt = remote.createdAt,
                         updatedAt = remote.updatedAt,
@@ -274,6 +277,34 @@ class VaultRepositoryImpl(
             credentialsUpdated = credentialsUpdated,
             credentialsSkipped = credentialsSkipped
         )
+    }
+
+    override suspend fun migrateLegacySecrets(): Int {
+        if (!LegacyVaultCrypto.hasLegacyKey()) return 0
+        var failed = 0
+        for (row in credentialDao.getAllCredentialsOnce()) {
+            val password = LegacyVaultCrypto.decrypt(row.encryptedPassword)
+            if (password == null) {
+                val alreadyMoved = try {
+                    CryptoManager.decrypt(row.encryptedPassword)
+                    true
+                } catch (_: VaultCryptoException) {
+                    false
+                }
+                if (!alreadyMoved) failed++
+                continue
+            }
+            credentialDao.update(
+                row.copy(
+                    username = seal(row.username),
+                    encryptedPassword = seal(password),
+                    websiteUrl = seal(row.websiteUrl),
+                    notes = seal(row.notes)
+                )
+            )
+        }
+        if (failed == 0) LegacyVaultCrypto.destroy()
+        return failed
     }
 
     override suspend fun seedInitialDataIfEmpty() {
@@ -349,17 +380,17 @@ class VaultRepositoryImpl(
         )
 
         val entities = initialItems.mapIndexed { index, item ->
-            val encryptedPw = CryptoManager.encrypt(item.password)
+            val encryptedPw = seal(item.password)
             val entropy = PasswordGenerator.calculateEntropy(item.password)
             CredentialEntity(
                 id = 0L,
                 syncId = newSyncId(),
                 service = item.service,
-                username = item.username,
+                username = seal(item.username),
                 encryptedPassword = encryptedPw,
                 category = item.category,
-                websiteUrl = item.websiteUrl,
-                notes = "Auto-generated secure vault record for ${item.service}.",
+                websiteUrl = seal(item.websiteUrl),
+                notes = seal("Auto-generated secure vault record for ${item.service}."),
                 iconKey = item.iconKey,
                 createdAt = currentTimeMillis() - (index * 86400000L),
                 updatedAt = currentTimeMillis() - (index * 43200000L),
@@ -380,18 +411,18 @@ class VaultRepositoryImpl(
         )
     }
 
-    private fun CredentialEntity.toDomain(): Credential {
-        val decryptedPw = CryptoManager.decrypt(encryptedPassword)
+    private fun seal(value: String): String = CryptoManager.encrypt(value)
 
+    private fun CredentialEntity.toDomain(): Credential {
         return Credential(
             id = id,
             syncId = syncId,
             service = service,
-            username = username,
-            password = decryptedPw,
+            username = CryptoManager.decrypt(username),
+            password = CryptoManager.decrypt(encryptedPassword),
             category = category,
-            websiteUrl = websiteUrl,
-            notes = notes,
+            websiteUrl = CryptoManager.decrypt(websiteUrl),
+            notes = CryptoManager.decrypt(notes),
             iconKey = iconKey,
             createdAt = createdAt,
             updatedAt = updatedAt,

@@ -1,8 +1,13 @@
 package com.example.core.crypto
 
-expect object CryptoManager {
-    fun encrypt(plainText: String): String
-    fun decrypt(encryptedPayload: String): String
-    fun deriveMasterKeyHash(passcode: String, salt: ByteArray): String
-    fun generateSalt(): ByteArray
+object CryptoManager {
+    fun encrypt(plainText: String): String {
+        if (plainText.isEmpty()) return ""
+        return CryptoEngine.encrypt(VaultSession.requireKey(), plainText)
+    }
+
+    fun decrypt(encryptedPayload: String): String {
+        if (encryptedPayload.isEmpty()) return ""
+        return CryptoEngine.decrypt(VaultSession.requireKey(), encryptedPayload)
+    }
 }

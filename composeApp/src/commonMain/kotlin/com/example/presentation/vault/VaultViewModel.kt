@@ -2,6 +2,8 @@ package com.example.presentation.vault
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core.crypto.BiometricVaultKey
+import com.example.core.crypto.VaultKeyStore
 import com.example.core.util.ClipboardHelper
 import com.example.domain.model.Credential
 import com.example.domain.usecase.AddCategoryUseCase
@@ -22,10 +24,13 @@ class VaultViewModel(
     private val saveCredentialUseCase: SaveCredentialUseCase,
     private val deleteCredentialUseCase: DeleteCredentialUseCase,
     private val observeCategoriesUseCase: ObserveCategoriesUseCase,
-    private val addCategoryUseCase: AddCategoryUseCase
+    private val addCategoryUseCase: AddCategoryUseCase,
+    private val onVaultOpened: suspend () -> Int = { 0 }
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(VaultUiState())
+    private val _uiState = MutableStateFlow(
+        VaultUiState(needsMasterSetup = !VaultKeyStore.isInitialized())
+    )
     val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()
 
     private var searchJob: Job? = null
@@ -34,7 +39,6 @@ class VaultViewModel(
 
     init {
         observeCategories()
-        loadCredentials()
     }
 
     fun handleIntent(intent: VaultUiIntent) {
@@ -97,12 +101,10 @@ class VaultViewModel(
                     }
                 }
             }
-            is VaultUiIntent.LockVault -> {
-                _uiState.update { it.copy(isLocked = true) }
-            }
-            is VaultUiIntent.UnlockVault -> {
-                _uiState.update { it.copy(isLocked = false) }
-            }
+            is VaultUiIntent.LockVault -> lock()
+            is VaultUiIntent.CreateMasterPassword -> createMasterPassword(intent.password, intent.confirm)
+            is VaultUiIntent.SubmitMasterPassword -> submitMasterPassword(intent.password)
+            is VaultUiIntent.UnlockWithBiometric -> unlockWithBiometric()
         }
     }
 
@@ -166,6 +168,108 @@ class VaultViewModel(
                     categorySheetSessionId = it.categorySheetSessionId + 1
                 )
             }
+        }
+    }
+
+    private fun lock() {
+        VaultKeyStore.lock()
+        searchJob?.cancel()
+        _uiState.update {
+            it.copy(
+                isLocked = true,
+                credentials = emptyList(),
+                editingCredential = null,
+                isBottomSheetOpen = false,
+                isCategorySheetOpen = false,
+                unlockError = null,
+                isUnlocking = false
+            )
+        }
+    }
+
+    private fun createMasterPassword(password: String, confirm: String) {
+        if (_uiState.value.isUnlocking) return
+        when {
+            password.length < VaultKeyStore.MIN_PASSWORD_LENGTH -> {
+                _uiState.update {
+                    it.copy(unlockError = "Use at least ${VaultKeyStore.MIN_PASSWORD_LENGTH} characters")
+                }
+                return
+            }
+            password != confirm -> {
+                _uiState.update { it.copy(unlockError = "Passwords do not match") }
+                return
+            }
+        }
+        _uiState.update { it.copy(isUnlocking = true, unlockError = null) }
+        viewModelScope.launch {
+            try {
+                VaultKeyStore.create(password)
+                val failed = onVaultOpened()
+                _uiState.update {
+                    it.copy(
+                        isLocked = false,
+                        needsMasterSetup = false,
+                        isUnlocking = false,
+                        unlockError = null,
+                        legacyFailures = failed
+                    )
+                }
+                loadCredentials()
+            } catch (error: Exception) {
+                VaultKeyStore.lock()
+                _uiState.update {
+                    it.copy(
+                        isUnlocking = false,
+                        unlockError = error.message ?: "Could not create the vault key"
+                    )
+                }
+            }
+        }
+    }
+
+    private fun submitMasterPassword(password: String) {
+        if (_uiState.value.isUnlocking) return
+        _uiState.update { it.copy(isUnlocking = true, unlockError = null) }
+        viewModelScope.launch {
+            val opened = VaultKeyStore.unlock(password)
+            if (!opened) {
+                _uiState.update {
+                    it.copy(isUnlocking = false, unlockError = "Incorrect master password")
+                }
+                return@launch
+            }
+            val failed = onVaultOpened()
+            _uiState.update {
+                it.copy(
+                    isLocked = false,
+                    isUnlocking = false,
+                    unlockError = null,
+                    legacyFailures = failed
+                )
+            }
+            loadCredentials()
+        }
+    }
+
+    private fun unlockWithBiometric() {
+        if (_uiState.value.isUnlocking) return
+        if (!BiometricVaultKey.unwrapAfterAuth()) {
+            _uiState.update { it.copy(unlockError = "Biometric unlock failed. Use the master password.") }
+            return
+        }
+        _uiState.update { it.copy(isUnlocking = true, unlockError = null) }
+        viewModelScope.launch {
+            val failed = onVaultOpened()
+            _uiState.update {
+                it.copy(
+                    isLocked = false,
+                    isUnlocking = false,
+                    unlockError = null,
+                    legacyFailures = failed
+                )
+            }
+            loadCredentials()
         }
     }
 

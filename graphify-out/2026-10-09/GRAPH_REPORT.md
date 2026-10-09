@@ -1,34 +1,33 @@
-# Graph Report - vault  (2026-10-09)
+# Graph Report - vault  (2026-10-08)
 
 ## Corpus Check
-- 157 files · ~42,872 words
+- 140 files · ~41,819 words
 - Verdict: corpus is large enough that graph structure adds value.
 - Unclassified: 34 file(s) not represented in the graph (top: .xml 20, .properties 3, (none) 2)
 
 ## Summary
-- 1618 nodes · 3680 edges · 115 communities (54 shown, 61 thin omitted)
-- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 128 edges (avg confidence: 0.85)
+- 1494 nodes · 3473 edges · 113 communities (51 shown, 62 thin omitted)
+- Extraction: 97% EXTRACTED · 3% INFERRED · 0% AMBIGUOUS · INFERRED: 120 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Graph Freshness
-- Built from commit: `24deead2`
+- Built from commit: `0a3835ed`
 - Run `git rev-parse HEAD` and compare to check if the graph is stale.
 - Run `graphify update .` after code changes (no API cost).
 
 ## Community Hubs (Navigation)
-- java/com/example/domain/usecase/VaultUseCases.kt
+- java/com/example/presentation/vault/VaultViewModel.kt
 - VaultUiIntent
 - CredentialDao
 - ExampleRobolectricTest.kt
-- BiometricPromptManager.kt
-- java/com/example/presentation/navigation/VaultNavigation.kt
+- BiometricResult
 - CryptoManager
 - SyncPhase
 - CategoryDao
 - launch
 - java/com/example/core/designsystem/Neumorphism.kt
 - java/com/example/core/crypto/CryptoManager.kt
-- NeumorphicButton
+- GeneratorScreen
 - java/com/example/core/components/BrandIconWell.kt
 - SyncViewModel
 - VaultScreen
@@ -52,9 +51,9 @@
 - AppGraph
 - CredentialDao
 - java/com/example/MainActivity.kt
-- java/com/example/presentation/vault/VaultViewModel.kt
+- java/com/example/core/designsystem/Theme.kt
 - java/com/example/presentation/category/ManageCategoriesViewModel.kt
-- VaultRepositoryImpl
+- VaultDatabase.android.kt
 - CredentialEntity
 - VaultRepository
 - kotlin/com/example/presentation/category/ManageCategoriesViewModel.kt
@@ -62,12 +61,12 @@
 - VaultUiIntent
 - java/com/example/data/local/database/VaultDatabase.kt
 - VaultRepository
-- ByteArray
 - VaultSnapshot
 - VaultRepositoryImpl
 - kotlin/com/example/MainActivity.kt
 - CredentialBottomSheet
 - SyncPairingInfo
+- VaultRepositoryImpl
 - kotlin/com/example/presentation/generator/GeneratorViewModel.kt
 - GeneratorUiIntent
 - java/com/example/presentation/generator/GeneratorViewModel.kt
@@ -77,57 +76,58 @@
 - VaultApp
 - QrImageBitmap.desktop.kt
 - kotlin/com/example/data/local/database/VaultDatabase.kt
-- ByteArray
 - SyncUiIntent
-- CryptoEngine
+- AuthenticationCallback
 - SyncScreen
 - App.kt
 - SyncHostSession
+- ExampleUnitTest.kt
 - CryptoManager
-- BiometricVaultKey
 - SettingsScreen
-- BiometricUnlockResult
+- BiometricUnlock
 - ManageCategoriesScreen
 - VaultDestination
-- PlatformCapabilities.kt
+- QrImage
 - SyncQrCamera.android.kt
 - BiometricSettings
-- .start
+- SettingsScreen
 - kotlin/com/example/domain/model/Credential.kt
-- LegacyVaultCrypto
+- AuthenticationCallback
 - CredentialEntity
 - java/com/example/domain/model/Credential.kt
 - BiometricUnlock
 - QrImageBitmap.kt
-- BiometricVaultKey
-- GeneratorScreen
+- ClipboardHelper
+- SyncPairingTest.kt
 - AGENTS.md
 - currentTimeMillis
 - currentTimeMillis
 - BiometricSettings
-- LegacyVaultCrypto
-- MasterUnlockScreen
-- PasswordCard
-- SecureRandom.android.kt
+- QrCodec.android.kt
+- java/com/example/core/crypto/PasswordGenerator.kt
+- CredentialBottomSheet
+- .generate
+- .generate
+- VaultDatabase.desktop.kt
+- PasswordStrengthLevel
+- BarcodeCallback
+- PasswordStrengthLevel
+- BiometricPromptManager
 - SyncEnvelope
-- VaultKeyIo
-- SecureRandom.desktop.kt
-- SyncEnvelope
-- MasterUnlockScreen
 - SyncQrCamera
 - SyncQrCamera.desktop.kt
 
 ## God Nodes (most connected - your core abstractions)
-1. `SyncViewModel` - 27 edges
-2. `VaultRepositoryImpl` - 26 edges
+1. `VaultRepositoryImpl` - 24 edges
+2. `SyncViewModel` - 24 edges
 3. `VaultRepositoryImpl` - 23 edges
 4. `AppGraph` - 23 edges
-5. `VaultViewModel` - 22 edges
-6. `SyncPairingInfo` - 20 edges
-7. `VaultSnapshot` - 19 edges
-8. `VaultApp()` - 19 edges
-9. `VaultViewModel` - 18 edges
-10. `VaultUiIntent` - 18 edges
+5. `VaultApp()` - 19 edges
+6. `VaultViewModel` - 18 edges
+7. `VaultViewModel` - 18 edges
+8. `VaultUiIntent` - 17 edges
+9. `VaultSnapshot` - 17 edges
+10. `VaultRepository` - 16 edges
 
 ## Surprising Connections (you probably didn't know these)
 - `Credential` --semantically_similar_to--> `Credentials`  [INFERRED] [semantically similar]
@@ -157,31 +157,27 @@
 - **Round Launcher Visual System** — app_src_main_res_mipmap_xhdpi_ic_launcher_round_round_launcher_icon, app_src_main_res_mipmap_xhdpi_ic_launcher_round_android_robot_head, app_src_main_res_mipmap_xhdpi_ic_launcher_round_green_grid_background, app_src_main_res_mipmap_xhdpi_ic_launcher_round_material_long_shadow [INFERRED 0.85]
 - **Vault security model** — readme_encryption, readme_cryptomanager, readme_android_keystore, readme_aes_gcm, readme_master_unlock, readme_biometrics [INFERRED 0.85]
 
-## Communities (115 total, 61 thin omitted)
+## Communities (113 total, 62 thin omitted)
 
-### Community 0 - "java/com/example/domain/usecase/VaultUseCases.kt"
-Cohesion: 0.07
-Nodes (11): VaultTheme(), AddCategoryUseCase, DeleteCategoryUseCase, DeleteCredentialUseCase, GeneratePasswordUseCase, GetVaultCredentialsUseCase, ObserveCategoriesUseCase, RenameCategoryUseCase (+3 more)
+### Community 0 - "java/com/example/presentation/vault/VaultViewModel.kt"
+Cohesion: 0.08
+Nodes (10): AddCategoryUseCase, DeleteCategoryUseCase, DeleteCredentialUseCase, GeneratePasswordUseCase, GetVaultCredentialsUseCase, ObserveCategoriesUseCase, RenameCategoryUseCase, SaveCredentialUseCase (+2 more)
 
 ### Community 1 - "VaultUiIntent"
 Cohesion: 0.12
 Nodes (18): CloseBottomSheet, CloseCategorySheet, CopyPassword, CopyUsername, CreateCategory, DeleteCredential, LockVault, OpenCreate (+10 more)
 
-### Community 3 - "ExampleRobolectricTest.kt"
-Cohesion: 0.05
-Nodes (7): ExampleRobolectricTest, VaultCoreUnitTest, base64UrlToBytes(), bytesToBase64Url(), SyncEnvelope, CryptoEngineTest, SyncPairingTest
-
-### Community 4 - "BiometricPromptManager.kt"
-Cohesion: 0.07
-Nodes (11): AuthenticationError, AuthenticationFailed, AuthenticationSuccess, BiometricPromptManager, AuthenticationCallback, BiometricResult, FeatureUnavailable, HardwareUnavailable (+3 more)
+### Community 4 - "BiometricResult"
+Cohesion: 0.25
+Nodes (7): AuthenticationError, AuthenticationFailed, AuthenticationSuccess, BiometricResult, FeatureUnavailable, HardwareUnavailable, NoneEnrolled
 
 ### Community 6 - "CryptoManager"
 Cohesion: 0.06
 Nodes (42): Credential, CredentialBottomSheet, CryptoManager, MainActivity, MasterUnlockScreen, PasswordGenerator, SecurityReport, SettingsScreen (+34 more)
 
 ### Community 7 - "SyncPhase"
-Cohesion: 0.29
-Nodes (7): AwaitingAuth, Done, Error, Hosting, Idle, SyncPhase, Transferring
+Cohesion: 0.18
+Nodes (12): AwaitingAuth, Done, Error, Hosting, Idle, SelectMode, SyncPhase, SyncTransportMode (+4 more)
 
 ### Community 9 - "launch"
 Cohesion: 0.12
@@ -192,28 +188,32 @@ Cohesion: 0.24
 Nodes (6): neuClickable(), neuFlat(), neuPressed(), neuClickable(), neuFlat(), neuPressed()
 
 ### Community 11 - "java/com/example/core/crypto/CryptoManager.kt"
-Cohesion: 0.20
-Nodes (4): base64Decode(), base64Encode(), base64Decode(), base64Encode()
+Cohesion: 0.06
+Nodes (7): CryptoManager, CryptoManager, secureRandomBytes(), SyncEnvelope, CryptoManager, secureRandomBytes(), SyncEnvelope
 
-### Community 12 - "NeumorphicButton"
-Cohesion: 0.32
-Nodes (3): NeumorphicButton(), TactileSlider(), TactileToggleSwitch()
+### Community 12 - "GeneratorScreen"
+Cohesion: 0.21
+Nodes (5): NeumorphicButton(), TactileSlider(), TactileToggleSwitch(), AttributeRow(), GeneratorScreen()
 
 ### Community 13 - "java/com/example/core/components/BrandIconWell.kt"
 Cohesion: 0.11
 Nodes (16): AppleLogo(), BrandIconWell(), FigmaLogo(), GitHubLogo(), GoogleLogo(), SlackLogo(), SpotifyLogo(), NotchedCapsuleShape (+8 more)
 
+### Community 14 - "SyncViewModel"
+Cohesion: 0.11
+Nodes (6): BiometricUnlock, BiometricUnlockResult, Error, Success, Unavailable, SyncViewModel
+
 ### Community 15 - "VaultScreen"
-Cohesion: 0.32
-Nodes (3): CategoryPillStrip(), NeumorphicSearchBar(), VaultScreen()
+Cohesion: 0.20
+Nodes (4): CategoryPillStrip(), NeumorphicSearchBar(), PasswordCard(), VaultScreen()
 
 ### Community 16 - "SyncTransport.desktop.kt"
 Cohesion: 0.09
-Nodes (4): exchangeSnapshot(), SyncRejectedException, toHex(), SyncClient
+Nodes (6): SyncClient, toHex(), localLanAddresses(), SyncClient, SyncHost, toHex()
 
 ### Community 18 - "VaultApp"
-Cohesion: 0.22
-Nodes (3): selectTopLevelTab(), VaultApp(), VaultBottomNavigationBar()
+Cohesion: 0.16
+Nodes (4): selectTopLevelTab(), VaultApp(), VaultBottomNavigationBar(), MasterUnlockScreen()
 
 ### Community 20 - "java/com/example/presentation/navigation/VaultRoutes.kt"
 Cohesion: 0.67
@@ -260,48 +260,40 @@ Cohesion: 0.50
 Nodes (5): Android Robot Head, Green Grid Background, Material Design Long Shadow, mipmap-xhdpi Launcher Asset, Round Android Launcher Icon
 
 ### Community 32 - "newSyncId"
-Cohesion: 0.24
-Nodes (3): secureRandomBytes(), newSyncId(), CategoryEntity
+Cohesion: 0.17
+Nodes (5): currentTimeMillis(), secureRandomBytes(), newSyncId(), CategoryEntity, InitialSeed
 
 ### Community 33 - "AppGraph"
 Cohesion: 0.13
 Nodes (11): AppGraph, BuildVaultSnapshotUseCase, MergeVaultSnapshotUseCase, AddCategoryUseCase, DeleteCategoryUseCase, DeleteCredentialUseCase, GeneratePasswordUseCase, GetVaultCredentialsUseCase (+3 more)
 
-### Community 40 - "java/com/example/presentation/category/ManageCategoriesViewModel.kt"
-Cohesion: 0.14
-Nodes (8): CloseSheet, DeleteCategory, ManageCategoriesUiIntent, ManageCategoriesUiState, ManageCategoriesViewModel, OpenCreate, OpenRename, SaveCategory
+### Community 39 - "java/com/example/core/designsystem/Theme.kt"
+Cohesion: 0.13
+Nodes (3): VaultTheme(), MyApplicationTheme(), VaultTheme()
 
-### Community 41 - "VaultRepositoryImpl"
-Cohesion: 0.22
-Nodes (3): currentTimeMillis(), InitialSeed, VaultRepositoryImpl
+### Community 40 - "java/com/example/presentation/category/ManageCategoriesViewModel.kt"
+Cohesion: 0.15
+Nodes (8): CloseSheet, DeleteCategory, ManageCategoriesUiIntent, ManageCategoriesUiState, ManageCategoriesViewModel, OpenCreate, OpenRename, SaveCategory
 
 ### Community 44 - "kotlin/com/example/presentation/category/ManageCategoriesViewModel.kt"
 Cohesion: 0.15
 Nodes (8): CloseSheet, DeleteCategory, ManageCategoriesUiIntent, ManageCategoriesUiState, ManageCategoriesViewModel, OpenCreate, OpenRename, SaveCategory
 
-### Community 45 - "VaultViewModel"
-Cohesion: 0.08
-Nodes (6): BiometricVaultKey, base64Decode(), base64Encode(), VaultKeyStore, WrapRecord, VaultViewModel
-
 ### Community 46 - "VaultUiIntent"
-Cohesion: 0.11
-Nodes (19): CloseBottomSheet, CloseCategorySheet, CopyPassword, CopyUsername, CreateCategory, CreateMasterPassword, DeleteCredential, LockVault (+11 more)
-
-### Community 47 - "java/com/example/data/local/database/VaultDatabase.kt"
-Cohesion: 0.08
-Nodes (7): VaultDatabase, bindVaultDatabaseContext(), createVaultDatabaseBuilder(), LegacyVaultCrypto, VaultKeyIo, vaultDir(), createVaultDatabaseBuilder()
+Cohesion: 0.12
+Nodes (17): CloseBottomSheet, CloseCategorySheet, CopyPassword, CopyUsername, CreateCategory, DeleteCredential, LockVault, OpenCreate (+9 more)
 
 ### Community 51 - "VaultSnapshot"
-Cohesion: 0.26
-Nodes (7): SyncClient, SyncExchangeResult, CategorySnapshot, CredentialSnapshot, MergeResult, VaultSnapshot, SyncUiState
+Cohesion: 0.29
+Nodes (6): SyncClient, SyncExchangeResult, CategorySnapshot, CredentialSnapshot, MergeResult, VaultSnapshot
 
 ### Community 54 - "CredentialBottomSheet"
-Cohesion: 0.06
-Nodes (23): GeneratedSecret, GeneratorConfig, PasswordGenerator, PasswordStrengthLevel, FAIR, STRONG, VERY_STRONG, WEAK (+15 more)
+Cohesion: 0.29
+Nodes (4): GeneratorConfig, CredentialBottomSheet(), sheetFieldWell(), sheetIconButton()
 
 ### Community 55 - "SyncPairingInfo"
-Cohesion: 0.20
-Nodes (3): SyncClient, ClipboardHelper, SyncPairingInfo
+Cohesion: 0.19
+Nodes (3): base64UrlToBytes(), bytesToBase64Url(), SyncPairingInfo
 
 ### Community 58 - "GeneratorUiIntent"
 Cohesion: 0.20
@@ -321,47 +313,35 @@ Nodes (9): CopyPassword, GeneratorUiIntent, GeneratorUiState, Regenerate, Toggle
 
 ### Community 63 - "VaultApp"
 Cohesion: 0.15
-Nodes (6): selectTopLevelTab(), stackDepth(), VaultApp(), VaultBottomNavigationBar(), MetricItem(), SettingsScreen()
+Nodes (5): selectTopLevelTab(), stackDepth(), VaultApp(), VaultBottomNavigationBar(), MasterUnlockScreen()
 
 ### Community 65 - "kotlin/com/example/data/local/database/VaultDatabase.kt"
 Cohesion: 0.20
 Nodes (4): createVaultDatabase(), createVaultDatabaseBuilder(), VaultDatabase, VaultDatabaseConstructor
 
 ### Community 67 - "SyncUiIntent"
-Cohesion: 0.14
-Nodes (14): AuthCancelled, BackToIdle, ConfirmAuthAndSync, ConnectWithManualUri, DismissPinFallback, ManualUriChanged, PinChanged, QrScanned (+6 more)
+Cohesion: 0.15
+Nodes (13): AuthCancelled, BackToIdle, ConfirmAuthAndSync, ConnectWithManualUri, DismissPinFallback, ManualUriChanged, PinChanged, QrScanned (+5 more)
 
 ### Community 69 - "SyncScreen"
-Cohesion: 0.50
-Nodes (7): ActionButton(), HostContent(), ManualUriField(), PhaseBanner(), PinFallbackCard(), ScanContent(), SyncScreen()
+Cohesion: 0.35
+Nodes (11): ActionButton(), InstructionCard(), ManualUriField(), ModeHeader(), ModePicker(), PhaseBanner(), PinFallbackCard(), QrModeContent() (+3 more)
+
+### Community 70 - "App.kt"
+Cohesion: 0.11
+Nodes (5): platformCapabilities(), App(), PlatformCapabilities, platformCapabilities(), main()
 
 ### Community 71 - "SyncHostSession"
-Cohesion: 0.22
+Cohesion: 0.29
 Nodes (3): SyncHost, SyncHost, SyncHostSession
-
-### Community 73 - "BiometricVaultKey"
-Cohesion: 0.11
-Nodes (5): BiometricVaultKey, VaultFiles, VaultKeyIo, CryptoManager, VaultSession
-
-### Community 75 - "BiometricUnlockResult"
-Cohesion: 0.25
-Nodes (5): BiometricUnlock, BiometricUnlockResult, Error, Success, Unavailable
 
 ### Community 77 - "VaultDestination"
 Cohesion: 0.52
 Nodes (6): CategoriesRoute, GeneratorRoute, SettingsRoute, SyncRoute, VaultDestination, VaultRoute
 
-### Community 79 - "PlatformCapabilities.kt"
-Cohesion: 0.29
-Nodes (3): platformCapabilities(), PlatformCapabilities, platformCapabilities()
-
-### Community 80 - "SyncQrCamera.android.kt"
-Cohesion: 0.07
-Nodes (7): QrCodec, ScannerRef, SyncQrCamera(), BarcodeCallback, QrCodec, QrImage, QrCodec
-
-### Community 83 - ".start"
-Cohesion: 0.38
-Nodes (3): localLanAddresses(), SyncHost, toHex()
+### Community 79 - "QrImage"
+Cohesion: 0.25
+Nodes (3): QrCodec, QrCodec, QrImage
 
 ### Community 84 - "kotlin/com/example/domain/model/Credential.kt"
 Cohesion: 0.40
@@ -371,29 +351,37 @@ Nodes (3): Credential, SecurityReport, VaultCategory
 Cohesion: 0.50
 Nodes (3): Credential, SecurityReport, VaultCategory
 
-### Community 99 - "MasterUnlockScreen"
-Cohesion: 0.60
-Nodes (3): MasterUnlockScreen(), PasswordField(), UnlockButton()
+### Community 100 - "CredentialBottomSheet"
+Cohesion: 0.33
+Nodes (3): CredentialBottomSheet(), sheetFieldWell(), sheetIconButton()
+
+### Community 104 - "PasswordStrengthLevel"
+Cohesion: 0.40
+Nodes (5): PasswordStrengthLevel, FAIR, STRONG, VERY_STRONG, WEAK
+
+### Community 106 - "PasswordStrengthLevel"
+Cohesion: 0.40
+Nodes (5): PasswordStrengthLevel, FAIR, STRONG, VERY_STRONG, WEAK
 
 ## Knowledge Gaps
-- **132 isolated node(s):** `HardwareUnavailable`, `FeatureUnavailable`, `NoneEnrolled`, `AuthenticationSuccess`, `AuthenticationFailed` (+127 more)
-  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 372 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
-- **61 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **131 isolated node(s):** `HardwareUnavailable`, `FeatureUnavailable`, `NoneEnrolled`, `AuthenticationSuccess`, `AuthenticationFailed` (+126 more)
+  These have ≤1 connection - possible missing edges or undocumented components. (Counts symbols only; 330 node(s) total have ≤1 connection when file, concept and rationale nodes are included.)
+- **62 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `AppGraph` connect `AppGraph` to `kotlin/com/example/data/local/database/VaultDatabase.kt`, `java/com/example/MainActivity.kt`, `App.kt`, `VaultRepositoryImpl`, `kotlin/com/example/presentation/category/ManageCategoriesViewModel.kt`, `VaultViewModel`, `SyncViewModel`, `kotlin/com/example/MainActivity.kt`, `kotlin/com/example/presentation/generator/GeneratorViewModel.kt`?**
-  _High betweenness centrality (0.077) - this node is a cross-community bridge._
-- **Why does `SyncViewModel` connect `SyncViewModel` to `AppGraph`, `SyncScreen`, `java/com/example/presentation/navigation/VaultNavigation.kt`, `java/com/example/MainActivity.kt`, `VaultSnapshot`, `SyncPairingInfo`, `VaultApp`?**
-  _High betweenness centrality (0.051) - this node is a cross-community bridge._
-- **Why does `VaultCryptoException` connect `ByteArray` to `BiometricVaultKey`, `ByteArray`, `kotlin/com/example/data/repository/VaultRepositoryImpl.kt`?**
-  _High betweenness centrality (0.041) - this node is a cross-community bridge._
+- **Why does `AppGraph` connect `AppGraph` to `kotlin/com/example/data/local/database/VaultDatabase.kt`, `java/com/example/MainActivity.kt`, `App.kt`, `kotlin/com/example/presentation/category/ManageCategoriesViewModel.kt`, `VaultViewModel`, `SyncViewModel`, `kotlin/com/example/MainActivity.kt`, `VaultRepositoryImpl`, `kotlin/com/example/presentation/generator/GeneratorViewModel.kt`?**
+  _High betweenness centrality (0.086) - this node is a cross-community bridge._
+- **Why does `SyncViewModel` connect `SyncViewModel` to `AppGraph`, `SyncScreen`, `java/com/example/MainActivity.kt`, `SyncPhase`, `java/com/example/presentation/navigation/VaultNavigation.kt`, `SyncPairingInfo`, `VaultApp`?**
+  _High betweenness centrality (0.082) - this node is a cross-community bridge._
+- **Why does `SyncPairingInfo` connect `SyncPairingInfo` to `newSyncId`, `SyncHostSession`, `SyncViewModel`, `SyncTransport.desktop.kt`, `VaultSnapshot`?**
+  _High betweenness centrality (0.047) - this node is a cross-community bridge._
 - **What connects `HardwareUnavailable`, `FeatureUnavailable`, `NoneEnrolled` to the rest of the system?**
-  _132 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `java/com/example/domain/usecase/VaultUseCases.kt` be split into smaller, more focused modules?**
-  _Cohesion score 0.07272727272727272 - nodes in this community are weakly interconnected._
+  _131 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `java/com/example/presentation/vault/VaultViewModel.kt` be split into smaller, more focused modules?**
+  _Cohesion score 0.08019323671497584 - nodes in this community are weakly interconnected._
 - **Should `VaultUiIntent` be split into smaller, more focused modules?**
   _Cohesion score 0.11578947368421053 - nodes in this community are weakly interconnected._
-- **Should `ExampleRobolectricTest.kt` be split into smaller, more focused modules?**
-  _Cohesion score 0.054426705370101594 - nodes in this community are weakly interconnected._
+- **Should `java/com/example/presentation/credential/CredentialBottomSheet.kt` be split into smaller, more focused modules?**
+  _Cohesion score 0.07937285644292014 - nodes in this community are weakly interconnected._

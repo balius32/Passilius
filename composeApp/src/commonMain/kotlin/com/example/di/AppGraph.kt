@@ -18,10 +18,6 @@ import com.example.presentation.category.ManageCategoriesViewModel
 import com.example.presentation.generator.GeneratorViewModel
 import com.example.presentation.sync.SyncViewModel
 import com.example.presentation.vault.VaultViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 
 class AppGraph private constructor() {
     private val database = createVaultDatabase()
@@ -46,7 +42,12 @@ class AppGraph private constructor() {
         saveCredentialUseCase = saveCredentialUseCase,
         deleteCredentialUseCase = deleteCredentialUseCase,
         observeCategoriesUseCase = observeCategoriesUseCase,
-        addCategoryUseCase = addCategoryUseCase
+        addCategoryUseCase = addCategoryUseCase,
+        onVaultOpened = {
+            val failed = repository.migrateLegacySecrets()
+            repository.seedInitialDataIfEmpty()
+            failed
+        }
     )
 
     val manageCategoriesViewModel = ManageCategoriesViewModel(
@@ -64,15 +65,8 @@ class AppGraph private constructor() {
         buildSnapshot = buildVaultSnapshotUseCase,
         mergeSnapshot = mergeVaultSnapshotUseCase,
         syncHost = SyncHost(),
-        syncClient = SyncClient(),
-        masterPinProvider = { vaultViewModel.uiState.value.masterPin }
+        syncClient = SyncClient()
     )
-
-    init {
-        CoroutineScope(SupervisorJob() + Dispatchers.Default).launch {
-            repository.seedInitialDataIfEmpty()
-        }
-    }
 
     companion object {
         fun create(): AppGraph = AppGraph()

@@ -7,6 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.example.core.biometric.BiometricSettings
+import com.example.core.crypto.VaultFiles
 import com.example.core.biometric.BiometricUnlock
 import com.example.core.util.ClipboardHelper
 import com.example.data.local.database.bindVaultDatabaseContext
@@ -24,6 +25,7 @@ class MainActivity : AppCompatActivity() {
         )
 
         bindVaultDatabaseContext(applicationContext)
+        VaultFiles.bind(applicationContext)
         ClipboardHelper.bind(applicationContext)
         BiometricUnlock.bind(this)
         BiometricSettings.bind(applicationContext)

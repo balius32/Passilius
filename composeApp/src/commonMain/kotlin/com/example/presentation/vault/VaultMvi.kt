@@ -16,8 +16,11 @@ data class VaultUiState(
     /** Bumped on every open so Compose remounts a fresh ModalBottomSheet. */
     val bottomSheetSessionId: Long = 0L,
     val categorySheetSessionId: Long = 0L,
-    val isLocked: Boolean = false,
-    val masterPin: String = "1234"
+    val isLocked: Boolean = true,
+    val needsMasterSetup: Boolean = false,
+    val unlockError: String? = null,
+    val isUnlocking: Boolean = false,
+    val legacyFailures: Int = 0
 )
 
 sealed interface VaultUiIntent {
@@ -35,5 +38,7 @@ sealed interface VaultUiIntent {
     object CloseCategorySheet : VaultUiIntent
     data class CreateCategory(val name: String) : VaultUiIntent
     object LockVault : VaultUiIntent
-    object UnlockVault : VaultUiIntent
+    data class CreateMasterPassword(val password: String, val confirm: String) : VaultUiIntent
+    data class SubmitMasterPassword(val password: String) : VaultUiIntent
+    object UnlockWithBiometric : VaultUiIntent
 }
