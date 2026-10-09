@@ -1,7 +1,8 @@
 package com.example.core.biometric
 
+import android.os.Build
 import androidx.biometric.BiometricManager
-import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_STRONG
+import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK
 import androidx.biometric.BiometricManager.Authenticators.DEVICE_CREDENTIAL
 import androidx.biometric.BiometricPrompt
 import androidx.core.content.ContextCompat
@@ -19,8 +20,7 @@ actual object BiometricUnlock {
     actual fun isAvailable(): Boolean {
         val activity = hostActivity ?: return false
         val manager = BiometricManager.from(activity)
-        return manager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL) ==
-            BiometricManager.BIOMETRIC_SUCCESS
+        return manager.canAuthenticate(authenticators()) == BiometricManager.BIOMETRIC_SUCCESS
     }
 
     actual fun authenticate(
@@ -35,12 +35,9 @@ actual object BiometricUnlock {
         }
 
         val manager = BiometricManager.from(activity)
-        when (manager.canAuthenticate(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)) {
-            BiometricManager.BIOMETRIC_SUCCESS -> Unit
-            else -> {
-                onResult(BiometricUnlockResult.Unavailable)
-                return
-            }
+        if (manager.canAuthenticate(authenticators()) != BiometricManager.BIOMETRIC_SUCCESS) {
+            onResult(BiometricUnlockResult.Unavailable)
+            return
         }
 
         val executor = ContextCompat.getMainExecutor(activity)
@@ -55,11 +52,17 @@ actual object BiometricUnlock {
                 }
 
                 override fun onAuthenticationError(errorCode: Int, errString: CharSequence) {
-                    onResult(BiometricUnlockResult.Error(errString.toString()))
+                    val canceled = errorCode == BiometricPrompt.ERROR_USER_CANCELED ||
+                        errorCode == BiometricPrompt.ERROR_CANCELED ||
+                        errorCode == BiometricPrompt.ERROR_NEGATIVE_BUTTON
+                    onResult(
+                        if (canceled) BiometricUnlockResult.Error("")
+                        else BiometricUnlockResult.Error(errString.toString())
+                    )
                 }
 
                 override fun onAuthenticationFailed() {
-                    // Keep waiting for another attempt.
+                    // Keep the system prompt open for another attempt.
                 }
             }
         )
@@ -67,9 +70,30 @@ actual object BiometricUnlock {
         val info = BiometricPrompt.PromptInfo.Builder()
             .setTitle(title)
             .setSubtitle(subtitle)
-            .setAllowedAuthenticators(BIOMETRIC_STRONG or DEVICE_CREDENTIAL)
+            .setAllowedAuthenticators(authenticators())
+            .apply {
+                // Device credential cannot share a negative button, and that
+                // combination is only valid from API 30.
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                    setNegativeButtonText("Cancel")
+                }
+            }
             .build()
 
-        prompt.authenticate(info)
+        try {
+            prompt.authenticate(info)
+        } catch (error: IllegalArgumentException) {
+            onResult(BiometricUnlockResult.Error(error.message ?: "Biometrics unavailable"))
+        } catch (error: IllegalStateException) {
+            onResult(BiometricUnlockResult.Error(error.message ?: "Biometrics unavailable"))
+        }
+    }
+
+    private fun authenticators(): Int {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            BIOMETRIC_WEAK or DEVICE_CREDENTIAL
+        } else {
+            BIOMETRIC_WEAK
+        }
     }
 }

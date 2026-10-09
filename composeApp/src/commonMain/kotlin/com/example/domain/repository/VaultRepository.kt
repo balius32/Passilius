@@ -16,7 +16,6 @@ interface VaultRepository {
     suspend fun listCategories(): List<VaultCategory>
     suspend fun saveCredential(credential: Credential): Long
     suspend fun deleteCredential(id: Long)
-    suspend fun toggleFavorite(id: Long, isFavorite: Boolean)
     suspend fun getSecurityReport(): SecurityReport
     suspend fun seedInitialDataIfEmpty()
     suspend fun mergeSnapshot(snapshot: VaultSnapshot): MergeResult

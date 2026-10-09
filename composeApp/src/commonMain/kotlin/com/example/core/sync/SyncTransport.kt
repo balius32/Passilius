@@ -16,6 +16,7 @@ data class SyncExchangeResult(
 
 expect class SyncHost() {
     val isSupported: Boolean
+    fun lanAddresses(): List<String>
     suspend fun start(
         onIncoming: suspend (VaultSnapshot) -> Pair<MergeResult, VaultSnapshot>
     ): SyncHostSession

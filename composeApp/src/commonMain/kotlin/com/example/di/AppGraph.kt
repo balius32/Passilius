@@ -14,7 +14,6 @@ import com.example.domain.usecase.MergeVaultSnapshotUseCase
 import com.example.domain.usecase.ObserveCategoriesUseCase
 import com.example.domain.usecase.RenameCategoryUseCase
 import com.example.domain.usecase.SaveCredentialUseCase
-import com.example.domain.usecase.ToggleFavoriteUseCase
 import com.example.presentation.category.ManageCategoriesViewModel
 import com.example.presentation.generator.GeneratorViewModel
 import com.example.presentation.sync.SyncViewModel
@@ -34,7 +33,6 @@ class AppGraph private constructor() {
     private val getCredentialsUseCase = GetVaultCredentialsUseCase(repository)
     private val saveCredentialUseCase = SaveCredentialUseCase(repository)
     private val deleteCredentialUseCase = DeleteCredentialUseCase(repository)
-    private val toggleFavoriteUseCase = ToggleFavoriteUseCase(repository)
     private val observeCategoriesUseCase = ObserveCategoriesUseCase(repository)
     private val addCategoryUseCase = AddCategoryUseCase(repository)
     private val renameCategoryUseCase = RenameCategoryUseCase(repository)
@@ -47,7 +45,6 @@ class AppGraph private constructor() {
         getVaultCredentialsUseCase = getCredentialsUseCase,
         saveCredentialUseCase = saveCredentialUseCase,
         deleteCredentialUseCase = deleteCredentialUseCase,
-        toggleFavoriteUseCase = toggleFavoriteUseCase,
         observeCategoriesUseCase = observeCategoriesUseCase,
         addCategoryUseCase = addCategoryUseCase
     )

@@ -49,6 +49,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
@@ -84,6 +85,12 @@ private const val ProfileTransitionDurationMs = 320
 
 private val FabSize = 56.dp
 private val FabHitSize = 80.dp
+
+private fun stackDepth(destination: VaultDestination?): Int = when (destination) {
+    CategoriesRoute, SyncRoute -> 2
+    SettingsRoute -> 1
+    else -> 0
+}
 
 private fun selectTopLevelTab(
     backStack: MutableList<VaultDestination>,
@@ -138,20 +145,34 @@ fun VaultApp(
                     AnimatedContent(
                         targetState = currentKey,
                         transitionSpec = {
-                            val forward = targetState == SettingsRoute ||
-                                targetState == CategoriesRoute ||
-                                targetState == SyncRoute
-                            if (forward) {
-                                slideInHorizontally(
-                                    initialOffsetX = { it },
-                                    animationSpec = tween(ProfileTransitionDurationMs)
-                                ) togetherWith slideOutHorizontally(
-                                    targetOffsetX = { -it / 4 },
-                                    animationSpec = tween(ProfileTransitionDurationMs)
-                                )
-                            } else {
-                                fadeIn(animationSpec = tween(120)) togetherWith
-                                    fadeOut(animationSpec = tween(120))
+                            val fromDepth = stackDepth(initialState)
+                            val toDepth = stackDepth(targetState)
+                            val slide = tween<IntOffset>(ProfileTransitionDurationMs)
+                            when {
+                                toDepth > fromDepth -> {
+                                    slideInHorizontally(
+                                        animationSpec = slide,
+                                        initialOffsetX = { it }
+                                    ) togetherWith slideOutHorizontally(
+                                        animationSpec = slide,
+                                        targetOffsetX = { -it / 4 }
+                                    )
+                                }
+                                toDepth < fromDepth -> {
+                                    slideInHorizontally(
+                                        animationSpec = slide,
+                                        initialOffsetX = { -it / 4 }
+                                    ) togetherWith slideOutHorizontally(
+                                        animationSpec = slide,
+                                        targetOffsetX = { it }
+                                    )
+                                }
+                                else -> {
+                                    fadeIn(animationSpec = tween(120)) togetherWith
+                                        fadeOut(animationSpec = tween(120))
+                                }
+                            }.apply {
+                                targetContentZIndex = toDepth.toFloat()
                             }
                         },
                         label = "vault_nav"

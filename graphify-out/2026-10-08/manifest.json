@@ -449,6 +449,12 @@
     "ast_hash": "e0b55122aeb1101f7ab83e3f671af7c3",
     "semantic_hash": ""
   },
+  "composeApp/src/androidMain/kotlin/com/example/presentation/sync/SyncQrScanner.android.kt": {
+    "mtime": 1791378082.8403,
+    "seen": 1791379123.1707404,
+    "ast_hash": "f7c2bd2e7aa03f39c73f35e47efb0c15",
+    "semantic_hash": ""
+  },
   "composeApp/src/commonMain/kotlin/com/example/App.kt": {
     "mtime": 1791378134.799787,
     "seen": 1791379123.1707404,
@@ -731,10 +737,16 @@
     "ast_hash": "a7d29bd4cd42cbf721c7981d5bf0032b",
     "semantic_hash": ""
   },
+  "composeApp/src/commonMain/kotlin/com/example/presentation/sync/SyncQrScanner.kt": {
+    "mtime": 1791378081.6217563,
+    "seen": 1791379123.1707404,
+    "ast_hash": "a0bfeba5e5854a816ae8791468e97247",
+    "semantic_hash": ""
+  },
   "composeApp/src/commonMain/kotlin/com/example/presentation/sync/SyncScreen.kt": {
-    "mtime": 1791484134.3378093,
-    "seen": 1791484565.0145361,
-    "ast_hash": "15dec20b098b0b068c803d8b06379624",
+    "mtime": 1791379113.1535277,
+    "seen": 1791379123.1707404,
+    "ast_hash": "1f8c673c3bdb7a2b7208fdd5f4a1328f",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/sync/SyncViewModel.kt": {
@@ -839,6 +851,12 @@
     "ast_hash": "a64ef578afb9b256ab9ba1e6177350ea",
     "semantic_hash": ""
   },
+  "composeApp/src/desktopMain/kotlin/com/example/presentation/sync/SyncQrScanner.desktop.kt": {
+    "mtime": 1791378083.2759292,
+    "seen": 1791379123.1707404,
+    "ast_hash": "6842ec5daf1978eb5b1c7a81c3a7d0a1",
+    "semantic_hash": ""
+  },
   "composeApp/src/desktopTest/kotlin/com/example/domain/sync/SyncPairingTest.kt": {
     "mtime": 1791379031.1439984,
     "seen": 1791379123.1707404,
@@ -939,24 +957,6 @@
     "mtime": 1791482121.156689,
     "seen": 1791482184.9262478,
     "ast_hash": "ffebe2110d865a5ff2b59e293b9608b2",
-    "semantic_hash": ""
-  },
-  "composeApp/src/androidMain/kotlin/com/example/presentation/sync/SyncQrCamera.android.kt": {
-    "mtime": 1791484487.4379916,
-    "seen": 1791484565.0145361,
-    "ast_hash": "cb18b3f802b4273825bc82382af15ea9",
-    "semantic_hash": ""
-  },
-  "composeApp/src/commonMain/kotlin/com/example/presentation/sync/SyncQrCamera.kt": {
-    "mtime": 1791484123.1741018,
-    "seen": 1791484565.0145361,
-    "ast_hash": "f91c0e43f89c1eed3631780fd6d30410",
-    "semantic_hash": ""
-  },
-  "composeApp/src/desktopMain/kotlin/com/example/presentation/sync/SyncQrCamera.desktop.kt": {
-    "mtime": 1791484123.1741018,
-    "seen": 1791484565.0145361,
-    "ast_hash": "a2faa2c72528d8d5fced563f9552f15f",
     "semantic_hash": ""
   }
 }

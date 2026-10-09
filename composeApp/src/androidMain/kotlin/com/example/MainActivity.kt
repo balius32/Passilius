@@ -5,13 +5,14 @@ import android.os.Bundle
 import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.fragment.app.FragmentActivity
+import androidx.appcompat.app.AppCompatActivity
+import com.example.core.biometric.BiometricSettings
 import com.example.core.biometric.BiometricUnlock
 import com.example.core.util.ClipboardHelper
 import com.example.data.local.database.bindVaultDatabaseContext
 import com.example.di.AppGraph
 
-class MainActivity : FragmentActivity() {
+class MainActivity : AppCompatActivity() {
 
     private lateinit var appGraph: AppGraph
 
@@ -25,6 +26,7 @@ class MainActivity : FragmentActivity() {
         bindVaultDatabaseContext(applicationContext)
         ClipboardHelper.bind(applicationContext)
         BiometricUnlock.bind(this)
+        BiometricSettings.bind(applicationContext)
 
         appGraph = AppGraph.create()
 

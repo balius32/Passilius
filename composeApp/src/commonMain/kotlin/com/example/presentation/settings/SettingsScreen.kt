@@ -42,6 +42,9 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.core.biometric.BiometricSettings
+import com.example.core.biometric.BiometricUnlock
+import com.example.core.biometric.BiometricUnlockResult
 import com.example.core.components.TactileToggleSwitch
 import com.example.core.designsystem.ElectricPrimaryBright
 import com.example.core.designsystem.OnPrimary
@@ -65,7 +68,8 @@ fun SettingsScreen(
     modifier: Modifier = Modifier
 ) {
     val supportsBiometrics = LocalPlatformCapabilities.current.supportsBiometricUnlock
-    var biometricEnabled by remember { mutableStateOf(supportsBiometrics) }
+    var biometricEnabled by remember { mutableStateOf(BiometricSettings.isUnlockEnabled()) }
+    var biometricMessage by remember { mutableStateOf<String?>(null) }
     var autoClearClipboard by remember { mutableStateOf(true) }
     val contentPadding = rememberScreenContentPadding(bottom = 60.dp)
 
@@ -240,11 +244,47 @@ fun SettingsScreen(
                                             color = SecondarySlate,
                                             fontSize = 11.sp
                                         )
+                                        if (!biometricMessage.isNullOrBlank()) {
+                                            Text(
+                                                text = biometricMessage.orEmpty(),
+                                                style = VaultTypography.bodySmall,
+                                                color = Color(0xFFBA1A1A),
+                                                fontSize = 11.sp
+                                            )
+                                        }
                                     }
                                 }
                                 TactileToggleSwitch(
                                     checked = biometricEnabled,
-                                    onCheckedChange = { biometricEnabled = it }
+                                    onCheckedChange = { enabled ->
+                                        if (enabled) {
+                                            BiometricUnlock.authenticate(
+                                                title = "Enable biometric unlock",
+                                                subtitle = "Confirm your fingerprint or face"
+                                            ) { result ->
+                                                when (result) {
+                                                    BiometricUnlockResult.Success -> {
+                                                        biometricEnabled = true
+                                                        biometricMessage = null
+                                                        BiometricSettings.setUnlockEnabled(true)
+                                                    }
+                                                    BiometricUnlockResult.Unavailable -> {
+                                                        biometricEnabled = false
+                                                        biometricMessage =
+                                                            "Set up fingerprint or face unlock in system settings"
+                                                    }
+                                                    is BiometricUnlockResult.Error -> {
+                                                        biometricEnabled = false
+                                                        biometricMessage = result.message.ifBlank { null }
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            biometricEnabled = false
+                                            biometricMessage = null
+                                            BiometricSettings.setUnlockEnabled(false)
+                                        }
+                                    }
                                 )
                             }
                         }

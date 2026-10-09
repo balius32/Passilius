@@ -3,15 +3,8 @@ package com.example.core.sync
 import com.example.domain.sync.MergeResult
 import com.example.domain.sync.SyncPairingInfo
 import com.example.domain.sync.VaultSnapshot
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.cio.CIO as ClientCIO
-import io.ktor.client.request.header
-import io.ktor.client.request.post
-import io.ktor.client.request.setBody
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
-import io.ktor.http.contentType
 import io.ktor.server.cio.CIO
 import io.ktor.server.engine.EmbeddedServer
 import io.ktor.server.engine.embeddedServer
@@ -24,7 +17,6 @@ import io.ktor.server.routing.routing
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.json.Json
 import java.net.Inet4Address
 import java.net.NetworkInterface
@@ -38,6 +30,8 @@ private val syncJson = Json {
 actual class SyncHost {
     actual val isSupported: Boolean = true
 
+    actual fun lanAddresses(): List<String> = localLanAddresses()
+
     private var server: EmbeddedServer<*, *>? = null
     private val activePairing = AtomicReference<SyncPairingInfo?>(null)
     private val mutex = Mutex()
@@ -47,7 +41,6 @@ actual class SyncHost {
     ): SyncHostSession {
         stop()
         val addresses = localLanAddresses()
-        val preferredHost = addresses.firstOrNull() ?: "127.0.0.1"
         val pairingHolder = activePairing
 
         val engine = embeddedServer(CIO, port = 0, host = "0.0.0.0") {
@@ -86,12 +79,12 @@ actual class SyncHost {
         }
         engine.start(wait = false)
         val port = engine.engine.resolvedConnectors().first().port
-        val info = SyncPairingInfo.create(host = preferredHost, port = port)
+        val info = SyncPairingInfo.create(hosts = addresses, port = port)
         activePairing.set(info)
         server = engine
         return SyncHostSession(
             pairing = info,
-            lanAddresses = addresses.ifEmpty { listOf(preferredHost) }
+            lanAddresses = info.hosts
         )
     }
 
@@ -108,30 +101,7 @@ actual class SyncClient {
     actual suspend fun exchange(
         pairing: SyncPairingInfo,
         localSnapshot: VaultSnapshot
-    ): VaultSnapshot {
-        val client = HttpClient(ClientCIO)
-        try {
-            val encrypted = SyncEnvelope.encrypt(
-                pairing.token,
-                syncJson.encodeToString(VaultSnapshot.serializer(), localSnapshot)
-                    .encodeToByteArray()
-            )
-            val response = withTimeout(120_000) {
-                client.post("http://${pairing.host}:${pairing.port}/sync") {
-                    header("X-Passilius-Token", pairing.token.toHex())
-                    contentType(ContentType.Text.Plain)
-                    setBody(encrypted)
-                }
-            }
-            if (response.status.value !in 200..299) {
-                error("Sync rejected: HTTP ${response.status.value}")
-            }
-            val plain = SyncEnvelope.decrypt(pairing.token, response.bodyAsText())
-            return syncJson.decodeFromString(VaultSnapshot.serializer(), plain.decodeToString())
-        } finally {
-            client.close()
-        }
-    }
+    ): VaultSnapshot = exchangeSnapshot(pairing, localSnapshot)
 }
 
 private fun ByteArray.toHex(): String =
@@ -152,8 +122,9 @@ private fun localLanAddresses(): List<String> {
     for (nic in interfaces) {
         if (!nic.isUp || nic.isLoopback) continue
         for (addr in nic.inetAddresses) {
-            if (addr is Inet4Address && !addr.isLoopbackAddress) {
-                result += addr.hostAddress
+            if (addr is Inet4Address && !addr.isLoopbackAddress && !addr.isLinkLocalAddress) {
+                val hostAddress = addr.hostAddress ?: continue
+                result += hostAddress
             }
         }
     }

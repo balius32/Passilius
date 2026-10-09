@@ -23,10 +23,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
-import androidx.compose.material.icons.outlined.StarBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -62,7 +60,6 @@ fun PasswordCard(
     onCopyUsername: (String) -> Unit,
     onEdit: (Credential) -> Unit,
     onDelete: (Long) -> Unit,
-    onToggleFavorite: (Long, Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var isRevealed by remember { mutableStateOf(false) }
@@ -111,25 +108,14 @@ fun PasswordCard(
                     Spacer(modifier = Modifier.width(14.dp))
 
                     Column(modifier = Modifier.weight(1f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = credential.service,
-                                style = VaultTypography.headlineSmall,
-                                color = OnSurfacePrimary,
-                                fontWeight = FontWeight.SemiBold,
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis
-                            )
-                            if (credential.isFavorite) {
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Icon(
-                                    imageVector = Icons.Default.Star,
-                                    contentDescription = "Favorite",
-                                    tint = Color(0xFFF59E0B),
-                                    modifier = Modifier.size(14.dp)
-                                )
-                            }
-                        }
+                        Text(
+                            text = credential.service,
+                            style = VaultTypography.headlineSmall,
+                            color = OnSurfacePrimary,
+                            fontWeight = FontWeight.SemiBold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
 
                         Text(
                             text = credential.username,
@@ -273,7 +259,7 @@ fun PasswordCard(
                                 Text(
                                     text = "Password",
                                     style = VaultTypography.bodySmall,
-                                    color = ElectricPrimaryBright,
+                                    color = SecondarySlate,
                                     fontWeight = FontWeight.Medium
                                 )
                             }
@@ -289,12 +275,21 @@ fun PasswordCard(
                                 .clickable { onCopyUsername(credential.username) }
                                 .padding(horizontal = 12.dp, vertical = 6.dp)
                         ) {
-                            Text(
-                                text = "Username",
-                                style = VaultTypography.bodySmall,
-                                color = SecondarySlate,
-                                fontWeight = FontWeight.Medium
-                            )
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.ContentCopy,
+                                    contentDescription = null,
+                                    tint = ElectricPrimaryBright,
+                                    modifier = Modifier.size(14.dp)
+                                )
+                                Spacer(modifier = Modifier.width(4.dp))
+                                Text(
+                                    text = "Username",
+                                    style = VaultTypography.bodySmall,
+                                    color = SecondarySlate,
+                                    fontWeight = FontWeight.Medium
+                                )
+                            }
                         }
 
                         Box(
@@ -312,25 +307,6 @@ fun PasswordCard(
                                 imageVector = Icons.Default.Edit,
                                 contentDescription = "Edit",
                                 tint = SecondarySlate,
-                                modifier = Modifier.size(16.dp)
-                            )
-                        }
-
-                        Box(
-                            modifier = Modifier
-                                .size(32.dp)
-                                .neuFlat(
-                                    shape = CircleShape,
-                                    cornerRadius = 16.dp,
-                                    backgroundColor = SurfaceCanvas
-                                )
-                                .clickable { onToggleFavorite(credential.id, !credential.isFavorite) },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector = if (credential.isFavorite) Icons.Default.Star else Icons.Outlined.StarBorder,
-                                contentDescription = "Favorite",
-                                tint = if (credential.isFavorite) Color(0xFFF59E0B) else SecondarySlate,
                                 modifier = Modifier.size(16.dp)
                             )
                         }

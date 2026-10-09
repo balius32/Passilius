@@ -18,11 +18,13 @@ zxingAndroid = "4.3.0"
 core = "1.6.1"
 robolectric = "4.16.1"
 biometric = "1.2.0-alpha05"
+appcompat = "1.7.1"
 haze = "1.6.10"
 
 [libraries]
 compose-ui-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "composeMultiplatform" }
 androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometric" }
+androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
 haze = { group = "dev.chrisbanes.haze", name = "haze", version.ref = "haze" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

@@ -3,11 +3,6 @@ package com.example.presentation.sync
 import com.example.core.sync.QrImage
 import com.example.domain.sync.MergeResult
 
-enum class SyncTransportMode {
-    Qr,
-    Usb
-}
-
 sealed interface SyncPhase {
     data object Idle : SyncPhase
     data object Hosting : SyncPhase
@@ -18,10 +13,10 @@ sealed interface SyncPhase {
 }
 
 data class SyncUiState(
-    val mode: SyncTransportMode? = null,
     val phase: SyncPhase = SyncPhase.Idle,
     val canHost: Boolean = false,
     val canScanQr: Boolean = false,
+    val scanEpoch: Int = 0,
     val pairingUri: String = "",
     val lanAddresses: List<String> = emptyList(),
     val qrImage: QrImage? = null,
@@ -34,10 +29,10 @@ data class SyncUiState(
 
 sealed interface SyncUiIntent {
     data object BackToIdle : SyncUiIntent
-    data class SelectMode(val mode: SyncTransportMode) : SyncUiIntent
     data object StartHosting : SyncUiIntent
     data object StopHosting : SyncUiIntent
-    data object ScanQr : SyncUiIntent
+    data object RefreshQr : SyncUiIntent
+    data object RetryScan : SyncUiIntent
     data class QrScanned(val uri: String) : SyncUiIntent
     data class ManualUriChanged(val value: String) : SyncUiIntent
     data object ConnectWithManualUri : SyncUiIntent

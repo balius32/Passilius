@@ -116,10 +116,6 @@ class VaultRepositoryImpl(
         credentialDao.deleteById(id)
     }
 
-    override suspend fun toggleFavorite(id: Long, isFavorite: Boolean) {
-        credentialDao.updateFavorite(id, isFavorite)
-    }
-
     override suspend fun getSecurityReport(): SecurityReport {
         return SecurityReport(
             totalCount = 24,

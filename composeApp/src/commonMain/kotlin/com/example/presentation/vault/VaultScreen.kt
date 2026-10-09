@@ -207,8 +207,7 @@ fun VaultScreen(
                         onCopyPassword = { viewModel.handleIntent(VaultUiIntent.CopyPassword(it, cred.service)) },
                         onCopyUsername = { viewModel.handleIntent(VaultUiIntent.CopyUsername(it)) },
                         onEdit = { viewModel.handleIntent(VaultUiIntent.OpenEdit(it)) },
-                        onDelete = { viewModel.handleIntent(VaultUiIntent.DeleteCredential(it)) },
-                        onToggleFavorite = { id, fav -> viewModel.handleIntent(VaultUiIntent.ToggleFavorite(id, fav)) }
+                        onDelete = { viewModel.handleIntent(VaultUiIntent.DeleteCredential(it)) }
                     )
                 }
             }

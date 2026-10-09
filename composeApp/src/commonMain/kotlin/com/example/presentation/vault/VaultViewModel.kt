@@ -9,7 +9,6 @@ import com.example.domain.usecase.DeleteCredentialUseCase
 import com.example.domain.usecase.GetVaultCredentialsUseCase
 import com.example.domain.usecase.ObserveCategoriesUseCase
 import com.example.domain.usecase.SaveCredentialUseCase
-import com.example.domain.usecase.ToggleFavoriteUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -22,7 +21,6 @@ class VaultViewModel(
     private val getVaultCredentialsUseCase: GetVaultCredentialsUseCase,
     private val saveCredentialUseCase: SaveCredentialUseCase,
     private val deleteCredentialUseCase: DeleteCredentialUseCase,
-    private val toggleFavoriteUseCase: ToggleFavoriteUseCase,
     private val observeCategoriesUseCase: ObserveCategoriesUseCase,
     private val addCategoryUseCase: AddCategoryUseCase
 ) : ViewModel() {
@@ -83,11 +81,6 @@ class VaultViewModel(
             is VaultUiIntent.DeleteCredential -> {
                 viewModelScope.launch {
                     deleteCredentialUseCase(intent.id)
-                }
-            }
-            is VaultUiIntent.ToggleFavorite -> {
-                viewModelScope.launch {
-                    toggleFavoriteUseCase(intent.id, intent.isFavorite)
                 }
             }
             is VaultUiIntent.OpenCreateCategory -> {

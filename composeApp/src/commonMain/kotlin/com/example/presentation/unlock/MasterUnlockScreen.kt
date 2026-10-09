@@ -39,6 +39,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.core.biometric.BiometricSettings
 import com.example.core.biometric.BiometricUnlock
 import com.example.core.biometric.BiometricUnlockResult
 import com.example.core.designsystem.ElectricPrimaryBright
@@ -57,7 +58,8 @@ fun MasterUnlockScreen(
     masterPin: String = "1234",
     modifier: Modifier = Modifier
 ) {
-    val supportsBiometrics = LocalPlatformCapabilities.current.supportsBiometricUnlock
+    val supportsBiometrics = LocalPlatformCapabilities.current.supportsBiometricUnlock &&
+        BiometricSettings.isUnlockEnabled()
     var enteredPin by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 

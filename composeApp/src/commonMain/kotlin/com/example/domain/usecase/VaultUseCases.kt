@@ -36,14 +36,6 @@ class DeleteCredentialUseCase(
     }
 }
 
-class ToggleFavoriteUseCase(
-    private val repository: VaultRepository
-) {
-    suspend operator fun invoke(id: Long, isFavorite: Boolean) {
-        repository.toggleFavorite(id, isFavorite)
-    }
-}
-
 class GeneratePasswordUseCase {
     operator fun invoke(config: GeneratorConfig): GeneratedSecret {
         return PasswordGenerator.generate(config)

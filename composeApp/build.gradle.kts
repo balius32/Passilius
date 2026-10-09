@@ -45,6 +45,7 @@ kotlin {
       implementation(libs.androidx.activity.compose)
       implementation(libs.androidx.core.ktx)
       implementation(libs.androidx.biometric)
+      implementation(libs.androidx.appcompat)
       implementation(libs.kotlinx.coroutines.android)
       implementation(libs.zxing.android.embedded)
       implementation(libs.zxing.core)
@@ -146,6 +147,10 @@ android {
 compose.desktop {
   application {
     mainClass = "com.example.MainKt"
+    val packagingJdk = System.getenv("COMPOSE_PACKAGE_JDK")
+    if (!packagingJdk.isNullOrBlank()) {
+      javaHome = packagingJdk
+    }
     nativeDistributions {
       targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
       packageName = "Passilius"

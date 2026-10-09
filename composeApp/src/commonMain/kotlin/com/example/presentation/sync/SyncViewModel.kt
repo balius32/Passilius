@@ -42,15 +42,11 @@ class SyncViewModel(
 
     fun handleIntent(intent: SyncUiIntent) {
         when (intent) {
-            SyncUiIntent.BackToIdle -> resetToIdle(clearMode = true)
-            is SyncUiIntent.SelectMode -> _uiState.update {
-                it.copy(mode = intent.mode, phase = SyncPhase.Idle, pairingUri = "", qrImage = null)
-            }
+            SyncUiIntent.BackToIdle -> resetToIdle()
             SyncUiIntent.StartHosting -> startHosting()
             SyncUiIntent.StopHosting -> stopHosting()
-            SyncUiIntent.ScanQr -> {
-                // UI launches scanner; result comes via QrScanned
-            }
+            SyncUiIntent.RefreshQr -> refreshQr()
+            SyncUiIntent.RetryScan -> retryScan()
             is SyncUiIntent.QrScanned -> beginClientAuth(intent.uri)
             is SyncUiIntent.ManualUriChanged -> _uiState.update { it.copy(manualUri = intent.value) }
             SyncUiIntent.ConnectWithManualUri -> beginClientAuth(_uiState.value.manualUri)
@@ -68,7 +64,13 @@ class SyncViewModel(
                     _uiState.update { it.copy(pinFallbackVisible = false, pinInput = "") }
                     runClientSync()
                 } else {
-                    _uiState.update { it.copy(phase = SyncPhase.Error("Incorrect PIN")) }
+                    _uiState.update {
+                        it.copy(
+                            phase = SyncPhase.Error("Incorrect PIN"),
+                            pinFallbackVisible = false,
+                            pinInput = ""
+                        )
+                    }
                 }
             }
             SyncUiIntent.DismissPinFallback -> {
@@ -84,7 +86,7 @@ class SyncViewModel(
         }
     }
 
-    private fun resetToIdle(clearMode: Boolean) {
+    private fun resetToIdle() {
         viewModelScope.launch { syncHost.stop() }
         hostTimeoutJob?.cancel()
         pendingPairing = null
@@ -92,7 +94,36 @@ class SyncViewModel(
             SyncUiState(
                 canHost = syncHost.isSupported,
                 canScanQr = platformCapabilities().canScanSyncQr,
-                mode = if (clearMode) null else it.mode
+                scanEpoch = it.scanEpoch + 1
+            )
+        }
+    }
+
+    private fun retryScan() {
+        pendingPairing = null
+        _uiState.update {
+            it.copy(
+                phase = SyncPhase.Idle,
+                pinFallbackVisible = false,
+                pinInput = "",
+                scanEpoch = it.scanEpoch + 1
+            )
+        }
+    }
+
+    private fun refreshQr() {
+        val state = _uiState.value
+        if (state.phase !is SyncPhase.Hosting || state.pairingUri.isBlank()) return
+        val pairing = SyncPairingInfo.parseUri(state.pairingUri) ?: return
+        val hosts = syncHost.lanAddresses()
+        if (hosts.isEmpty()) return
+        val uri = pairing.withHosts(hosts).toUri()
+        val qr = QrCodec.encode(uri, sizePx = 512)
+        _uiState.update {
+            it.copy(
+                pairingUri = uri,
+                lanAddresses = hosts,
+                qrImage = qr
             )
         }
     }

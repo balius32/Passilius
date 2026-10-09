@@ -31,7 +31,6 @@ sealed interface VaultUiIntent {
     object CloseBottomSheet : VaultUiIntent
     data class SaveCredential(val credential: Credential) : VaultUiIntent
     data class DeleteCredential(val id: Long) : VaultUiIntent
-    data class ToggleFavorite(val id: Long, val isFavorite: Boolean) : VaultUiIntent
     object OpenCreateCategory : VaultUiIntent
     object CloseCategorySheet : VaultUiIntent
     data class CreateCategory(val name: String) : VaultUiIntent
