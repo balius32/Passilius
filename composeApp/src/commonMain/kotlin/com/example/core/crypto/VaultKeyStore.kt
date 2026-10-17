@@ -50,6 +50,90 @@ object VaultKeyStore {
         VaultSession.lock()
     }
 
+    suspend fun changePassword(currentPassword: String, newPassword: String): Boolean =
+        withContext(Dispatchers.Default) {
+            require(newPassword.length >= MIN_PASSWORD_LENGTH) {
+                "Master password must be at least $MIN_PASSWORD_LENGTH characters"
+            }
+            val existing = VaultKeyIo.readWrap() ?: return@withContext false
+            val result = rewrapRecord(existing, currentPassword, newPassword, ITERATIONS)
+            val dek = result.dek
+            if (!result.changed || dek == null) {
+                dek?.fill(0)
+                return@withContext false
+            }
+            try {
+                VaultKeyIo.writeWrap(result.record)
+                VaultSession.unlock(dek)
+                true
+            } finally {
+                dek.fill(0)
+            }
+        }
+
+    internal fun rewrapRecord(
+        recordText: String,
+        currentPassword: String,
+        newPassword: String,
+        iterations: Int
+    ): RewrapResult {
+        val record = decodeRecord(recordText)
+            ?: return RewrapResult(recordText, changed = false, dek = null)
+        val currentChars = currentPassword.toCharArray()
+        val currentKek = CryptoEngine.pbkdf2(currentChars, record.salt, record.iterations)
+        currentChars.fill('\u0000')
+        val dek = try {
+            CryptoEngine.decryptBytes(currentKek, record.wrappedDek)
+        } catch (_: VaultCryptoException) {
+            return RewrapResult(recordText, changed = false, dek = null)
+        } finally {
+            currentKek.fill(0)
+        }
+        val salt = CryptoEngine.randomBytes(16)
+        val newChars = newPassword.toCharArray()
+        val newKek = CryptoEngine.pbkdf2(newChars, salt, iterations)
+        newChars.fill('\u0000')
+        return try {
+            val wrapped = CryptoEngine.encryptBytes(newKek, dek)
+            RewrapResult(
+                record = encodeRecord(iterations, salt, wrapped),
+                changed = true,
+                dek = dek
+            )
+        } catch (error: Exception) {
+            dek.fill(0)
+            throw error
+        } finally {
+            newKek.fill(0)
+        }
+    }
+
+    internal fun createWrapRecord(password: String, iterations: Int, dek: ByteArray): String {
+        val salt = CryptoEngine.randomBytes(16)
+        val chars = password.toCharArray()
+        val kek = CryptoEngine.pbkdf2(chars, salt, iterations)
+        chars.fill('\u0000')
+        return try {
+            encodeRecord(iterations, salt, CryptoEngine.encryptBytes(kek, dek))
+        } finally {
+            kek.fill(0)
+        }
+    }
+
+    internal fun unwrapRecord(recordText: String, password: String): ByteArray? {
+        val record = decodeRecord(recordText) ?: return null
+        val chars = password.toCharArray()
+        val kek = CryptoEngine.pbkdf2(chars, record.salt, record.iterations)
+        chars.fill('\u0000')
+        return try {
+            CryptoEngine.decryptBytes(kek, record.wrappedDek)
+        } catch (_: VaultCryptoException) {
+            null
+        } finally {
+            kek.fill(0)
+        }
+    }
+
     private fun encodeRecord(iterations: Int, salt: ByteArray, wrappedDek: String): String =
         "v1\n$iterations\n${base64Encode(salt)}\n$wrappedDek"
 
@@ -63,6 +147,12 @@ object VaultKeyStore {
         return WrapRecord(iterations, salt, wrapped)
     }
 }
+
+internal class RewrapResult(
+    val record: String,
+    val changed: Boolean,
+    val dek: ByteArray?
+)
 
 private data class WrapRecord(
     val iterations: Int,

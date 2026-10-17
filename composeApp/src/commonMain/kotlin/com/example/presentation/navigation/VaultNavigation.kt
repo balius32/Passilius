@@ -67,6 +67,7 @@ import com.example.presentation.category.ManageCategoriesViewModel
 import com.example.presentation.credential.CredentialBottomSheet
 import com.example.presentation.generator.GeneratorScreen
 import com.example.presentation.generator.GeneratorViewModel
+import com.example.presentation.settings.ChangeMasterPasswordScreen
 import com.example.presentation.settings.SettingsScreen
 import com.example.presentation.sync.SyncScreen
 import com.example.presentation.sync.SyncViewModel
@@ -87,7 +88,7 @@ private val FabSize = 56.dp
 private val FabHitSize = 80.dp
 
 private fun stackDepth(destination: VaultDestination?): Int = when (destination) {
-    CategoriesRoute, SyncRoute -> 2
+    CategoriesRoute, SyncRoute, ChangeMasterPasswordRoute -> 2
     SettingsRoute -> 1
     else -> 0
 }
@@ -131,7 +132,8 @@ fun VaultApp(
         val currentKey = backStack.lastOrNull()
         val showBottomBar = currentKey != SettingsRoute &&
             currentKey != CategoriesRoute &&
-            currentKey != SyncRoute
+            currentKey != SyncRoute &&
+            currentKey != ChangeMasterPasswordRoute
         val hazeState = rememberHazeState()
 
         BackHandler(enabled = backStack.size > 1) {
@@ -204,7 +206,11 @@ fun VaultApp(
                                     vaultViewModel.handleIntent(VaultUiIntent.LockVault)
                                 },
                                 onManageCategories = { backStack.add(CategoriesRoute) },
-                                onSyncDevices = { backStack.add(SyncRoute) }
+                                onSyncDevices = { backStack.add(SyncRoute) },
+                                onChangeMasterPassword = {
+                                    vaultViewModel.handleIntent(VaultUiIntent.ClearPasswordChangeResult)
+                                    backStack.add(ChangeMasterPasswordRoute)
+                                }
                             )
                             CategoriesRoute -> ManageCategoriesScreen(
                                 viewModel = manageCategoriesViewModel,
@@ -215,6 +221,27 @@ fun VaultApp(
                             SyncRoute -> SyncScreen(
                                 viewModel = syncViewModel,
                                 onBack = {
+                                    if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+                                }
+                            )
+                            ChangeMasterPasswordRoute -> ChangeMasterPasswordScreen(
+                                isChanging = vaultState.isChangingPassword,
+                                errorMessage = vaultState.passwordChangeError,
+                                succeeded = vaultState.passwordChangeSucceeded,
+                                onBack = {
+                                    vaultViewModel.handleIntent(VaultUiIntent.ClearPasswordChangeResult)
+                                    if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+                                },
+                                onSubmit = { current, newPassword, confirm ->
+                                    vaultViewModel.handleIntent(
+                                        VaultUiIntent.ChangeMasterPassword(current, newPassword, confirm)
+                                    )
+                                },
+                                onClearError = {
+                                    vaultViewModel.handleIntent(VaultUiIntent.ClearPasswordChangeResult)
+                                },
+                                onFinished = {
+                                    vaultViewModel.handleIntent(VaultUiIntent.ClearPasswordChangeResult)
                                     if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
                                 }
                             )

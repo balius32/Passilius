@@ -20,7 +20,10 @@ data class VaultUiState(
     val needsMasterSetup: Boolean = false,
     val unlockError: String? = null,
     val isUnlocking: Boolean = false,
-    val legacyFailures: Int = 0
+    val legacyFailures: Int = 0,
+    val isChangingPassword: Boolean = false,
+    val passwordChangeError: String? = null,
+    val passwordChangeSucceeded: Boolean = false
 )
 
 sealed interface VaultUiIntent {
@@ -41,4 +44,10 @@ sealed interface VaultUiIntent {
     data class CreateMasterPassword(val password: String, val confirm: String) : VaultUiIntent
     data class SubmitMasterPassword(val password: String) : VaultUiIntent
     object UnlockWithBiometric : VaultUiIntent
+    data class ChangeMasterPassword(
+        val current: String,
+        val newPassword: String,
+        val confirm: String
+    ) : VaultUiIntent
+    object ClearPasswordChangeResult : VaultUiIntent
 }

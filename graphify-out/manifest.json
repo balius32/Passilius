@@ -702,21 +702,21 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/navigation/VaultNavigation.kt": {
-    "mtime": 1791554029.301823,
-    "seen": 1791554474.2808223,
-    "ast_hash": "410c47d7f8cb54b9a8047f3f81486cc1",
+    "mtime": 1792230262.8084905,
+    "seen": 1792232117.4720232,
+    "ast_hash": "acf620bd0a3feab488f15b018b05a2be",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/navigation/VaultRoutes.kt": {
-    "mtime": 1791378118.188177,
-    "seen": 1791379123.1707404,
-    "ast_hash": "09e395edaa69a7868776f36179531c5b",
+    "mtime": 1792230096.4089925,
+    "seen": 1792232117.4720232,
+    "ast_hash": "c123a8cb53345af2076ea6e185e63f58",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/settings/SettingsScreen.kt": {
-    "mtime": 1791554100.2657893,
-    "seen": 1791554474.2808223,
-    "ast_hash": "e26f92747d80ae768e65e3eeaf9653bc",
+    "mtime": 1792230095.357646,
+    "seen": 1792232117.4720232,
+    "ast_hash": "2a90b7e9aa9e6995d8c1393c486bffe4",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/sync/SyncMvi.kt": {
@@ -744,9 +744,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/vault/VaultMvi.kt": {
-    "mtime": 1791553988.4946468,
-    "seen": 1791554474.2808223,
-    "ast_hash": "31c0c7232918b9716950ddce408b50de",
+    "mtime": 1792230075.3045933,
+    "seen": 1792232117.4720232,
+    "ast_hash": "89d9938ab4253f90338cba852361edbf",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/vault/VaultScreen.kt": {
@@ -756,9 +756,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/vault/VaultViewModel.kt": {
-    "mtime": 1791554004.796653,
-    "seen": 1791554474.2808223,
-    "ast_hash": "d61bf74ba5309d18e311a95e565a288e",
+    "mtime": 1792230083.2720573,
+    "seen": 1792232117.4720232,
+    "ast_hash": "5d5b785be13763ae5cf35e56fdf4021c",
     "semantic_hash": ""
   },
   "composeApp/src/desktopMain/kotlin/com/example/Main.kt": {
@@ -972,9 +972,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/androidMain/kotlin/com/example/core/crypto/VaultKeyIo.android.kt": {
-    "mtime": 1791553920.595564,
-    "seen": 1791554474.2808223,
-    "ast_hash": "7417728869d914608ddd94a783a0d954",
+    "mtime": 1792230282.0682886,
+    "seen": 1792232117.4720232,
+    "ast_hash": "b5e91b139db45b1d05cd5e3deb5c632b",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/core/crypto/BiometricVaultKey.kt": {
@@ -1008,9 +1008,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/core/crypto/VaultKeyStore.kt": {
-    "mtime": 1791554118.961944,
-    "seen": 1791554474.2808223,
-    "ast_hash": "022d9dd611157ceee4978094aaa74bf1",
+    "mtime": 1792230264.7979221,
+    "seen": 1792232117.4720232,
+    "ast_hash": "64bffeb93bfc0f51d5eee98d896687f3",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/core/crypto/VaultSession.kt": {
@@ -1044,9 +1044,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/desktopMain/kotlin/com/example/core/crypto/VaultKeyIo.desktop.kt": {
-    "mtime": 1791553934.425491,
-    "seen": 1791554474.2808223,
-    "ast_hash": "9406626a90dadcabd77b7eaffe925887",
+    "mtime": 1792230282.6059694,
+    "seen": 1792232117.4720232,
+    "ast_hash": "413d066116f0c2aaa2cdbd957fc03b7c",
     "semantic_hash": ""
   },
   "composeApp/src/desktopMain/kotlin/com/example/core/crypto/VaultPaths.desktop.kt": {
@@ -1059,6 +1059,18 @@
     "mtime": 1791554130.9550006,
     "seen": 1791554474.2808223,
     "ast_hash": "0123648d63db27c501445309e21055c9",
+    "semantic_hash": ""
+  },
+  "composeApp/src/commonMain/kotlin/com/example/presentation/settings/ChangeMasterPasswordScreen.kt": {
+    "mtime": 1792230260.7140489,
+    "seen": 1792232117.4720232,
+    "ast_hash": "22ed6105b6d1ef6065060a9621bb217c",
+    "semantic_hash": ""
+  },
+  "composeApp/src/desktopTest/kotlin/com/example/core/crypto/VaultKeyRewrapTest.kt": {
+    "mtime": 1792230179.1865253,
+    "seen": 1792232117.4720232,
+    "ast_hash": "3f03967f369266b871d93111c4bf2f66",
     "semantic_hash": ""
   }
 }

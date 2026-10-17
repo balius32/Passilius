@@ -105,6 +105,13 @@ class VaultViewModel(
             is VaultUiIntent.CreateMasterPassword -> createMasterPassword(intent.password, intent.confirm)
             is VaultUiIntent.SubmitMasterPassword -> submitMasterPassword(intent.password)
             is VaultUiIntent.UnlockWithBiometric -> unlockWithBiometric()
+            is VaultUiIntent.ChangeMasterPassword ->
+                changeMasterPassword(intent.current, intent.newPassword, intent.confirm)
+            is VaultUiIntent.ClearPasswordChangeResult -> {
+                _uiState.update {
+                    it.copy(passwordChangeError = null, passwordChangeSucceeded = false)
+                }
+            }
         }
     }
 
@@ -249,6 +256,62 @@ class VaultViewModel(
                 )
             }
             loadCredentials()
+        }
+    }
+
+    private fun changeMasterPassword(current: String, newPassword: String, confirm: String) {
+        if (_uiState.value.isChangingPassword) return
+        when {
+            newPassword.length < VaultKeyStore.MIN_PASSWORD_LENGTH -> {
+                _uiState.update {
+                    it.copy(passwordChangeError = "Use at least ${VaultKeyStore.MIN_PASSWORD_LENGTH} characters")
+                }
+                return
+            }
+            newPassword != confirm -> {
+                _uiState.update { it.copy(passwordChangeError = "Passwords do not match") }
+                return
+            }
+            newPassword == current -> {
+                _uiState.update { it.copy(passwordChangeError = "Choose a different password") }
+                return
+            }
+        }
+        _uiState.update {
+            it.copy(
+                isChangingPassword = true,
+                passwordChangeError = null,
+                passwordChangeSucceeded = false
+            )
+        }
+        viewModelScope.launch {
+            val changed = try {
+                VaultKeyStore.changePassword(current, newPassword)
+            } catch (error: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isChangingPassword = false,
+                        passwordChangeError = error.message ?: "Could not change the master password"
+                    )
+                }
+                return@launch
+            }
+            if (!changed) {
+                _uiState.update {
+                    it.copy(
+                        isChangingPassword = false,
+                        passwordChangeError = "Incorrect master password"
+                    )
+                }
+                return@launch
+            }
+            _uiState.update {
+                it.copy(
+                    isChangingPassword = false,
+                    passwordChangeError = null,
+                    passwordChangeSucceeded = true
+                )
+            }
         }
     }
 

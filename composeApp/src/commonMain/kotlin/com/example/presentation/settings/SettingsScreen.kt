@@ -66,6 +66,7 @@ fun SettingsScreen(
     onLockVault: () -> Unit,
     onManageCategories: () -> Unit,
     onSyncDevices: () -> Unit = {},
+    onChangeMasterPassword: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val supportsBiometrics = LocalPlatformCapabilities.current.supportsBiometricUnlock
@@ -363,6 +364,57 @@ fun SettingsScreen(
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .testTag("change_master_password_row")
+                        .neuFlat(
+                            shape = RoundedCornerShape(24.dp),
+                            cornerRadius = 24.dp,
+                            backgroundColor = SurfaceContainerLowest
+                        )
+                        .clickable { onChangeMasterPassword() }
+                        .padding(18.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = null,
+                                tint = ElectricPrimaryBright,
+                                modifier = Modifier.size(20.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Column {
+                                Text(
+                                    text = "Change master password",
+                                    style = VaultTypography.bodyMedium,
+                                    color = OnSurfacePrimary,
+                                    fontWeight = FontWeight.Medium
+                                )
+                                Text(
+                                    text = "Updates the password that unlocks this vault",
+                                    style = VaultTypography.bodySmall,
+                                    color = SecondarySlate,
+                                    fontSize = 11.sp
+                                )
+                            }
+                        }
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                            contentDescription = null,
+                            tint = SecondarySlate,
+                            modifier = Modifier.size(22.dp)
+                        )
                     }
                 }
             }
