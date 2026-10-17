@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -49,6 +50,8 @@ import com.example.core.designsystem.neuFlat
 import com.example.core.designsystem.neuPressed
 import com.example.core.util.rememberScreenContentPadding
 
+private val VaultItemPadding = 20.dp
+
 @Composable
 fun VaultScreen(
     viewModel: VaultViewModel,
@@ -56,7 +59,8 @@ fun VaultScreen(
     modifier: Modifier = Modifier
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-    val contentPadding = rememberScreenContentPadding()
+    val contentPadding = rememberScreenContentPadding(horizontal = 0.dp)
+    val itemInset = Modifier.padding(horizontal = VaultItemPadding)
 
     Box(
         modifier = modifier
@@ -71,7 +75,7 @@ fun VaultScreen(
             // Header Row
             item {
                 Row(
-                    modifier = Modifier
+                    modifier = itemInset
                         .fillMaxWidth()
                         .padding(top = 4.dp, bottom = 4.dp),
                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -148,7 +152,8 @@ fun VaultScreen(
                     Text(
                         text = "${uiState.legacyFailures} older item(s) could not be re-encrypted and were left unchanged.",
                         style = VaultTypography.bodySmall,
-                        color = SecondarySlate
+                        color = SecondarySlate,
+                        modifier = itemInset
                     )
                 }
             }
@@ -158,7 +163,8 @@ fun VaultScreen(
                 item {
                     NeumorphicSearchBar(
                         query = uiState.searchQuery,
-                        onQueryChange = { viewModel.handleIntent(VaultUiIntent.UpdateSearchQuery(it)) }
+                        onQueryChange = { viewModel.handleIntent(VaultUiIntent.UpdateSearchQuery(it)) },
+                        modifier = itemInset
                     )
                 }
             }
@@ -169,13 +175,14 @@ fun VaultScreen(
                     categories = uiState.categories,
                     selectedCategory = uiState.selectedCategory,
                     onSelectCategory = { viewModel.handleIntent(VaultUiIntent.SelectCategory(it)) },
-                    onAddCategory = { viewModel.handleIntent(VaultUiIntent.OpenCreateCategory) }
+                    onAddCategory = { viewModel.handleIntent(VaultUiIntent.OpenCreateCategory) },
+                    contentPadding = PaddingValues(horizontal = VaultItemPadding)
                 )
             }
 
             // Vault Summary Meta
             item {
-                Column(modifier = Modifier.padding(top = 2.dp, bottom = 2.dp)) {
+                Column(modifier = itemInset.padding(top = 2.dp, bottom = 2.dp)) {
                     Text(
                         text = "${uiState.credentials.size} Passwords",
                         style = VaultTypography.headlineSmall,
@@ -195,7 +202,7 @@ fun VaultScreen(
             if (uiState.credentials.isEmpty()) {
                 item {
                     Box(
-                        modifier = Modifier
+                        modifier = itemInset
                             .fillMaxWidth()
                             .padding(top = 40.dp),
                         contentAlignment = Alignment.Center
@@ -217,7 +224,8 @@ fun VaultScreen(
                         onCopyPassword = { viewModel.handleIntent(VaultUiIntent.CopyPassword(it, cred.service)) },
                         onCopyUsername = { viewModel.handleIntent(VaultUiIntent.CopyUsername(it)) },
                         onEdit = { viewModel.handleIntent(VaultUiIntent.OpenEdit(it)) },
-                        onDelete = { viewModel.handleIntent(VaultUiIntent.DeleteCredential(it)) }
+                        onDelete = { viewModel.handleIntent(VaultUiIntent.DeleteCredential(it)) },
+                        modifier = itemInset
                     )
                 }
             }

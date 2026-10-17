@@ -237,9 +237,23 @@ class VaultViewModel(
 
     private fun submitMasterPassword(password: String) {
         if (_uiState.value.isUnlocking) return
+        if (password.isBlank()) {
+            _uiState.update { it.copy(unlockError = "Enter the master password") }
+            return
+        }
         _uiState.update { it.copy(isUnlocking = true, unlockError = null) }
         viewModelScope.launch {
-            val opened = VaultKeyStore.unlock(password)
+            val opened = try {
+                VaultKeyStore.unlock(password)
+            } catch (error: Exception) {
+                _uiState.update {
+                    it.copy(
+                        isUnlocking = false,
+                        unlockError = error.message ?: "Could not unlock the vault"
+                    )
+                }
+                return@launch
+            }
             if (!opened) {
                 _uiState.update {
                     it.copy(isUnlocking = false, unlockError = "Incorrect master password")

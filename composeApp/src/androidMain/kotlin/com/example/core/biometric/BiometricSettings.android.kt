@@ -13,7 +13,7 @@ actual object BiometricSettings {
     }
 
     actual fun isUnlockEnabled(): Boolean {
-        val context = appContext ?: return true
+        val context = appContext ?: return false
         return context
             .getSharedPreferences(PREFS, Context.MODE_PRIVATE)
             .getBoolean(KEY_UNLOCK, false)

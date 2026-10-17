@@ -26,7 +26,6 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material.icons.filled.Sync
 import androidx.compose.material.icons.filled.Timer
-import androidx.compose.material.icons.filled.VerifiedUser
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,6 +55,7 @@ import com.example.core.designsystem.SurfaceCanvas
 import com.example.core.designsystem.SurfaceContainerLowest
 import com.example.core.designsystem.VaultTypography
 import com.example.core.platform.LocalPlatformCapabilities
+import com.example.core.util.ClipboardSettings
 import com.example.core.util.rememberScreenContentPadding
 import com.example.core.designsystem.neuFlat
 import com.example.core.designsystem.neuPressed
@@ -72,7 +72,7 @@ fun SettingsScreen(
     val supportsBiometrics = LocalPlatformCapabilities.current.supportsBiometricUnlock
     var biometricEnabled by remember { mutableStateOf(BiometricSettings.isUnlockEnabled()) }
     var biometricMessage by remember { mutableStateOf<String?>(null) }
-    var autoClearClipboard by remember { mutableStateOf(true) }
+    var autoClearClipboard by remember { mutableStateOf(ClipboardSettings.isAutoClearEnabled()) }
     val contentPadding = rememberScreenContentPadding(bottom = 60.dp)
 
     Box(
@@ -330,39 +330,11 @@ fun SettingsScreen(
                             }
                             TactileToggleSwitch(
                                 checked = autoClearClipboard,
-                                onCheckedChange = { autoClearClipboard = it }
-                            )
-                        }
-
-                        // Row 3: KeyStore Spec
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = Icons.Default.VerifiedUser,
-                                    contentDescription = null,
-                                    tint = SecurityTertiaryBright,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                Column {
-                                    Text(
-                                        text = "Cipher Architecture",
-                                        style = VaultTypography.bodyMedium,
-                                        color = OnSurfacePrimary,
-                                        fontWeight = FontWeight.Medium
-                                    )
-                                    Text(
-                                        text = "AES-256-GCM Hardware-Backed KeyStore",
-                                        style = VaultTypography.bodySmall,
-                                        color = SecondarySlate,
-                                        fontSize = 11.sp
-                                    )
+                                onCheckedChange = { enabled ->
+                                    autoClearClipboard = enabled
+                                    ClipboardSettings.setAutoClearEnabled(enabled)
                                 }
-                            }
+                            )
                         }
                     }
                 }

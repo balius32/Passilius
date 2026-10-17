@@ -26,4 +26,4 @@ Local desktop data/key files live under `%USERPROFILE%\.passilius-vault\`.
 - `src/androidMain` — Keystore crypto, biometrics, clipboard, Room builder, `MainActivity`
 - `src/desktopMain` — file-based crypto key, AWT clipboard, Room builder, `main()`
 
-Biometrics are Android-only; desktop unlock is PIN-only.
+Biometrics are Android-only. Both platforms unlock with a master password of at least 8 characters. A blank password stays on the unlock screen.

@@ -20,6 +20,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,6 +37,7 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.example.core.crypto.VaultKeyStore
 import com.example.core.designsystem.ElectricPrimaryBright
@@ -199,16 +202,10 @@ private fun PasswordField(
     onValueChange: (String) -> Unit,
     hint: String
 ) {
+    var visible by rememberSaveable { mutableStateOf(false) }
     Column(verticalArrangement = Arrangement.spacedBy(6.dp), modifier = Modifier.fillMaxWidth()) {
         Text(text = hint, style = VaultTypography.labelSmall, color = SecondarySlate)
-        BasicTextField(
-            value = value,
-            onValueChange = onValueChange,
-            singleLine = true,
-            visualTransformation = PasswordVisualTransformation(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary),
-            cursorBrush = SolidColor(ElectricPrimaryBright),
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .neuFlat(
@@ -216,7 +213,34 @@ private fun PasswordField(
                     cornerRadius = 18.dp,
                     backgroundColor = SurfaceContainerLowest
                 )
-                .padding(horizontal = 16.dp, vertical = 14.dp)
-        )
+                .padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            BasicTextField(
+                value = value,
+                onValueChange = onValueChange,
+                singleLine = true,
+                visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary),
+                cursorBrush = SolidColor(ElectricPrimaryBright),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(vertical = 6.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .size(36.dp)
+                    .clickable { visible = !visible },
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = if (visible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                    contentDescription = if (visible) "Hide $hint" else "Show $hint",
+                    tint = SecondarySlate,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
     }
 }

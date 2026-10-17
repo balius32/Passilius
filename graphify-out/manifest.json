@@ -288,9 +288,9 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1791368714.3949814,
-    "seen": 1791379123.1707404,
-    "ast_hash": "2126430319b37765c13864db554f8015",
+    "mtime": 1792234842.0344906,
+    "seen": 1792234859.9876611,
+    "ast_hash": "6adf3c0beb43e19c90fbd4fc4ef40205",
     "semantic_hash": ""
   },
   "app/README.md": {
@@ -378,9 +378,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/androidMain/kotlin/com/example/MainActivity.kt": {
-    "mtime": 1791554074.271296,
-    "seen": 1791554474.2808223,
-    "ast_hash": "5fecc14a264a772a32d765254d7dd1aa",
+    "mtime": 1792237142.3495488,
+    "seen": 1792237287.4986928,
+    "ast_hash": "63408906176ce261444966de85233d92",
     "semantic_hash": ""
   },
   "composeApp/src/androidMain/kotlin/com/example/core/biometric/BiometricUnlock.android.kt": {
@@ -432,9 +432,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/androidMain/kotlin/com/example/core/util/ClipboardHelper.android.kt": {
-    "mtime": 1791362905.974687,
-    "seen": 1791379123.1707404,
-    "ast_hash": "5505b89339e2c81f2887b385201d4613",
+    "mtime": 1792237138.2319045,
+    "seen": 1792237287.4986928,
+    "ast_hash": "425d9c7720c4daf30625e3dcc9eab37c",
     "semantic_hash": ""
   },
   "composeApp/src/androidMain/kotlin/com/example/data/local/database/VaultDatabase.android.kt": {
@@ -462,9 +462,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/core/components/NeumorphicSearchBar.kt": {
-    "mtime": 1791202383.9601696,
-    "seen": 1791379123.1707404,
-    "ast_hash": "99963d50c09402e9905e9b66d4905378",
+    "mtime": 1792232974.2530637,
+    "seen": 1792234859.9876611,
+    "ast_hash": "ece71e3762f5d0e1af69e16340fa8a75",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/core/components/NotchedCapsuleShape.kt": {
@@ -714,9 +714,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/settings/SettingsScreen.kt": {
-    "mtime": 1792230095.357646,
-    "seen": 1792232117.4720232,
-    "ast_hash": "2a90b7e9aa9e6995d8c1393c486bffe4",
+    "mtime": 1792237128.900922,
+    "seen": 1792237287.4986928,
+    "ast_hash": "8f6d72d48ff271fb03f119d7f4eed14a",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/sync/SyncMvi.kt": {
@@ -750,15 +750,15 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/vault/VaultScreen.kt": {
-    "mtime": 1791554141.407278,
-    "seen": 1791554474.2808223,
-    "ast_hash": "54013548083946a0985ada2fd8488264",
+    "mtime": 1792232994.0696945,
+    "seen": 1792234859.9876611,
+    "ast_hash": "80aae2a9752fbb498dcaea9a3d8764b6",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/vault/VaultViewModel.kt": {
-    "mtime": 1792230083.2720573,
-    "seen": 1792232117.4720232,
-    "ast_hash": "5d5b785be13763ae5cf35e56fdf4021c",
+    "mtime": 1792234805.7113662,
+    "seen": 1792234859.9876611,
+    "ast_hash": "00f2c90da4beb12a000d2d7d505dc5c5",
     "semantic_hash": ""
   },
   "composeApp/src/desktopMain/kotlin/com/example/Main.kt": {
@@ -816,9 +816,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/desktopMain/kotlin/com/example/core/util/ClipboardHelper.desktop.kt": {
-    "mtime": 1791362911.1505406,
-    "seen": 1791379123.1707404,
-    "ast_hash": "1209a87bbcf042943f9af2240f8c36f6",
+    "mtime": 1792237139.8384714,
+    "seen": 1792237287.4986928,
+    "ast_hash": "d1b9a241def3260f6f426935d9212485",
     "semantic_hash": ""
   },
   "composeApp/src/desktopMain/kotlin/com/example/data/local/database/VaultDatabase.desktop.kt": {
@@ -846,9 +846,9 @@
     "semantic_hash": ""
   },
   "composeApp/README.md": {
-    "mtime": 1791368712.2684662,
-    "seen": 1791379123.1707404,
-    "ast_hash": "bc142f45f031282b1382830d5f05b42f",
+    "mtime": 1792234842.5830233,
+    "seen": 1792234859.9876611,
+    "ast_hash": "74f8669428cb2aa13777920e642e275e",
     "semantic_hash": ""
   },
   "composeApp/src/androidMain/res/mipmap-hdpi/ic_launcher.webp": {
@@ -912,9 +912,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/androidMain/kotlin/com/example/core/biometric/BiometricSettings.android.kt": {
-    "mtime": 1791554053.6988275,
-    "seen": 1791554474.2808223,
-    "ast_hash": "18ab383617aed444b72f508300f7c73c",
+    "mtime": 1792237130.1611629,
+    "seen": 1792237287.4986928,
+    "ast_hash": "0b1adbfd694024cd6349f54622fe2277",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/core/biometric/BiometricSettings.kt": {
@@ -1008,9 +1008,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/core/crypto/VaultKeyStore.kt": {
-    "mtime": 1792230264.7979221,
-    "seen": 1792232117.4720232,
-    "ast_hash": "64bffeb93bfc0f51d5eee98d896687f3",
+    "mtime": 1792234801.7745256,
+    "seen": 1792234859.9876611,
+    "ast_hash": "6b1a09cfba673331f54dc06f742fd77a",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/core/crypto/VaultSession.kt": {
@@ -1062,15 +1062,33 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/settings/ChangeMasterPasswordScreen.kt": {
-    "mtime": 1792230260.7140489,
-    "seen": 1792232117.4720232,
-    "ast_hash": "22ed6105b6d1ef6065060a9621bb217c",
+    "mtime": 1792235163.4048467,
+    "seen": 1792235177.5276754,
+    "ast_hash": "513d720e7982add5e792ef5a4901d270",
     "semantic_hash": ""
   },
   "composeApp/src/desktopTest/kotlin/com/example/core/crypto/VaultKeyRewrapTest.kt": {
-    "mtime": 1792230179.1865253,
-    "seen": 1792232117.4720232,
-    "ast_hash": "3f03967f369266b871d93111c4bf2f66",
+    "mtime": 1792234810.1673424,
+    "seen": 1792234859.9876611,
+    "ast_hash": "80e6b082483d5305ff90509a6dd138c6",
+    "semantic_hash": ""
+  },
+  "composeApp/src/androidMain/kotlin/com/example/core/util/ClipboardSettings.android.kt": {
+    "mtime": 1792237134.272057,
+    "seen": 1792237287.4986928,
+    "ast_hash": "cd15f220fe42e55d345de267b22e179e",
+    "semantic_hash": ""
+  },
+  "composeApp/src/commonMain/kotlin/com/example/core/util/ClipboardSettings.kt": {
+    "mtime": 1792237130.9998875,
+    "seen": 1792237287.4986928,
+    "ast_hash": "3bfe5a3cadaf8ca6c432f9f2fa423749",
+    "semantic_hash": ""
+  },
+  "composeApp/src/desktopMain/kotlin/com/example/core/util/ClipboardSettings.desktop.kt": {
+    "mtime": 1792237136.5357997,
+    "seen": 1792237287.4986928,
+    "ast_hash": "4a9cd745a3fb8595837d6d2810b64fcf",
     "semantic_hash": ""
   }
 }

@@ -29,17 +29,23 @@ object VaultKeyStore {
     }
 
     suspend fun unlock(masterPassword: String): Boolean = withContext(Dispatchers.Default) {
+        if (masterPassword.isEmpty()) return@withContext false
         val record = decodeRecord(VaultKeyIo.readWrap() ?: return@withContext false)
             ?: return@withContext false
         val chars = masterPassword.toCharArray()
-        val kek = CryptoEngine.pbkdf2(chars, record.salt, record.iterations)
-        chars.fill('\u0000')
+        val kek = try {
+            CryptoEngine.pbkdf2(chars, record.salt, record.iterations)
+        } catch (_: Exception) {
+            return@withContext false
+        } finally {
+            chars.fill('\u0000')
+        }
         try {
             val dek = CryptoEngine.decryptBytes(kek, record.wrappedDek)
             VaultSession.unlock(dek)
             dek.fill(0)
             true
-        } catch (_: VaultCryptoException) {
+        } catch (_: Exception) {
             false
         } finally {
             kek.fill(0)
@@ -79,9 +85,17 @@ object VaultKeyStore {
     ): RewrapResult {
         val record = decodeRecord(recordText)
             ?: return RewrapResult(recordText, changed = false, dek = null)
+        if (currentPassword.isEmpty()) {
+            return RewrapResult(recordText, changed = false, dek = null)
+        }
         val currentChars = currentPassword.toCharArray()
-        val currentKek = CryptoEngine.pbkdf2(currentChars, record.salt, record.iterations)
-        currentChars.fill('\u0000')
+        val currentKek = try {
+            CryptoEngine.pbkdf2(currentChars, record.salt, record.iterations)
+        } catch (_: Exception) {
+            return RewrapResult(recordText, changed = false, dek = null)
+        } finally {
+            currentChars.fill('\u0000')
+        }
         val dek = try {
             CryptoEngine.decryptBytes(currentKek, record.wrappedDek)
         } catch (_: VaultCryptoException) {
@@ -121,10 +135,16 @@ object VaultKeyStore {
     }
 
     internal fun unwrapRecord(recordText: String, password: String): ByteArray? {
+        if (password.isEmpty()) return null
         val record = decodeRecord(recordText) ?: return null
         val chars = password.toCharArray()
-        val kek = CryptoEngine.pbkdf2(chars, record.salt, record.iterations)
-        chars.fill('\u0000')
+        val kek = try {
+            CryptoEngine.pbkdf2(chars, record.salt, record.iterations)
+        } catch (_: Exception) {
+            return null
+        } finally {
+            chars.fill('\u0000')
+        }
         return try {
             CryptoEngine.decryptBytes(kek, record.wrappedDek)
         } catch (_: VaultCryptoException) {

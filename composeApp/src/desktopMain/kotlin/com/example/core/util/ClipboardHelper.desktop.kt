@@ -22,7 +22,7 @@ actual object ClipboardHelper {
         clipboard.setContents(StringSelection(text), null)
 
         autoClearJob?.cancel()
-        if (isSensitive && autoClearSeconds > 0) {
+        if (isSensitive && autoClearSeconds > 0 && ClipboardSettings.isAutoClearEnabled()) {
             autoClearJob = CoroutineScope(Dispatchers.Default).launch {
                 delay(autoClearSeconds * 1000L)
                 val current = runCatching {

@@ -2,9 +2,9 @@ package com.example.core.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,7 +12,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -127,18 +128,16 @@ fun CategoryPillStrip(
     selectedCategory: String,
     onSelectCategory: (String) -> Unit,
     onAddCategory: (() -> Unit)? = null,
+    contentPadding: PaddingValues = PaddingValues(0.dp),
     modifier: Modifier = Modifier
 ) {
-    val scrollState = rememberScrollState()
-
-    Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .horizontalScroll(scrollState),
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        contentPadding = contentPadding,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        categories.forEach { category ->
+        items(categories) { category ->
             val isSelected = category.equals(selectedCategory, ignoreCase = true)
 
             Box(
@@ -192,32 +191,34 @@ fun CategoryPillStrip(
         }
 
         if (onAddCategory != null) {
-            Box(
-                modifier = Modifier
-                    .testTag("category_chip_add")
-                    .neuFlat(
-                        shape = RoundedCornerShape(20.dp),
-                        cornerRadius = 20.dp,
-                        backgroundColor = SurfaceContainerLowest
-                    )
-                    .clickable(onClick = onAddCategory)
-                    .padding(horizontal = 14.dp, vertical = 10.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Add category",
-                        tint = ElectricPrimaryBright,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(
-                        text = "Add",
-                        style = VaultTypography.labelSmall,
-                        color = ElectricPrimaryBright,
-                        fontWeight = FontWeight.SemiBold
-                    )
+            item {
+                Box(
+                    modifier = Modifier
+                        .testTag("category_chip_add")
+                        .neuFlat(
+                            shape = RoundedCornerShape(20.dp),
+                            cornerRadius = 20.dp,
+                            backgroundColor = SurfaceContainerLowest
+                        )
+                        .clickable(onClick = onAddCategory)
+                        .padding(horizontal = 14.dp, vertical = 10.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Add,
+                            contentDescription = "Add category",
+                            tint = ElectricPrimaryBright,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = "Add",
+                            style = VaultTypography.labelSmall,
+                            color = ElectricPrimaryBright,
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    }
                 }
             }
         }

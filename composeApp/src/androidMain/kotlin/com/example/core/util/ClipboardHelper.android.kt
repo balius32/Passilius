@@ -42,7 +42,7 @@ actual object ClipboardHelper {
         clipboard.setPrimaryClip(clip)
 
         autoClearJob?.cancel()
-        if (isSensitive && autoClearSeconds > 0) {
+        if (isSensitive && autoClearSeconds > 0 && ClipboardSettings.isAutoClearEnabled()) {
             autoClearJob = CoroutineScope(Dispatchers.Main).launch {
                 delay(autoClearSeconds * 1000L)
                 clearIfStillMatching(clipboard, text)

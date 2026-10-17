@@ -10,6 +10,14 @@ import kotlin.test.assertTrue
 class VaultKeyRewrapTest {
 
     @Test
+    fun emptyPasswordDoesNotOpenWrap() {
+        val dek = CryptoEngine.randomBytes(32)
+        val original = VaultKeyStore.createWrapRecord("current-password", 1_000, dek)
+        assertNull(VaultKeyStore.unwrapRecord(original, ""))
+        dek.fill(0)
+    }
+
+    @Test
     fun wrongPasswordReturnsOriginalRecord() {
         val dek = CryptoEngine.randomBytes(32)
         val original = VaultKeyStore.createWrapRecord("current-password", 1_000, dek)
