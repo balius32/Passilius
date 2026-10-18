@@ -16,6 +16,7 @@ import com.example.domain.usecase.RenameCategoryUseCase
 import com.example.domain.usecase.SaveCredentialUseCase
 import com.example.presentation.category.ManageCategoriesViewModel
 import com.example.presentation.generator.GeneratorViewModel
+import com.example.presentation.settings.SettingsViewModel
 import com.example.presentation.sync.SyncViewModel
 import com.example.presentation.vault.VaultViewModel
 
@@ -59,6 +60,10 @@ class AppGraph private constructor() {
 
     val generatorViewModel = GeneratorViewModel(
         generatePasswordUseCase = generatePasswordUseCase
+    )
+
+    val settingsViewModel = SettingsViewModel(
+        getVaultCredentialsUseCase = getCredentialsUseCase
     )
 
     val syncViewModel = SyncViewModel(

@@ -180,6 +180,9 @@ fun VaultScreen(
                 )
             }
 
+            val showingWholeVault = uiState.searchQuery.isBlank() &&
+                (uiState.selectedCategory == "All Vaults" || uiState.selectedCategory == "All")
+
             // Vault Summary Meta
             item {
                 Column(modifier = itemInset.padding(top = 2.dp, bottom = 2.dp)) {
@@ -190,7 +193,11 @@ fun VaultScreen(
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
-                        text = "All accounts are securely stored",
+                        text = if (uiState.credentials.isEmpty() && showingWholeVault) {
+                            "Add an account to start this vault"
+                        } else {
+                            "All accounts are securely stored"
+                        },
                         style = VaultTypography.bodySmall,
                         color = OnSurfaceSecondary,
                         modifier = Modifier.padding(top = 1.dp)
@@ -208,7 +215,11 @@ fun VaultScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "No credentials found in this vault category.",
+                            text = if (showingWholeVault) {
+                                "No accounts yet."
+                            } else {
+                                "No credentials found in this vault category."
+                            },
                             style = VaultTypography.bodyMedium,
                             color = SecondarySlate
                         )

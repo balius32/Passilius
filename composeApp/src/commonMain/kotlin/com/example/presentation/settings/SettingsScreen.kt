@@ -33,6 +33,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -62,6 +63,7 @@ import com.example.core.designsystem.neuPressed
 
 @Composable
 fun SettingsScreen(
+    viewModel: SettingsViewModel,
     onBack: () -> Unit,
     onLockVault: () -> Unit,
     onManageCategories: () -> Unit,
@@ -69,6 +71,7 @@ fun SettingsScreen(
     onChangeMasterPassword: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
+    val securityReport by viewModel.securityReport.collectAsStateWithLifecycle()
     val supportsBiometrics = LocalPlatformCapabilities.current.supportsBiometricUnlock
     var biometricEnabled by remember { mutableStateOf(BiometricSettings.isUnlockEnabled()) }
     var biometricMessage by remember { mutableStateOf<String?>(null) }
@@ -168,7 +171,7 @@ fun SettingsScreen(
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = "Grade: Military-Grade",
+                                        text = "Grade: ${securityReport.gradeLabel}",
                                         style = VaultTypography.labelSmall,
                                         color = SecurityTertiaryBright,
                                         fontWeight = FontWeight.SemiBold
@@ -177,7 +180,7 @@ fun SettingsScreen(
                             }
 
                             Text(
-                                text = "96%",
+                                text = "${securityReport.securityScorePercentage}%",
                                 style = VaultTypography.displayLarge,
                                 color = SecurityTertiaryBright,
                                 fontWeight = FontWeight.Bold,
@@ -190,9 +193,9 @@ fun SettingsScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            MetricItem("Accounts", "24")
-                            MetricItem("Strong", "21")
-                            MetricItem("Reused", "0")
+                            MetricItem("Accounts", securityReport.totalCount.toString())
+                            MetricItem("Strong", securityReport.strongCount.toString())
+                            MetricItem("Reused", securityReport.reusedCount.toString())
                         }
                     }
                 }

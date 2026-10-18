@@ -444,9 +444,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/App.kt": {
-    "mtime": 1791378134.799787,
-    "seen": 1791379123.1707404,
-    "ast_hash": "33d834439cee4257a377c08f49f7d0f2",
+    "mtime": 1792311643.59417,
+    "seen": 1792311918.0693936,
+    "ast_hash": "7cc4b785003c1d759d2ea135a9c57e00",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/core/biometric/BiometricUnlock.kt": {
@@ -612,21 +612,21 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/data/repository/VaultRepositoryImpl.kt": {
-    "mtime": 1791553971.980922,
-    "seen": 1791554474.2808223,
-    "ast_hash": "5ac14a3c9f9f07a5f534d649fce41349",
+    "mtime": 1792318381.075855,
+    "seen": 1792318416.5489461,
+    "ast_hash": "5843944670c5aaccb79f3aa0b07821af",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/di/AppGraph.kt": {
-    "mtime": 1791554037.993531,
-    "seen": 1791554474.2808223,
-    "ast_hash": "43d681c179d5de0cb14c2010671ea6ef",
+    "mtime": 1792311642.8442442,
+    "seen": 1792311918.0693936,
+    "ast_hash": "5307c408f366eadc25ebb9d5398c0b9b",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/domain/model/Credential.kt": {
-    "mtime": 1791377952.8828585,
-    "seen": 1791379123.1707404,
-    "ast_hash": "58519dd7c2e8d021dd41d129b232bd71",
+    "mtime": 1792311636.4924088,
+    "seen": 1792311918.0693936,
+    "ast_hash": "f77d80fabc7f1b0dd1c400ff351890ca",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/domain/repository/VaultRepository.kt": {
@@ -702,9 +702,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/navigation/VaultNavigation.kt": {
-    "mtime": 1792230262.8084905,
-    "seen": 1792232117.4720232,
-    "ast_hash": "acf620bd0a3feab488f15b018b05a2be",
+    "mtime": 1792311645.2387612,
+    "seen": 1792311918.0693936,
+    "ast_hash": "78694bd03d0e6766ead6188ee9a758dd",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/navigation/VaultRoutes.kt": {
@@ -714,9 +714,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/settings/SettingsScreen.kt": {
-    "mtime": 1792237128.900922,
-    "seen": 1792237287.4986928,
-    "ast_hash": "8f6d72d48ff271fb03f119d7f4eed14a",
+    "mtime": 1792311641.77291,
+    "seen": 1792311918.0693936,
+    "ast_hash": "ca868788971c373d0d2ee4279320f578",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/sync/SyncMvi.kt": {
@@ -750,9 +750,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/vault/VaultScreen.kt": {
-    "mtime": 1792232994.0696945,
-    "seen": 1792234859.9876611,
-    "ast_hash": "80aae2a9752fbb498dcaea9a3d8764b6",
+    "mtime": 1792318400.3840163,
+    "seen": 1792318416.5489461,
+    "ast_hash": "51e5d7be2a2008d82141830069296d70",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/vault/VaultViewModel.kt": {
@@ -1089,6 +1089,18 @@
     "mtime": 1792237136.5357997,
     "seen": 1792237287.4986928,
     "ast_hash": "4a9cd745a3fb8595837d6d2810b64fcf",
+    "semantic_hash": ""
+  },
+  "composeApp/src/commonMain/kotlin/com/example/presentation/settings/SettingsViewModel.kt": {
+    "mtime": 1792311638.1508918,
+    "seen": 1792311918.0693936,
+    "ast_hash": "356a21465f66bb33747323249cbb43cd",
+    "semantic_hash": ""
+  },
+  "composeApp/src/desktopTest/kotlin/com/example/domain/model/SecurityReportTest.kt": {
+    "mtime": 1792311649.4674242,
+    "seen": 1792311918.0693936,
+    "ast_hash": "b8b920789acd693c83b20e7ddab60312",
     "semantic_hash": ""
   }
 }

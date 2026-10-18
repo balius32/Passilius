@@ -26,6 +26,7 @@ class VaultRepositoryImpl(
 
     companion object {
         const val DEFAULT_CATEGORY = "Personal"
+        private const val SEEDED_NOTE_PREFIX = "Auto-generated secure vault record for "
         private val DEFAULT_CATEGORIES = listOf(
             "Personal",
             "Work",
@@ -120,13 +121,7 @@ class VaultRepositoryImpl(
     }
 
     override suspend fun getSecurityReport(): SecurityReport {
-        return SecurityReport(
-            totalCount = 24,
-            strongCount = 18,
-            weakCount = 2,
-            reusedCount = 1,
-            securityScorePercentage = 94
-        )
+        return SecurityReport.from(listCredentials())
     }
 
     override fun observeCategories(): Flow<List<String>> {
@@ -309,97 +304,16 @@ class VaultRepositoryImpl(
 
     override suspend fun seedInitialDataIfEmpty() {
         seedCategoriesIfEmpty()
+        removeSeededCredentials()
+    }
 
-        if (credentialDao.getCount() > 0) return
-
-        val initialItems = listOf(
-            InitialSeed(
-                service = "Google",
-                username = "alex.sterling@gmail.com",
-                password = "nK9\$vL72#mQp",
-                category = "Personal",
-                websiteUrl = "https://accounts.google.com",
-                iconKey = "google"
-            ),
-            InitialSeed(
-                service = "GitHub",
-                username = "alex-sterling",
-                password = "ghp_9u02!bVaKx9",
-                category = "Work",
-                websiteUrl = "https://github.com",
-                iconKey = "github"
-            ),
-            InitialSeed(
-                service = "Spotify",
-                username = "alex.music.premium",
-                password = "S0und#W4ve89!",
-                category = "Entertainment",
-                websiteUrl = "https://spotify.com",
-                iconKey = "spotify"
-            ),
-            InitialSeed(
-                service = "Apple",
-                username = "a.sterling@icloud.com",
-                password = "Cup3rt!n0_987x",
-                category = "Personal",
-                websiteUrl = "https://appleid.apple.com",
-                iconKey = "apple"
-            ),
-            InitialSeed(
-                service = "Figma",
-                username = "sterling.design@workspace.io",
-                password = "V3ct0r&Pix3l\$42",
-                category = "Work",
-                websiteUrl = "https://figma.com",
-                iconKey = "figma"
-            ),
-            InitialSeed(
-                service = "Slack",
-                username = "alex@quantumcore.dev",
-                password = "Huddl3#M0d3*91",
-                category = "Work",
-                websiteUrl = "https://slack.com",
-                iconKey = "slack"
-            ),
-            InitialSeed(
-                service = "Netflix",
-                username = "home.alex@outlook.com",
-                password = "4k_Str3am!n9",
-                category = "Entertainment",
-                websiteUrl = "https://netflix.com",
-                iconKey = "netflix"
-            ),
-            InitialSeed(
-                service = "Notion",
-                username = "alex.workspace.2025",
-                password = "P@g3s_Doc\$99",
-                category = "Work",
-                websiteUrl = "https://notion.so",
-                iconKey = "notion"
-            )
-        )
-
-        val entities = initialItems.mapIndexed { index, item ->
-            val encryptedPw = seal(item.password)
-            val entropy = PasswordGenerator.calculateEntropy(item.password)
-            CredentialEntity(
-                id = 0L,
-                syncId = newSyncId(),
-                service = item.service,
-                username = seal(item.username),
-                encryptedPassword = encryptedPw,
-                category = item.category,
-                websiteUrl = seal(item.websiteUrl),
-                notes = seal("Auto-generated secure vault record for ${item.service}."),
-                iconKey = item.iconKey,
-                createdAt = currentTimeMillis() - (index * 86400000L),
-                updatedAt = currentTimeMillis() - (index * 43200000L),
-                isFavorite = index < 3,
-                entropyBits = entropy
-            )
+    private suspend fun removeSeededCredentials() {
+        credentialDao.getAllCredentialsOnce().forEach { row ->
+            val notes = runCatching { CryptoManager.decrypt(row.notes) }.getOrNull() ?: return@forEach
+            if (notes.startsWith(SEEDED_NOTE_PREFIX)) {
+                credentialDao.deleteById(row.id)
+            }
         }
-
-        credentialDao.insertAll(entities)
     }
 
     private suspend fun seedCategoriesIfEmpty() {
@@ -448,13 +362,4 @@ class VaultRepositoryImpl(
             else -> "generic"
         }
     }
-
-    private data class InitialSeed(
-        val service: String,
-        val username: String,
-        val password: String,
-        val category: String,
-        val websiteUrl: String,
-        val iconKey: String
-    )
 }

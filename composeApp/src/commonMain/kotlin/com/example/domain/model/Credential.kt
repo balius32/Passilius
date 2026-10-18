@@ -1,5 +1,7 @@
 package com.example.domain.model
 
+import com.example.core.crypto.PasswordGenerator
+import com.example.core.crypto.PasswordStrengthLevel
 import com.example.core.platform.currentTimeMillis
 
 data class Credential(
@@ -30,5 +32,56 @@ data class SecurityReport(
     val strongCount: Int = 0,
     val weakCount: Int = 0,
     val reusedCount: Int = 0,
-    val securityScorePercentage: Int = 100
-)
+    val securityScorePercentage: Int = 0,
+    val gradeLabel: String = "Empty"
+) {
+    companion object {
+        fun from(credentials: List<Credential>): SecurityReport {
+            if (credentials.isEmpty()) return SecurityReport()
+
+            val passwordCounts = credentials.groupingBy { it.password }.eachCount()
+            var strongCount = 0
+            var weakCount = 0
+            var reusedCount = 0
+            var secureCount = 0
+            var allVeryStrong = true
+            var allAtLeastStrong = true
+
+            for (credential in credentials) {
+                val entropy = if (credential.entropyBits > 0) {
+                    credential.entropyBits
+                } else {
+                    PasswordGenerator.calculateEntropy(credential.password)
+                }
+                val level = PasswordGenerator.evaluateStrength(entropy)
+                val isReused = credential.password.isNotEmpty() &&
+                    (passwordCounts[credential.password] ?: 0) > 1
+                if (isReused) reusedCount++
+                if (level.score >= PasswordStrengthLevel.STRONG.score) {
+                    strongCount++
+                } else {
+                    weakCount++
+                    allAtLeastStrong = false
+                }
+                if (level != PasswordStrengthLevel.VERY_STRONG) allVeryStrong = false
+                if (level.score >= PasswordStrengthLevel.STRONG.score && !isReused) secureCount++
+            }
+
+            val score = secureCount * 100 / credentials.size
+            val grade = when {
+                allVeryStrong && reusedCount == 0 -> PasswordStrengthLevel.VERY_STRONG.label
+                allAtLeastStrong && reusedCount == 0 -> PasswordStrengthLevel.STRONG.label
+                score >= 50 -> PasswordStrengthLevel.FAIR.label
+                else -> PasswordStrengthLevel.WEAK.label
+            }
+            return SecurityReport(
+                totalCount = credentials.size,
+                strongCount = strongCount,
+                weakCount = weakCount,
+                reusedCount = reusedCount,
+                securityScorePercentage = score,
+                gradeLabel = grade
+            )
+        }
+    }
+}

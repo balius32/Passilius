@@ -69,6 +69,7 @@ import com.example.presentation.generator.GeneratorScreen
 import com.example.presentation.generator.GeneratorViewModel
 import com.example.presentation.settings.ChangeMasterPasswordScreen
 import com.example.presentation.settings.SettingsScreen
+import com.example.presentation.settings.SettingsViewModel
 import com.example.presentation.sync.SyncScreen
 import com.example.presentation.sync.SyncViewModel
 import com.example.presentation.unlock.MasterUnlockScreen
@@ -108,7 +109,8 @@ fun VaultApp(
     vaultViewModel: VaultViewModel,
     generatorViewModel: GeneratorViewModel,
     manageCategoriesViewModel: ManageCategoriesViewModel,
-    syncViewModel: SyncViewModel
+    syncViewModel: SyncViewModel,
+    settingsViewModel: SettingsViewModel
 ) {
     val vaultState by vaultViewModel.uiState.collectAsStateWithLifecycle()
     val backStack = remember { mutableStateListOf<VaultDestination>(VaultRoute) }
@@ -199,6 +201,7 @@ fun VaultApp(
                                 onNavigateToSettings = { backStack.add(SettingsRoute) }
                             )
                             SettingsRoute -> SettingsScreen(
+                                viewModel = settingsViewModel,
                                 onBack = {
                                     if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
                                 },
