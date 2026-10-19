@@ -42,7 +42,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -67,6 +69,7 @@ import com.example.presentation.category.ManageCategoriesViewModel
 import com.example.presentation.credential.CredentialBottomSheet
 import com.example.presentation.generator.GeneratorScreen
 import com.example.presentation.generator.GeneratorViewModel
+import com.example.presentation.onboarding.OnboardingScreen
 import com.example.presentation.settings.ChangeMasterPasswordScreen
 import com.example.presentation.settings.SettingsScreen
 import com.example.presentation.settings.SettingsViewModel
@@ -114,8 +117,11 @@ fun VaultApp(
 ) {
     val vaultState by vaultViewModel.uiState.collectAsStateWithLifecycle()
     val backStack = remember { mutableStateListOf<VaultDestination>(VaultRoute) }
+    var onboardingComplete by remember { mutableStateOf(false) }
 
-    if (vaultState.isLocked) {
+    if (vaultState.isLocked && vaultState.needsMasterSetup && !onboardingComplete) {
+        OnboardingScreen(onFinished = { onboardingComplete = true })
+    } else if (vaultState.isLocked) {
         MasterUnlockScreen(
             needsSetup = vaultState.needsMasterSetup,
             isUnlocking = vaultState.isUnlocking,

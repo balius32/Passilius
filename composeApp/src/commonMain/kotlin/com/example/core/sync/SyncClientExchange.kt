@@ -26,8 +26,10 @@ suspend fun exchangeSnapshot(
     pairing: SyncPairingInfo,
     localSnapshot: VaultSnapshot
 ): VaultSnapshot {
-    val hosts = pairing.hosts.ifEmpty { listOf(pairing.host) }.distinct()
-    if (hosts.isEmpty()) error("No sync address in the QR")
+    val hosts = pairing.hosts.ifEmpty { listOf(pairing.host) }
+        .distinct()
+        .filter(::isLocalSyncHost)
+    if (hosts.isEmpty()) error("Sync only connects to a device on the local network")
     val encrypted = SyncEnvelope.encrypt(
         pairing.token,
         syncJson.encodeToString(VaultSnapshot.serializer(), localSnapshot).encodeToByteArray()
@@ -69,6 +71,23 @@ suspend fun exchangeSnapshot(
         }
     }
     throw lastError ?: IllegalStateException("Could not reach the computer")
+}
+
+fun isLocalSyncHost(host: String): Boolean {
+    val parts = host.split('.')
+    if (parts.size != 4 || parts.any { it.length > 1 && it.startsWith('0') }) return false
+    val octets = parts.map { part -> part.toIntOrNull() ?: return false }
+    if (octets.any { it !in 0..255 }) return false
+    val first = octets[0]
+    val second = octets[1]
+    return when {
+        first == 10 -> true
+        first == 127 -> true
+        first == 192 && second == 168 -> true
+        first == 172 && second in 16..31 -> true
+        first == 169 && second == 254 -> true
+        else -> false
+    }
 }
 
 private fun ByteArray.toHex(): String =

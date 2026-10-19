@@ -360,9 +360,9 @@
     "semantic_hash": "9ee591be72fb336861a8044086054daa"
   },
   "composeApp/build.gradle.kts": {
-    "mtime": 1791554132.1434226,
-    "seen": 1791554474.2808223,
-    "ast_hash": "bdbffa1d15d30073798362cee4120cd0",
+    "mtime": 1792407299.0226839,
+    "seen": 1792408216.0581322,
+    "ast_hash": "241ffcfd8492b9c7b053bdbc9ecdd1fb",
     "semantic_hash": ""
   },
   "composeApp/schemas/com.example.data.local.database.VaultDatabase/3.json": {
@@ -702,9 +702,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/navigation/VaultNavigation.kt": {
-    "mtime": 1792311645.2387612,
-    "seen": 1792311918.0693936,
-    "ast_hash": "78694bd03d0e6766ead6188ee9a758dd",
+    "mtime": 1792397852.820245,
+    "seen": 1792408216.0581322,
+    "ast_hash": "c83c60ec78f3ea9266f7b0eba5d45a57",
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/presentation/navigation/VaultRoutes.kt": {
@@ -810,9 +810,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/desktopMain/kotlin/com/example/core/sync/SyncTransport.desktop.kt": {
-    "mtime": 1791533046.1870089,
-    "seen": 1791554474.2808223,
-    "ast_hash": "59d8402028eececea75217b2a841093b",
+    "mtime": 1792407264.8964021,
+    "seen": 1792408216.0581322,
+    "ast_hash": "13d6f6267087b8ce965ea32d0db05a8e",
     "semantic_hash": ""
   },
   "composeApp/src/desktopMain/kotlin/com/example/core/util/ClipboardHelper.desktop.kt": {
@@ -828,9 +828,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/desktopTest/kotlin/com/example/domain/sync/SyncPairingTest.kt": {
-    "mtime": 1791533117.1757965,
-    "seen": 1791554474.2808223,
-    "ast_hash": "a69caddc154e72f29a80629331e9cb87",
+    "mtime": 1792407267.9097447,
+    "seen": 1792408216.0581322,
+    "ast_hash": "f949c4f61fdef7770c5c035cab4932a6",
     "semantic_hash": ""
   },
   "gradlew": {
@@ -1020,9 +1020,9 @@
     "semantic_hash": ""
   },
   "composeApp/src/commonMain/kotlin/com/example/core/sync/SyncClientExchange.kt": {
-    "mtime": 1791533172.5298274,
-    "seen": 1791554474.2808223,
-    "ast_hash": "8866f287a4656c185a7bc88419ddb191",
+    "mtime": 1792407264.1561983,
+    "seen": 1792408216.0581322,
+    "ast_hash": "c946fe17a02be56458cf63ce64577706",
     "semantic_hash": ""
   },
   "composeApp/src/desktopMain/kotlin/com/example/core/crypto/BiometricVaultKey.desktop.kt": {
@@ -1101,6 +1101,24 @@
     "mtime": 1792311649.4674242,
     "seen": 1792311918.0693936,
     "ast_hash": "b8b920789acd693c83b20e7ddab60312",
+    "semantic_hash": ""
+  },
+  "composeApp/src/commonMain/kotlin/com/example/presentation/onboarding/OnboardingScreen.kt": {
+    "mtime": 1792400895.7703652,
+    "seen": 1792408216.0581322,
+    "ast_hash": "3b0dcd346ae59925ac1839169703a3a6",
+    "semantic_hash": ""
+  },
+  "PRIVACY.md": {
+    "mtime": 1792407284.1366322,
+    "seen": 1792408216.0581322,
+    "ast_hash": "e8516d825b8c05c891c916424d8550b3",
+    "semantic_hash": ""
+  },
+  "docs/play-listing.md": {
+    "mtime": 1792407289.6781018,
+    "seen": 1792408216.0591323,
+    "ast_hash": "c5c549882b53da4c152ab7ea7328b219",
     "semantic_hash": ""
   }
 }

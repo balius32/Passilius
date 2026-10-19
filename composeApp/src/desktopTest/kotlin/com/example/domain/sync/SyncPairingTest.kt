@@ -2,9 +2,11 @@ package com.example.domain.sync
 
 import com.example.core.platform.bytesToBase64Url
 import com.example.core.sync.SyncEnvelope
+import com.example.core.sync.isLocalSyncHost
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -46,6 +48,21 @@ class SyncPairingTest {
         assertEquals(listOf("10.0.0.8"), parsed.hosts)
         assertEquals(original.host, parsed.host)
         assertContentEquals(original.token, parsed.token)
+    }
+
+    @Test
+    fun localSyncHostAllowsOnlyPrivateLanAddresses() {
+        assertTrue(isLocalSyncHost("192.168.1.20"))
+        assertTrue(isLocalSyncHost("10.0.0.8"))
+        assertTrue(isLocalSyncHost("172.16.0.1"))
+        assertTrue(isLocalSyncHost("172.31.255.255"))
+        assertTrue(isLocalSyncHost("127.0.0.1"))
+        assertTrue(isLocalSyncHost("169.254.1.1"))
+        assertFalse(isLocalSyncHost("172.32.0.1"))
+        assertFalse(isLocalSyncHost("8.8.8.8"))
+        assertFalse(isLocalSyncHost("example.com"))
+        assertFalse(isLocalSyncHost("192.168.1.20:8080"))
+        assertFalse(isLocalSyncHost("192.168.001.20"))
     }
 
     @Test

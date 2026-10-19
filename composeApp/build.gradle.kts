@@ -83,12 +83,20 @@ room {
   schemaDirectory("$projectDir/schemas")
 }
 
+val releaseKeystorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/my-upload-key.jks"
+val releaseStorePassword = System.getenv("STORE_PASSWORD")
+val releaseKeyPassword = System.getenv("KEY_PASSWORD")
+val releaseKeystore = file(releaseKeystorePath)
+val hasReleaseSigning = releaseKeystore.isFile &&
+  !releaseStorePassword.isNullOrBlank() &&
+  !releaseKeyPassword.isNullOrBlank()
+
 android {
   namespace = "com.example"
   compileSdk = 37
 
   defaultConfig {
-    applicationId = "com.aistudio.vault.qmxzld"
+    applicationId = "io.github.balius32.passilius"
     minSdk = 24
     targetSdk = 37
     versionCode = 1
@@ -97,11 +105,12 @@ android {
 
   signingConfigs {
     create("release") {
-      val keystorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/my-upload-key.jks"
-      storeFile = file(keystorePath)
-      storePassword = System.getenv("STORE_PASSWORD")
-      keyAlias = "upload"
-      keyPassword = System.getenv("KEY_PASSWORD")
+      if (hasReleaseSigning) {
+        storeFile = releaseKeystore
+        storePassword = requireNotNull(releaseStorePassword)
+        keyAlias = "upload"
+        keyPassword = requireNotNull(releaseKeyPassword)
+      }
     }
     val debugKeystore = file("${rootDir}/debug.keystore")
     if (debugKeystore.exists()) {
@@ -120,7 +129,9 @@ android {
       isMinifyEnabled = true
       isShrinkResources = true
       proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
-      signingConfig = signingConfigs.getByName("release")
+      if (hasReleaseSigning) {
+        signingConfig = signingConfigs.getByName("release")
+      }
     }
     debug {
       if (file("${rootDir}/debug.keystore").exists()) {
@@ -141,6 +152,19 @@ android {
   packaging {
     resources {
       excludes += "/META-INF/{AL2.0,LGPL2.1}"
+    }
+  }
+}
+
+tasks.configureEach {
+  if (name == "assembleRelease" || name == "bundleRelease") {
+    doFirst {
+      if (!hasReleaseSigning) {
+        error(
+          "Release signing needs an existing keystore plus STORE_PASSWORD and KEY_PASSWORD. " +
+            "KEYSTORE_PATH defaults to my-upload-key.jks in the project root. The alias is upload."
+        )
+      }
     }
   }
 }

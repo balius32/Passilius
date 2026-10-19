@@ -124,7 +124,7 @@ private fun localLanAddresses(): List<String> {
         for (addr in nic.inetAddresses) {
             if (addr is Inet4Address && !addr.isLoopbackAddress && !addr.isLinkLocalAddress) {
                 val hostAddress = addr.hostAddress ?: continue
-                result += hostAddress
+                if (isLocalSyncHost(hostAddress)) result += hostAddress
             }
         }
     }
