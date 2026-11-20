@@ -1,3 +1,5 @@
+import java.io.File
+import java.util.Properties
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
 plugins {
@@ -83,10 +85,23 @@ room {
   schemaDirectory("$projectDir/schemas")
 }
 
-val releaseKeystorePath = System.getenv("KEYSTORE_PATH") ?: "${rootDir}/my-upload-key.jks"
-val releaseStorePassword = System.getenv("STORE_PASSWORD")
-val releaseKeyPassword = System.getenv("KEY_PASSWORD")
-val releaseKeystore = file(releaseKeystorePath)
+val keystoreProperties = Properties().apply {
+  val local = rootProject.file("keystore.properties")
+  if (local.isFile) {
+    local.inputStream().use { load(it) }
+  }
+}
+
+fun releaseSigningValue(propertyKey: String, envKey: String): String? =
+  keystoreProperties.getProperty(propertyKey)?.takeIf { it.isNotBlank() }
+    ?: System.getenv(envKey)?.takeIf { it.isNotBlank() }
+
+val releaseKeystorePath = releaseSigningValue("storeFile", "KEYSTORE_PATH")
+  ?: "${rootDir}/my-upload-key.jks"
+val releaseStorePassword = releaseSigningValue("storePassword", "STORE_PASSWORD")
+val releaseKeyPassword = releaseSigningValue("keyPassword", "KEY_PASSWORD")
+val releaseKeyAlias = releaseSigningValue("keyAlias", "KEY_ALIAS") ?: "upload"
+val releaseKeystore = rootProject.file(releaseKeystorePath)
 val hasReleaseSigning = releaseKeystore.isFile &&
   !releaseStorePassword.isNullOrBlank() &&
   !releaseKeyPassword.isNullOrBlank()
@@ -96,7 +111,7 @@ android {
   compileSdk = 37
 
   defaultConfig {
-    applicationId = "io.github.balius32.passilius"
+    applicationId = "com.balius.passilius"
     minSdk = 24
     targetSdk = 37
     versionCode = 1
@@ -108,7 +123,7 @@ android {
       if (hasReleaseSigning) {
         storeFile = releaseKeystore
         storePassword = requireNotNull(releaseStorePassword)
-        keyAlias = "upload"
+        keyAlias = releaseKeyAlias
         keyPassword = requireNotNull(releaseKeyPassword)
       }
     }
@@ -156,14 +171,62 @@ android {
   }
 }
 
+base {
+  archivesName.set("passilius")
+}
+
+fun renameReleaseArtifact(dir: File, extension: String, newFileName: String) {
+  if (!dir.isDirectory) return
+  dir.listFiles()
+    ?.filter { it.isFile && it.extension.equals(extension, ignoreCase = true) && it.name != newFileName }
+    ?.forEach { source ->
+      val target = File(dir, newFileName)
+      if (target.exists()) target.delete()
+      if (!source.renameTo(target)) {
+        source.copyTo(target, overwrite = true)
+        source.delete()
+      }
+    }
+  if (extension == "apk") {
+    val metadata = File(dir, "output-metadata.json")
+    if (metadata.isFile) {
+      metadata.writeText(
+        metadata.readText().replace(
+          Regex("\"outputFile\"\\s*:\\s*\"[^\"]+\""),
+          "\"outputFile\": \"$newFileName\"",
+        ),
+      )
+    }
+  }
+}
+
+val releaseSigningOk = hasReleaseSigning
+val releaseSigningError =
+  "Release signing needs keystore.properties (or STORE_PASSWORD/KEY_PASSWORD env vars) " +
+    "and an existing keystore. See keystore.properties.example."
+
 tasks.configureEach {
-  if (name == "assembleRelease" || name == "bundleRelease") {
-    doFirst {
-      if (!hasReleaseSigning) {
-        error(
-          "Release signing needs an existing keystore plus STORE_PASSWORD and KEY_PASSWORD. " +
-            "KEYSTORE_PATH defaults to my-upload-key.jks in the project root. The alias is upload."
-        )
+  if (name != "assembleRelease" && name != "bundleRelease") return@configureEach
+  val ok = releaseSigningOk
+  val msg = releaseSigningError
+  doFirst {
+    if (!ok) {
+      throw org.gradle.api.GradleException(msg)
+    }
+  }
+  doLast {
+    when (name) {
+      "assembleRelease" -> {
+        listOf(
+          layout.buildDirectory.dir("outputs/apk/release").get().asFile,
+          layout.projectDirectory.dir("release").asFile,
+        ).forEach { renameReleaseArtifact(it, "apk", "passilius.apk") }
+      }
+      "bundleRelease" -> {
+        listOf(
+          layout.buildDirectory.dir("outputs/bundle/release").get().asFile,
+          layout.projectDirectory.dir("release").asFile,
+        ).forEach { renameReleaseArtifact(it, "aab", "passilius.aab") }
       }
     }
   }

@@ -19,9 +19,11 @@ import com.example.presentation.generator.GeneratorViewModel
 import com.example.presentation.settings.SettingsViewModel
 import com.example.presentation.sync.SyncViewModel
 import com.example.presentation.vault.VaultViewModel
+import kotlinx.coroutines.flow.map
 
 class AppGraph private constructor() {
     private val database = createVaultDatabase()
+    val categoryIdentities = database.categoryDao().observeAll().map { rows -> rows.associate { it.name to it.syncId } }
     private val repository = VaultRepositoryImpl(
         credentialDao = database.credentialDao(),
         categoryDao = database.categoryDao()

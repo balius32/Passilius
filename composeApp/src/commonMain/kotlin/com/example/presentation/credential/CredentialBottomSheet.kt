@@ -1,5 +1,10 @@
 package com.example.presentation.credential
 
+import com.example.core.localization.*
+
+import com.example.core.localization.tr
+import passilius.composeapp.generated.resources.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -157,7 +162,7 @@ fun CredentialBottomSheet(
                 .imePadding()
         ) {
             Text(
-                text = if (initialCredential == null) "New Credential" else "Edit Credential",
+                text = if (initialCredential == null) tr(Res.string.new_credential) else tr(Res.string.edit_credential),
                 style = VaultTypography.headlineMedium,
                 color = OnSurfacePrimary,
                 fontWeight = FontWeight.Bold,
@@ -168,7 +173,7 @@ fun CredentialBottomSheet(
             )
 
             Text(
-                text = "Category",
+                text = tr(Res.string.category),
                 style = VaultTypography.labelMedium,
                 color = SecondarySlate,
                 modifier = Modifier
@@ -201,7 +206,7 @@ fun CredentialBottomSheet(
                             .padding(horizontal = 14.dp, vertical = 7.dp)
                     ) {
                         Text(
-                            text = cat,
+                            text = com.example.core.localization.categoryLabel(cat),
                             style = VaultTypography.labelSmall,
                             color = if (isCatSelected) OnPrimary else SecondarySlate,
                             fontWeight = if (isCatSelected) FontWeight.Bold else FontWeight.Medium
@@ -249,13 +254,13 @@ fun CredentialBottomSheet(
                         modifier = Modifier
                             .weight(1f)
                             .testTag("service_input"),
-                        textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary),
+                        textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary, textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr),
                         cursorBrush = SolidColor(ElectricPrimaryBright),
                         singleLine = true,
                         decorationBox = { inner ->
                             if (service.isEmpty()) {
                                 Text(
-                                    text = "Website name",
+                                    text = tr(Res.string.website_name),
                                     style = VaultTypography.bodyMedium,
                                     color = OutlineColor
                                 )
@@ -305,13 +310,13 @@ fun CredentialBottomSheet(
                         modifier = Modifier
                             .weight(1f)
                             .testTag("username_input"),
-                        textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary),
+                        textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary, textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr),
                         cursorBrush = SolidColor(ElectricPrimaryBright),
                         singleLine = true,
                         decorationBox = { inner ->
                             if (username.isEmpty()) {
                                 Text(
-                                    text = "Email or username",
+                                    text = tr(Res.string.email_or_username),
                                     style = VaultTypography.bodyMedium,
                                     color = OutlineColor
                                 )
@@ -361,14 +366,14 @@ fun CredentialBottomSheet(
                         modifier = Modifier
                             .weight(1f)
                             .testTag("password_input"),
-                        textStyle = VaultTypography.labelMedium.copy(color = OnSurfacePrimary),
+                        textStyle = VaultTypography.labelMedium.copy(color = OnSurfacePrimary, textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr),
                         cursorBrush = SolidColor(ElectricPrimaryBright),
                         singleLine = true,
                         visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         decorationBox = { inner ->
                             if (password.isEmpty()) {
                                 Text(
-                                    text = "Enter master password",
+                                    text = tr(Res.string.enter_master_password),
                                     style = VaultTypography.labelMedium,
                                     color = OutlineColor
                                 )
@@ -387,7 +392,7 @@ fun CredentialBottomSheet(
                     ) {
                         Icon(
                             imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = "Toggle Visibility",
+                            contentDescription = tr(Res.string.toggle_visibility),
                             tint = SecondarySlate,
                             modifier = Modifier.size(16.dp)
                         )
@@ -429,7 +434,7 @@ fun CredentialBottomSheet(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "${password.length} characters",
+                        text = plural(Res.plurals.password_length, password.length),
                         style = VaultTypography.labelSmall,
                         color = SecondarySlate
                     )
@@ -453,7 +458,7 @@ fun CredentialBottomSheet(
                             )
                             Spacer(modifier = Modifier.width(3.dp))
                             Text(
-                                text = "Gen",
+                                text = tr(Res.string.gen),
                                 style = VaultTypography.labelSmall,
                                 color = ElectricPrimaryBright,
                                 fontWeight = FontWeight.Bold
@@ -492,7 +497,7 @@ fun CredentialBottomSheet(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Save",
+                    text = tr(Res.string.save),
                     style = VaultTypography.headlineSmall,
                     color = OnPrimary,
                     fontWeight = FontWeight.SemiBold

@@ -1,5 +1,8 @@
 package com.example.presentation.generator
 
+import com.example.core.localization.*
+import passilius.composeapp.generated.resources.*
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.util.ClipboardHelper
@@ -64,7 +67,7 @@ class GeneratorViewModel(
             is GeneratorUiIntent.CopyPassword -> {
                 val pw = _uiState.value.generatedPassword
                 ClipboardHelper.copy(
-                    label = "Generated Password",
+                    label = tr(Res.string.generated_password),
                     text = pw,
                     isSensitive = true
                 )

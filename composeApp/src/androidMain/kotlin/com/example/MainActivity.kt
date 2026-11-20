@@ -20,6 +20,8 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.example.core.localization.LanguagePreferences.bind(applicationContext)
+        com.example.core.localization.LanguageController.initialize()
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT),
             navigationBarStyle = SystemBarStyle.light(Color.TRANSPARENT, Color.TRANSPARENT)
@@ -37,5 +39,10 @@ class MainActivity : AppCompatActivity() {
         setContent {
             App(appGraph = appGraph)
         }
+    }
+
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        super.onConfigurationChanged(newConfig)
+        com.example.core.localization.LanguageController.refreshSystemLanguage()
     }
 }

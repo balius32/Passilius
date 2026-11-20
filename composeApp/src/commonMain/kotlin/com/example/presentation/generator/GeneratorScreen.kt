@@ -1,5 +1,10 @@
 package com.example.presentation.generator
 
+import com.example.core.localization.*
+
+import com.example.core.localization.tr
+import passilius.composeapp.generated.resources.*
+
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
@@ -89,7 +94,7 @@ fun GeneratorScreen(
                 ) {
                     Column {
                         Text(
-                            text = "Generator",
+                            text = tr(Res.string.generator),
                             style = VaultTypography.headlineLarge,
                             color = OnSurfacePrimary,
                             fontWeight = FontWeight.Bold
@@ -111,7 +116,7 @@ fun GeneratorScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Person,
-                            contentDescription = "Security Profile",
+                            contentDescription = tr(Res.string.security_profile),
                             tint = SecondarySlate,
                             modifier = Modifier.size(20.dp)
                         )
@@ -153,7 +158,7 @@ fun GeneratorScreen(
                             ) {
                                 Text(
                                     text = uiState.generatedPassword,
-                                    style = VaultTypography.labelLarge,
+                                    style = VaultTypography.labelLarge.copy(textDirection = androidx.compose.ui.text.style.TextDirection.Ltr),
                                     color = OnSurfacePrimary,
                                     fontWeight = FontWeight.SemiBold,
                                     letterSpacing = 1.sp,
@@ -172,7 +177,7 @@ fun GeneratorScreen(
                                         .padding(horizontal = 8.dp, vertical = 4.dp)
                                 ) {
                                     Text(
-                                        text = "${uiState.entropyBits} BITS",
+                                        text = tr(Res.string.entropy_bits, uiState.entropyBits),
                                         style = VaultTypography.labelSmall,
                                         color = SecurityTertiaryBright,
                                         fontWeight = FontWeight.Bold,
@@ -196,7 +201,7 @@ fun GeneratorScreen(
                                 )
                                 Spacer(modifier = Modifier.width(6.dp))
                                 Text(
-                                    text = "Cryptographic PRNG",
+                                    text = tr(Res.string.cryptographic_prng),
                                     style = VaultTypography.labelSmall,
                                     color = SecondarySlate,
                                     fontWeight = FontWeight.Medium
@@ -222,7 +227,7 @@ fun GeneratorScreen(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Default.Refresh,
-                                        contentDescription = "Regenerate",
+                                        contentDescription = tr(Res.string.regenerate),
                                         tint = OnSurfacePrimary,
                                         modifier = Modifier
                                             .size(19.dp)
@@ -245,7 +250,7 @@ fun GeneratorScreen(
                                 ) {
                                     Icon(
                                         imageVector = if (uiState.isCopied) Icons.Default.Check else Icons.Default.ContentCopy,
-                                        contentDescription = "Copy",
+                                        contentDescription = tr(Res.string.copy),
                                         tint = if (uiState.isCopied) SecurityTertiaryBright else ElectricPrimaryBright,
                                         modifier = Modifier.size(18.dp)
                                     )
@@ -279,13 +284,13 @@ fun GeneratorScreen(
                         ) {
                             Column {
                                 Text(
-                                    text = "Length",
+                                    text = tr(Res.string.length),
                                     style = VaultTypography.headlineSmall,
                                     color = OnSurfacePrimary,
                                     fontWeight = FontWeight.SemiBold
                                 )
                                 Text(
-                                    text = "Recommended: 16+ chars",
+                                    text = tr(Res.string.recommended_16_chars),
                                     style = VaultTypography.bodySmall,
                                     color = SecondarySlate
                                 )
@@ -302,7 +307,7 @@ fun GeneratorScreen(
                                     .padding(horizontal = 14.dp, vertical = 6.dp)
                             ) {
                                 Text(
-                                    text = "${uiState.config.length}",
+                                    text = displayNumber(uiState.config.length),
                                     style = VaultTypography.labelMedium,
                                     color = ElectricPrimaryBright,
                                     fontWeight = FontWeight.Bold
@@ -330,9 +335,9 @@ fun GeneratorScreen(
                                 .padding(horizontal = 4.dp),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            Text(text = "8", style = VaultTypography.labelSmall, color = SecondarySlate)
-                            Text(text = "20", style = VaultTypography.labelSmall, color = SecondarySlate)
-                            Text(text = "32", style = VaultTypography.labelSmall, color = SecondarySlate)
+                            Text(text = displayNumber(8), style = VaultTypography.labelSmall, color = SecondarySlate)
+                            Text(text = displayNumber(20), style = VaultTypography.labelSmall, color = SecondarySlate)
+                            Text(text = displayNumber(32), style = VaultTypography.labelSmall, color = SecondarySlate)
                         }
                     }
                 }
@@ -360,13 +365,13 @@ fun GeneratorScreen(
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Text(
-                                text = "Attributes",
+                                text = tr(Res.string.attributes),
                                 style = VaultTypography.headlineSmall,
                                 color = OnSurfacePrimary,
                                 fontWeight = FontWeight.SemiBold
                             )
                             Text(
-                                text = "Entropy Modifiers",
+                                text = tr(Res.string.entropy_modifiers),
                                 style = VaultTypography.labelSmall,
                                 color = SecondarySlate
                             )
@@ -375,7 +380,7 @@ fun GeneratorScreen(
                         // Row 1: Uppercase
                         AttributeRow(
                             glyph = "A",
-                            title = "Uppercase Letters",
+                            title = tr(Res.string.uppercase_letters),
                             subtitle = "A-Z",
                             checked = uiState.config.includeUppercase,
                             onCheckedChange = { viewModel.handleIntent(GeneratorUiIntent.ToggleUppercase(it)) }
@@ -384,7 +389,7 @@ fun GeneratorScreen(
                         // Row 2: Lowercase
                         AttributeRow(
                             glyph = "a",
-                            title = "Lowercase Letters",
+                            title = tr(Res.string.lowercase_letters),
                             subtitle = "a-z",
                             checked = uiState.config.includeLowercase,
                             onCheckedChange = { viewModel.handleIntent(GeneratorUiIntent.ToggleLowercase(it)) }
@@ -393,7 +398,7 @@ fun GeneratorScreen(
                         // Row 3: Numbers
                         AttributeRow(
                             glyph = "0",
-                            title = "Numbers",
+                            title = tr(Res.string.numbers),
                             subtitle = "0-9",
                             checked = uiState.config.includeNumbers,
                             onCheckedChange = { viewModel.handleIntent(GeneratorUiIntent.ToggleNumbers(it)) }
@@ -402,7 +407,7 @@ fun GeneratorScreen(
                         // Row 4: Symbols
                         AttributeRow(
                             glyph = "#",
-                            title = "Symbols",
+                            title = tr(Res.string.symbols),
                             subtitle = "!@#$%^&*()_+-=",
                             checked = uiState.config.includeSymbols,
                             onCheckedChange = { viewModel.handleIntent(GeneratorUiIntent.ToggleSymbols(it)) }

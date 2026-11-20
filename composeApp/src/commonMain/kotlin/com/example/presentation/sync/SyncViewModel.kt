@@ -1,5 +1,8 @@
 package com.example.presentation.sync
 
+import passilius.composeapp.generated.resources.*
+import com.example.core.localization.*
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.biometric.BiometricUnlock
@@ -54,7 +57,7 @@ class SyncViewModel(
             SyncUiIntent.AuthCancelled -> {
                 pendingPairing = null
                 _uiState.update {
-                    it.copy(phase = SyncPhase.Error("Sync cancelled — no data was sent."))
+                    it.copy(phase = SyncPhase.Error(UiMessage(Res.string.sync_cancelled_no_data_was_sent)))
                 }
             }
             is SyncUiIntent.PinChanged -> _uiState.update { it.copy(pinInput = intent.value) }
@@ -65,7 +68,7 @@ class SyncViewModel(
                     it.copy(
                         pinFallbackVisible = false,
                         pinInput = "",
-                        phase = SyncPhase.Error("Sync cancelled — no data was sent.")
+                        phase = SyncPhase.Error(UiMessage(Res.string.sync_cancelled_no_data_was_sent))
                     )
                 }
             }
@@ -117,7 +120,7 @@ class SyncViewModel(
     private fun startHosting() {
         if (!syncHost.isSupported) {
             _uiState.update {
-                it.copy(phase = SyncPhase.Error("Hosting sync is only available on Windows desktop."))
+                it.copy(phase = SyncPhase.Error(UiMessage(Res.string.hosting_sync_is_only_available_on_windows_desktop)))
             }
             return
         }
@@ -130,7 +133,7 @@ class SyncViewModel(
                     hostTimeoutJob?.cancel()
                     _uiState.update {
                         it.copy(
-                            phase = SyncPhase.Done("Sync complete. ${remoteMerge.summary}"),
+                            phase = SyncPhase.Done(UiMessage(Res.string.sync_complete, remoteMerge.credentialsAdded, remoteMerge.credentialsUpdated, remoteMerge.credentialsSkipped, remoteMerge.categoriesAdded, remoteMerge.categoriesUpdated)),
                             lastRemoteMerge = remoteMerge,
                             qrImage = null
                         )
@@ -159,13 +162,13 @@ class SyncViewModel(
                     syncHost.stop()
                     _uiState.update {
                         if (it.phase is SyncPhase.Hosting) {
-                            it.copy(phase = SyncPhase.Error("Sync session timed out."))
+                            it.copy(phase = SyncPhase.Error(UiMessage(Res.string.sync_session_timed_out)))
                         } else it
                     }
                 }
             } catch (e: Exception) {
                 _uiState.update {
-                    it.copy(phase = SyncPhase.Error(e.message ?: "Failed to start sync host"))
+                    it.copy(phase = SyncPhase.Error(UiMessage(Res.string.failed_to_start_sync_host)))
                 }
             }
         }
@@ -196,7 +199,7 @@ class SyncViewModel(
             } else {
                 _uiState.update {
                     it.copy(
-                        phase = SyncPhase.Error("Incorrect master password"),
+                        phase = SyncPhase.Error(UiMessage(Res.string.incorrect_master_password)),
                         pinInput = ""
                     )
                 }
@@ -207,7 +210,7 @@ class SyncViewModel(
     private fun beginClientAuth(uri: String) {
         val pairing = SyncPairingInfo.parseUri(uri)
         if (pairing == null) {
-            _uiState.update { it.copy(phase = SyncPhase.Error("Invalid sync code / QR")) }
+            _uiState.update { it.copy(phase = SyncPhase.Error(UiMessage(Res.string.invalid_sync_code_qr))) }
             return
         }
         pendingPairing = pairing
@@ -227,7 +230,7 @@ class SyncViewModel(
                 is BiometricUnlockResult.Error -> {
                     pendingPairing = null
                     _uiState.update {
-                        it.copy(phase = SyncPhase.Error(result.message.ifBlank { "Authentication failed" }))
+                        it.copy(phase = SyncPhase.Error(UiMessage(Res.string.authentication_failed)))
                     }
                 }
             }
@@ -238,8 +241,8 @@ class SyncViewModel(
         if (!BiometricUnlock.isAvailable()) return BiometricUnlockResult.Unavailable
         return suspendCancellableCoroutine { cont ->
             BiometricUnlock.authenticate(
-                title = "Confirm sync",
-                subtitle = "Verify it's you before sharing the vault with this computer"
+                title = tr(Res.string.confirm_sync),
+                subtitle = tr(Res.string.verify_it_s_you_before_sharing_the_vault_with_this_computer)
             ) { result ->
                 if (cont.isActive) cont.resume(result)
             }
@@ -257,14 +260,14 @@ class SyncViewModel(
                 pendingPairing = null
                 _uiState.update {
                     it.copy(
-                        phase = SyncPhase.Done("Sync complete. ${localMerge.summary}"),
+                        phase = SyncPhase.Done(UiMessage(Res.string.sync_complete, localMerge.credentialsAdded, localMerge.credentialsUpdated, localMerge.credentialsSkipped, localMerge.categoriesAdded, localMerge.categoriesUpdated)),
                         lastLocalMerge = localMerge
                     )
                 }
             } catch (e: Exception) {
                 pendingPairing = null
                 _uiState.update {
-                    it.copy(phase = SyncPhase.Error(e.message ?: "Sync failed"))
+                    it.copy(phase = SyncPhase.Error(UiMessage(Res.string.sync_failed)))
                 }
             }
         }

@@ -1,5 +1,8 @@
 package com.example.presentation.sync
 
+import com.example.core.localization.*
+import passilius.composeapp.generated.resources.*
+
 import com.example.core.sync.QrImage
 import com.example.domain.sync.MergeResult
 
@@ -8,8 +11,8 @@ sealed interface SyncPhase {
     data object Hosting : SyncPhase
     data object AwaitingAuth : SyncPhase
     data object Transferring : SyncPhase
-    data class Done(val message: String) : SyncPhase
-    data class Error(val message: String) : SyncPhase
+    data class Done(val message: UiMessage) : SyncPhase
+    data class Error(val message: UiMessage) : SyncPhase
 }
 
 data class SyncUiState(

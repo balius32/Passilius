@@ -1,5 +1,8 @@
 package com.example.presentation.vault
 
+import passilius.composeapp.generated.resources.*
+import com.example.core.localization.*
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.core.crypto.BiometricVaultKey
@@ -199,12 +202,12 @@ class VaultViewModel(
         when {
             password.length < VaultKeyStore.MIN_PASSWORD_LENGTH -> {
                 _uiState.update {
-                    it.copy(unlockError = "Use at least ${VaultKeyStore.MIN_PASSWORD_LENGTH} characters")
+                    it.copy(unlockError = UiMessage(Res.string.use_minimum, VaultKeyStore.MIN_PASSWORD_LENGTH))
                 }
                 return
             }
             password != confirm -> {
-                _uiState.update { it.copy(unlockError = "Passwords do not match") }
+                _uiState.update { it.copy(unlockError = UiMessage(Res.string.passwords_do_not_match)) }
                 return
             }
         }
@@ -228,7 +231,7 @@ class VaultViewModel(
                 _uiState.update {
                     it.copy(
                         isUnlocking = false,
-                        unlockError = error.message ?: "Could not create the vault key"
+                        unlockError = UiMessage(Res.string.could_not_create_the_vault_key)
                     )
                 }
             }
@@ -238,7 +241,7 @@ class VaultViewModel(
     private fun submitMasterPassword(password: String) {
         if (_uiState.value.isUnlocking) return
         if (password.isBlank()) {
-            _uiState.update { it.copy(unlockError = "Enter the master password") }
+            _uiState.update { it.copy(unlockError = UiMessage(Res.string.enter_the_master_password)) }
             return
         }
         _uiState.update { it.copy(isUnlocking = true, unlockError = null) }
@@ -249,14 +252,14 @@ class VaultViewModel(
                 _uiState.update {
                     it.copy(
                         isUnlocking = false,
-                        unlockError = error.message ?: "Could not unlock the vault"
+                        unlockError = UiMessage(Res.string.could_not_unlock_the_vault)
                     )
                 }
                 return@launch
             }
             if (!opened) {
                 _uiState.update {
-                    it.copy(isUnlocking = false, unlockError = "Incorrect master password")
+                    it.copy(isUnlocking = false, unlockError = UiMessage(Res.string.incorrect_master_password))
                 }
                 return@launch
             }
@@ -278,16 +281,16 @@ class VaultViewModel(
         when {
             newPassword.length < VaultKeyStore.MIN_PASSWORD_LENGTH -> {
                 _uiState.update {
-                    it.copy(passwordChangeError = "Use at least ${VaultKeyStore.MIN_PASSWORD_LENGTH} characters")
+                    it.copy(passwordChangeError = UiMessage(Res.string.use_minimum, VaultKeyStore.MIN_PASSWORD_LENGTH))
                 }
                 return
             }
             newPassword != confirm -> {
-                _uiState.update { it.copy(passwordChangeError = "Passwords do not match") }
+                _uiState.update { it.copy(passwordChangeError = UiMessage(Res.string.passwords_do_not_match)) }
                 return
             }
             newPassword == current -> {
-                _uiState.update { it.copy(passwordChangeError = "Choose a different password") }
+                _uiState.update { it.copy(passwordChangeError = UiMessage(Res.string.choose_a_different_password)) }
                 return
             }
         }
@@ -305,7 +308,7 @@ class VaultViewModel(
                 _uiState.update {
                     it.copy(
                         isChangingPassword = false,
-                        passwordChangeError = error.message ?: "Could not change the master password"
+                        passwordChangeError = UiMessage(Res.string.could_not_change_the_master_password)
                     )
                 }
                 return@launch
@@ -314,7 +317,7 @@ class VaultViewModel(
                 _uiState.update {
                     it.copy(
                         isChangingPassword = false,
-                        passwordChangeError = "Incorrect master password"
+                        passwordChangeError = UiMessage(Res.string.incorrect_master_password)
                     )
                 }
                 return@launch
@@ -332,7 +335,7 @@ class VaultViewModel(
     private fun unlockWithBiometric() {
         if (_uiState.value.isUnlocking) return
         if (!BiometricVaultKey.unwrapAfterAuth()) {
-            _uiState.update { it.copy(unlockError = "Biometric unlock failed. Use the master password.") }
+            _uiState.update { it.copy(unlockError = UiMessage(Res.string.biometric_unlock_failed_use_the_master_password)) }
             return
         }
         _uiState.update { it.copy(isUnlocking = true, unlockError = null) }

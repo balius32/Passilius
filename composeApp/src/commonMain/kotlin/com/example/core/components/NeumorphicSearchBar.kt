@@ -1,5 +1,10 @@
 package com.example.core.components
 
+import com.example.core.localization.*
+import passilius.composeapp.generated.resources.*
+
+import com.example.core.localization.tr
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -51,7 +56,7 @@ fun NeumorphicSearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    placeholderText: String = "Search accounts, emails..."
+    placeholderText: String = tr(Res.string.search_accounts_emails)
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -73,7 +78,7 @@ fun NeumorphicSearchBar(
         ) {
             Icon(
                 imageVector = Icons.Default.Search,
-                contentDescription = "Search",
+                contentDescription = tr(Res.string.search),
                 tint = OutlineColor,
                 modifier = Modifier.size(20.dp)
             )
@@ -112,7 +117,7 @@ fun NeumorphicSearchBar(
                 ) {
                     Icon(
                         imageVector = Icons.Default.Close,
-                        contentDescription = "Clear",
+                        contentDescription = tr(Res.string.clear),
                         tint = SecondarySlate,
                         modifier = Modifier.size(16.dp)
                     )
@@ -173,7 +178,7 @@ fun CategoryPillStrip(
                         Spacer(modifier = Modifier.width(8.dp))
                     }
                     Text(
-                        text = category,
+                        text = if (category == "All Vaults" || category == "All") tr(Res.string.all_vaults) else categoryLabel(category),
                         style = VaultTypography.labelSmall,
                         color = if (isSelected) Color.White else SecondarySlate,
                         fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium
@@ -207,13 +212,13 @@ fun CategoryPillStrip(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = "Add category",
+                            contentDescription = tr(Res.string.add_category),
                             tint = ElectricPrimaryBright,
                             modifier = Modifier.size(16.dp)
                         )
                         Spacer(modifier = Modifier.width(4.dp))
                         Text(
-                            text = "Add",
+                            text = tr(Res.string.add),
                             style = VaultTypography.labelSmall,
                             color = ElectricPrimaryBright,
                             fontWeight = FontWeight.SemiBold

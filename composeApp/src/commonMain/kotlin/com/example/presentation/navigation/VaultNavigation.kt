@@ -1,5 +1,10 @@
 package com.example.presentation.navigation
 
+import com.example.core.localization.*
+import passilius.composeapp.generated.resources.*
+
+import com.example.core.localization.tr
+
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.animation.AnimatedContent
@@ -125,7 +130,7 @@ fun VaultApp(
         MasterUnlockScreen(
             needsSetup = vaultState.needsMasterSetup,
             isUnlocking = vaultState.isUnlocking,
-            errorMessage = vaultState.unlockError,
+            errorMessage = vaultState.unlockError?.resolve(),
             onCreateMasterPassword = { password, confirm ->
                 vaultViewModel.handleIntent(VaultUiIntent.CreateMasterPassword(password, confirm))
             },
@@ -165,6 +170,7 @@ fun VaultApp(
                     AnimatedContent(
                         targetState = currentKey,
                         transitionSpec = {
+                            val direction = if (com.example.core.localization.LanguageController.language == "fa") -1 else 1
                             val fromDepth = stackDepth(initialState)
                             val toDepth = stackDepth(targetState)
                             val slide = tween<IntOffset>(ProfileTransitionDurationMs)
@@ -172,19 +178,19 @@ fun VaultApp(
                                 toDepth > fromDepth -> {
                                     slideInHorizontally(
                                         animationSpec = slide,
-                                        initialOffsetX = { it }
+                                        initialOffsetX = { it * direction }
                                     ) togetherWith slideOutHorizontally(
                                         animationSpec = slide,
-                                        targetOffsetX = { -it / 4 }
+                                        targetOffsetX = { -it * direction / 4 }
                                     )
                                 }
                                 toDepth < fromDepth -> {
                                     slideInHorizontally(
                                         animationSpec = slide,
-                                        initialOffsetX = { -it / 4 }
+                                        initialOffsetX = { -it * direction / 4 }
                                     ) togetherWith slideOutHorizontally(
                                         animationSpec = slide,
-                                        targetOffsetX = { it }
+                                        targetOffsetX = { it * direction }
                                     )
                                 }
                                 else -> {
@@ -235,7 +241,7 @@ fun VaultApp(
                             )
                             ChangeMasterPasswordRoute -> ChangeMasterPasswordScreen(
                                 isChanging = vaultState.isChangingPassword,
-                                errorMessage = vaultState.passwordChangeError,
+                                errorMessage = vaultState.passwordChangeError?.resolve(),
                                 succeeded = vaultState.passwordChangeSucceeded,
                                 onBack = {
                                     vaultViewModel.handleIntent(VaultUiIntent.ClearPasswordChangeResult)
@@ -367,13 +373,13 @@ fun VaultBottomNavigationBar(
                 ) {
                     Icon(
                         imageVector = if (isVault) Icons.Filled.Lock else Icons.Outlined.Lock,
-                        contentDescription = "Vault",
+                        contentDescription = tr(Res.string.vault),
                         tint = if (isVault) ElectricPrimaryBright else SecondarySlate,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Vault",
+                        text = tr(Res.string.vault),
                         style = VaultTypography.labelSmall,
                         color = if (isVault) ElectricPrimaryBright else SecondarySlate,
                         fontWeight = if (isVault) FontWeight.Bold else FontWeight.Medium,
@@ -397,13 +403,13 @@ fun VaultBottomNavigationBar(
                 ) {
                     Icon(
                         imageVector = if (isGen) Icons.Filled.Key else Icons.Outlined.Key,
-                        contentDescription = "Generator",
+                        contentDescription = tr(Res.string.generator),
                         tint = if (isGen) ElectricPrimaryBright else SecondarySlate,
                         modifier = Modifier.size(20.dp)
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = "Generator",
+                        text = tr(Res.string.generator),
                         style = VaultTypography.labelSmall,
                         color = if (isGen) ElectricPrimaryBright else SecondarySlate,
                         fontWeight = if (isGen) FontWeight.Bold else FontWeight.Medium,
@@ -433,7 +439,7 @@ fun VaultBottomNavigationBar(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = "Create Password",
+                    contentDescription = tr(Res.string.create_password),
                     tint = OnPrimary,
                     modifier = Modifier.size(26.dp)
                 )

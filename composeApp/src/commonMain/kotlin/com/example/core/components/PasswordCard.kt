@@ -1,5 +1,8 @@
 package com.example.core.components
 
+import com.example.core.localization.tr
+import passilius.composeapp.generated.resources.*
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -173,7 +176,7 @@ fun PasswordCard(
                     ) {
                         Icon(
                             imageVector = Icons.Default.ContentCopy,
-                            contentDescription = "Copy password",
+                            contentDescription = tr(Res.string.copy_password),
                             tint = ElectricPrimaryBright,
                             modifier = Modifier.size(18.dp)
                         )
@@ -205,7 +208,7 @@ fun PasswordCard(
                     ) {
                         Icon(
                             imageVector = if (isRevealed) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = if (isRevealed) "Hide Password" else "Show Password",
+                            contentDescription = if (isRevealed) tr(Res.string.hide_password) else tr(Res.string.show_password),
                             tint = if (isRevealed) ElectricPrimaryBright else SecondarySlate,
                             modifier = Modifier.size(18.dp)
                         )
@@ -257,7 +260,7 @@ fun PasswordCard(
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = "Password",
+                                    text = tr(Res.string.password),
                                     style = VaultTypography.bodySmall,
                                     color = SecondarySlate,
                                     fontWeight = FontWeight.Medium
@@ -284,7 +287,7 @@ fun PasswordCard(
                                 )
                                 Spacer(modifier = Modifier.width(4.dp))
                                 Text(
-                                    text = "Username",
+                                    text = tr(Res.string.username),
                                     style = VaultTypography.bodySmall,
                                     color = SecondarySlate,
                                     fontWeight = FontWeight.Medium
@@ -305,7 +308,7 @@ fun PasswordCard(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Edit,
-                                contentDescription = "Edit",
+                                contentDescription = tr(Res.string.edit),
                                 tint = SecondarySlate,
                                 modifier = Modifier.size(16.dp)
                             )
@@ -324,7 +327,7 @@ fun PasswordCard(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Delete,
-                                contentDescription = "Delete",
+                                contentDescription = tr(Res.string.delete),
                                 tint = Color(0xFFBA1A1A),
                                 modifier = Modifier.size(16.dp)
                             )

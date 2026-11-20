@@ -1,5 +1,8 @@
 package com.example.presentation.category
 
+import com.example.core.localization.tr
+import passilius.composeapp.generated.resources.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -82,7 +85,7 @@ fun ManageCategoriesScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = tr(Res.string.back),
                             tint = OnSurfacePrimary,
                             modifier = Modifier.size(20.dp)
                         )
@@ -91,7 +94,7 @@ fun ManageCategoriesScreen(
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Text(
-                        text = "Categories",
+                        text = tr(Res.string.categories),
                         style = VaultTypography.headlineLarge,
                         color = OnSurfacePrimary,
                         fontWeight = FontWeight.Bold,
@@ -112,7 +115,7 @@ fun ManageCategoriesScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Add,
-                            contentDescription = "Add category",
+                            contentDescription = tr(Res.string.add_category),
                             tint = ElectricPrimaryBright,
                             modifier = Modifier.size(20.dp)
                         )
@@ -140,7 +143,7 @@ fun ManageCategoriesScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = category,
+                            text = com.example.core.localization.categoryLabel(category),
                             style = VaultTypography.bodyMedium,
                             color = OnSurfacePrimary,
                             fontWeight = FontWeight.SemiBold,
@@ -165,7 +168,7 @@ fun ManageCategoriesScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Edit,
-                                    contentDescription = "Rename",
+                                    contentDescription = tr(Res.string.rename),
                                     tint = ElectricPrimaryBright,
                                     modifier = Modifier.size(16.dp)
                                 )
@@ -191,7 +194,7 @@ fun ManageCategoriesScreen(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.Delete,
-                                    contentDescription = "Delete",
+                                    contentDescription = tr(Res.string.delete),
                                     tint = Color(0xFFBA1A1A),
                                     modifier = Modifier.size(16.dp)
                                 )
@@ -204,7 +207,7 @@ fun ManageCategoriesScreen(
             if (uiState.categories.isEmpty()) {
                 item {
                     Text(
-                        text = "No categories yet.",
+                        text = tr(Res.string.no_categories_yet),
                         style = VaultTypography.bodySmall,
                         color = SecondarySlate,
                         modifier = Modifier.padding(top = 24.dp)

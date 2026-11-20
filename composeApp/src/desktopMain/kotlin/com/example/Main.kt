@@ -6,7 +6,9 @@ import androidx.compose.ui.window.application
 import androidx.compose.ui.window.rememberWindowState
 import com.example.di.AppGraph
 
-fun main() = application {
+fun main() {
+    com.example.core.localization.LanguageController.initialize()
+    application {
     val appGraph = AppGraph.create()
     Window(
         onCloseRequest = ::exitApplication,
@@ -15,4 +17,5 @@ fun main() = application {
     ) {
         App(appGraph = appGraph)
     }
+}
 }

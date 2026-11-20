@@ -1,5 +1,10 @@
 package com.example.presentation.sync
 
+import com.example.core.localization.*
+import passilius.composeapp.generated.resources.*
+
+import com.example.core.localization.tr
+
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -82,7 +87,7 @@ fun SyncScreen(
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                        contentDescription = "Back",
+                        contentDescription = tr(Res.string.back),
                         tint = OnSurfacePrimary,
                         modifier = Modifier.size(20.dp)
                     )
@@ -90,13 +95,13 @@ fun SyncScreen(
                 Spacer(modifier = Modifier.width(16.dp))
                 Column {
                     Text(
-                        text = "Sync devices",
+                        text = tr(Res.string.sync_devices),
                         style = VaultTypography.headlineLarge,
                         color = OnSurfacePrimary,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Local only — no cloud",
+                        text = tr(Res.string.local_only_no_cloud),
                         style = VaultTypography.labelSmall,
                         color = SecondarySlate
                     )
@@ -104,7 +109,7 @@ fun SyncScreen(
             }
 
             Text(
-                text = "Your phone must approve every sync with biometrics or PIN. Use the same Wi‑Fi, or a USB cable with tethering on. Plugging in alone does not connect.",
+                text = tr(Res.string.your_phone_must_approve_every_sync_with_biometrics_or_pin_use_the_same_wi_fi_or_a_usb_cable_with_tethering_on_plugging_in_alone_does_not_connect),
                 style = VaultTypography.bodySmall,
                 color = SecondarySlate
             )
@@ -129,14 +134,14 @@ fun SyncScreen(
             when (val phase = state.phase) {
                 is SyncPhase.Error -> {
                     Text(
-                        text = phase.message,
+                        text = phase.message.resolve(),
                         style = VaultTypography.bodyMedium,
                         color = androidx.compose.ui.graphics.Color(0xFFBA1A1A),
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.fillMaxWidth()
                     )
                     ActionButton(
-                        label = "Retry",
+                        label = tr(Res.string.retry),
                         onClick = { viewModel.handleIntent(SyncUiIntent.RetryScan) }
                     )
                 }
@@ -165,7 +170,7 @@ private fun HostContent(
     val hosting = state.phase is SyncPhase.Hosting
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         ActionButton(
-            label = if (hosting) "Stop waiting" else "Show QR & wait",
+            label = if (hosting) tr(Res.string.stop_waiting) else tr(Res.string.show_qr_wait),
             onClick = if (hosting) onStopHost else onStartHost
         )
         val qr = state.qrImage
@@ -184,21 +189,21 @@ private fun HostContent(
             ) {
                 Image(
                     bitmap = bitmap,
-                    contentDescription = "Sync QR code",
+                    contentDescription = tr(Res.string.sync_qr_code),
                     modifier = Modifier.size(220.dp)
                 )
             }
             val advertised = state.lanAddresses.filter { it != "127.0.0.1" }
             Text(
                 text = if (advertised.isEmpty()) {
-                    "No network address yet. Turn on Wi‑Fi or USB tethering, then refresh."
+                    tr(Res.string.no_network_address_yet_turn_on_wi_fi_or_usb_tethering_then_refresh)
                 } else {
-                    "Addresses: ${advertised.joinToString()}"
+                    tr(Res.string.addresses, advertised.joinToString())
                 },
                 style = VaultTypography.bodySmall,
                 color = SecondarySlate
             )
-            ActionButton(label = "Refresh QR", onClick = onRefreshQr)
+            ActionButton(label = tr(Res.string.refresh_qr), onClick = onRefreshQr)
         }
     }
 }
@@ -215,7 +220,7 @@ private fun ScanContent(
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         if (scanning) {
             Text(
-                text = "Point the camera at the QR on your computer",
+                text = tr(Res.string.point_the_camera_at_the_qr_on_your_computer),
                 style = VaultTypography.bodySmall,
                 color = SecondarySlate
             )
@@ -228,7 +233,7 @@ private fun ScanContent(
                 value = state.manualUri,
                 onChanged = onManualChanged,
                 onConnect = onConnectManual,
-                hint = "Or paste passilius://sync?... from the computer"
+                hint = tr(Res.string.or_paste_passilius_sync_from_the_computer)
             )
         }
     }
@@ -256,13 +261,13 @@ private fun ManualUriField(
         BasicTextField(
             value = value,
             onValueChange = onChanged,
-            textStyle = VaultTypography.bodySmall.copy(color = OnSurfacePrimary),
+            textStyle = VaultTypography.bodySmall.copy(color = OnSurfacePrimary, textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr),
             cursorBrush = SolidColor(ElectricPrimaryBright),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(72.dp)
         )
-        ActionButton(label = "Connect & approve", onClick = onConnect)
+        ActionButton(label = tr(Res.string.connect_approve), onClick = onConnect)
     }
 }
 
@@ -285,7 +290,7 @@ private fun PinFallbackCard(
         verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         Text(
-            text = "Enter the master password to allow sync",
+            text = tr(Res.string.enter_the_master_password_to_allow_sync),
             style = VaultTypography.bodyMedium,
             color = OnSurfacePrimary,
             fontWeight = FontWeight.Medium
@@ -294,13 +299,13 @@ private fun PinFallbackCard(
             value = pin,
             onValueChange = onPinChanged,
             visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
-            textStyle = VaultTypography.headlineSmall.copy(color = OnSurfacePrimary),
+            textStyle = VaultTypography.headlineSmall.copy(color = OnSurfacePrimary, textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr),
             cursorBrush = SolidColor(ElectricPrimaryBright),
             modifier = Modifier.fillMaxWidth()
         )
         Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            ActionButton(label = "Allow sync", onClick = onSubmit, modifier = Modifier.weight(1f))
-            ActionButton(label = "Cancel", onClick = onCancel, modifier = Modifier.weight(1f))
+            ActionButton(label = tr(Res.string.allow_sync), onClick = onSubmit, modifier = Modifier.weight(1f))
+            ActionButton(label = tr(Res.string.cancel), onClick = onCancel, modifier = Modifier.weight(1f))
         }
     }
 }
@@ -309,11 +314,11 @@ private fun PinFallbackCard(
 private fun PhaseBanner(phase: SyncPhase) {
     val (text, emphasize) = when (phase) {
         SyncPhase.Idle -> return
-        SyncPhase.Hosting -> "Waiting for phone…" to false
-        SyncPhase.AwaitingAuth -> "Waiting for biometric / PIN approval…" to false
-        SyncPhase.Transferring -> "Transferring encrypted vault…" to false
-        is SyncPhase.Done -> phase.message to false
-        is SyncPhase.Error -> phase.message to true
+        SyncPhase.Hosting -> tr(Res.string.waiting_for_phone) to false
+        SyncPhase.AwaitingAuth -> tr(Res.string.waiting_for_biometric_pin_approval) to false
+        SyncPhase.Transferring -> tr(Res.string.transferring_encrypted_vault) to false
+        is SyncPhase.Done -> phase.message.resolve() to false
+        is SyncPhase.Error -> phase.message.resolve() to true
     }
     Text(
         text = text,

@@ -1,5 +1,10 @@
 package com.example.presentation.vault
 
+import com.example.core.localization.*
+
+import com.example.core.localization.tr
+import passilius.composeapp.generated.resources.*
+
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -82,7 +87,7 @@ fun VaultScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Vault",
+                        text = tr(Res.string.vault),
                         style = VaultTypography.headlineLarge,
                         color = OnSurfacePrimary,
                         fontWeight = FontWeight.Bold
@@ -117,7 +122,7 @@ fun VaultScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Search,
-                                contentDescription = "Search",
+                                contentDescription = tr(Res.string.search),
                                 tint = if (uiState.isSearchVisible) ElectricPrimaryBright else SecondarySlate,
                                 modifier = Modifier.size(19.dp)
                             )
@@ -138,7 +143,7 @@ fun VaultScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Person,
-                                contentDescription = "Security Settings",
+                                contentDescription = tr(Res.string.security_settings),
                                 tint = SecondarySlate,
                                 modifier = Modifier.size(20.dp)
                             )
@@ -150,7 +155,7 @@ fun VaultScreen(
             if (uiState.legacyFailures > 0) {
                 item {
                     Text(
-                        text = "${uiState.legacyFailures} older item(s) could not be re-encrypted and were left unchanged.",
+                        text = tr(Res.string.legacy_failures, uiState.legacyFailures),
                         style = VaultTypography.bodySmall,
                         color = SecondarySlate,
                         modifier = itemInset
@@ -187,16 +192,16 @@ fun VaultScreen(
             item {
                 Column(modifier = itemInset.padding(top = 2.dp, bottom = 2.dp)) {
                     Text(
-                        text = "${uiState.credentials.size} Passwords",
+                        text = plural(Res.plurals.password_count, uiState.credentials.size),
                         style = VaultTypography.headlineSmall,
                         color = OnSurfacePrimary,
                         fontWeight = FontWeight.SemiBold
                     )
                     Text(
                         text = if (uiState.credentials.isEmpty() && showingWholeVault) {
-                            "Add an account to start this vault"
+                            tr(Res.string.add_an_account_to_start_this_vault)
                         } else {
-                            "All accounts are securely stored"
+                            tr(Res.string.all_accounts_are_securely_stored)
                         },
                         style = VaultTypography.bodySmall,
                         color = OnSurfaceSecondary,
@@ -216,9 +221,9 @@ fun VaultScreen(
                     ) {
                         Text(
                             text = if (showingWholeVault) {
-                                "No accounts yet."
+                                tr(Res.string.no_accounts_yet)
                             } else {
-                                "No credentials found in this vault category."
+                                tr(Res.string.no_credentials_found_in_this_vault_category)
                             },
                             style = VaultTypography.bodyMedium,
                             color = SecondarySlate

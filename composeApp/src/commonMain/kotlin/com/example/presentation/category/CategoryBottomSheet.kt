@@ -1,5 +1,8 @@
 package com.example.presentation.category
 
+import com.example.core.localization.tr
+import passilius.composeapp.generated.resources.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -95,7 +98,7 @@ fun CategoryBottomSheet(
                 .imePadding()
         ) {
             Text(
-                text = if (isEdit) "Rename Category" else "New Category",
+                text = if (isEdit) tr(Res.string.rename_category) else tr(Res.string.new_category),
                 style = VaultTypography.headlineMedium,
                 color = OnSurfacePrimary,
                 fontWeight = FontWeight.Bold,
@@ -128,7 +131,7 @@ fun CategoryBottomSheet(
                     decorationBox = { inner ->
                         if (name.isEmpty()) {
                             Text(
-                                text = "Category name",
+                                text = tr(Res.string.category_name),
                                 style = VaultTypography.bodyMedium,
                                 color = OutlineColor
                             )
@@ -154,7 +157,7 @@ fun CategoryBottomSheet(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "Save",
+                    text = tr(Res.string.save),
                     style = VaultTypography.headlineSmall,
                     color = OnPrimary,
                     fontWeight = FontWeight.SemiBold

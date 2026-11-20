@@ -1,5 +1,8 @@
 package com.example.presentation.sync
 
+import com.example.core.localization.tr
+import passilius.composeapp.generated.resources.*
+
 import android.Manifest
 import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -69,7 +72,7 @@ actual fun SyncQrCamera(
             contentAlignment = Alignment.Center
         ) {
             Text(
-                text = "Allow camera access to scan the sync QR",
+                text = tr(Res.string.allow_camera_access_to_scan_the_sync_qr),
                 style = VaultTypography.bodySmall,
                 color = OnSurfacePrimary
             )
@@ -87,10 +90,11 @@ actual fun SyncQrCamera(
             .fillMaxWidth()
             .height(280.dp)
             .clip(RoundedCornerShape(20.dp)),
+        update = { it.setStatusText(tr(Res.string.scan_the_qr_on_your_computer)) },
         factory = { viewContext ->
             DecoratedBarcodeView(viewContext).apply {
                 barcodeView.decoderFactory = DefaultDecoderFactory(listOf(BarcodeFormat.QR_CODE))
-                setStatusText("Scan the QR on your computer")
+                setStatusText(tr(Res.string.scan_the_qr_on_your_computer))
                 decodeContinuous(object : BarcodeCallback {
                     override fun barcodeResult(result: BarcodeResult) {
                         val text = result.text ?: return

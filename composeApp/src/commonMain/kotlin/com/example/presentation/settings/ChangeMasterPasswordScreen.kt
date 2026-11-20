@@ -1,5 +1,10 @@
 package com.example.presentation.settings
 
+import com.example.core.localization.*
+
+import com.example.core.localization.tr
+import passilius.composeapp.generated.resources.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -100,7 +105,7 @@ fun ChangeMasterPasswordScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = tr(Res.string.back),
                             tint = OnSurfacePrimary,
                             modifier = Modifier.size(20.dp)
                         )
@@ -109,7 +114,7 @@ fun ChangeMasterPasswordScreen(
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Text(
-                        text = "Change master password",
+                        text = tr(Res.string.change_master_password),
                         style = VaultTypography.headlineLarge,
                         color = OnSurfacePrimary,
                         fontWeight = FontWeight.Bold
@@ -119,7 +124,7 @@ fun ChangeMasterPasswordScreen(
 
             item {
                 Text(
-                    text = "At least ${VaultKeyStore.MIN_PASSWORD_LENGTH} characters. There is no way to recover the vault if this password is forgotten.",
+                    text = tr(Res.string.password_warning, VaultKeyStore.MIN_PASSWORD_LENGTH),
                     style = VaultTypography.bodySmall,
                     color = SecondarySlate
                 )
@@ -132,7 +137,7 @@ fun ChangeMasterPasswordScreen(
                         current = it
                         if (!errorMessage.isNullOrBlank()) onClearError()
                     },
-                    hint = "Current password"
+                    hint = tr(Res.string.current_password)
                 )
             }
 
@@ -143,7 +148,7 @@ fun ChangeMasterPasswordScreen(
                         newPassword = it
                         if (!errorMessage.isNullOrBlank()) onClearError()
                     },
-                    hint = "New password"
+                    hint = tr(Res.string.new_password)
                 )
             }
 
@@ -154,7 +159,7 @@ fun ChangeMasterPasswordScreen(
                         confirm = it
                         if (!errorMessage.isNullOrBlank()) onClearError()
                     },
-                    hint = "Confirm password"
+                    hint = tr(Res.string.confirm_password)
                 )
             }
 
@@ -185,7 +190,7 @@ fun ChangeMasterPasswordScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = if (isChanging) "Working…" else "Change password",
+                        text = if (isChanging) tr(Res.string.working) else tr(Res.string.change_password),
                         style = VaultTypography.bodyMedium,
                         color = ElectricPrimaryBright,
                         fontWeight = FontWeight.SemiBold
@@ -222,7 +227,7 @@ private fun PasswordField(
                 singleLine = true,
                 visualTransformation = if (visible) VisualTransformation.None else PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary),
+                textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary, textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr),
                 cursorBrush = SolidColor(ElectricPrimaryBright),
                 modifier = Modifier
                     .weight(1f)
@@ -236,7 +241,7 @@ private fun PasswordField(
             ) {
                 Icon(
                     imageVector = if (visible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                    contentDescription = if (visible) "Hide $hint" else "Show $hint",
+                    contentDescription = if (visible) tr(Res.string.hide_field, hint) else tr(Res.string.show_field, hint),
                     tint = SecondarySlate,
                     modifier = Modifier.size(20.dp)
                 )

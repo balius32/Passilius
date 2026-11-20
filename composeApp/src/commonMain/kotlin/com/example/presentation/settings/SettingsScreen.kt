@@ -1,5 +1,10 @@
 package com.example.presentation.settings
 
+import com.example.core.localization.*
+
+import com.example.core.localization.tr
+import passilius.composeapp.generated.resources.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -21,6 +26,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Category
 import androidx.compose.material.icons.filled.Fingerprint
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Shield
@@ -72,9 +78,39 @@ fun SettingsScreen(
     modifier: Modifier = Modifier
 ) {
     val securityReport by viewModel.securityReport.collectAsStateWithLifecycle()
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    if (showLanguageDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showLanguageDialog = false },
+            title = { Text(tr(Res.string.language)) },
+            text = {
+                Column {
+                    com.example.core.localization.AppLanguage.entries.forEach { language ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth().clickable {
+                                com.example.core.localization.LanguageController.select(language)
+                                showLanguageDialog = false
+                            }.padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            androidx.compose.material3.RadioButton(
+                                selected = com.example.core.localization.LanguageController.selection == language,
+                                onClick = null
+                            )
+                            Text(languageLabel(language))
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showLanguageDialog = false }) { Text(tr(Res.string.cancel)) }
+            }
+        )
+    }
     val supportsBiometrics = LocalPlatformCapabilities.current.supportsBiometricUnlock
     var biometricEnabled by remember { mutableStateOf(BiometricSettings.isUnlockEnabled()) }
-    var biometricMessage by remember { mutableStateOf<String?>(null) }
+    var biometricMessage by remember { mutableStateOf<UiMessage?>(null) }
     var autoClearClipboard by remember { mutableStateOf(ClipboardSettings.isAutoClearEnabled()) }
     val contentPadding = rememberScreenContentPadding(bottom = 60.dp)
 
@@ -109,7 +145,7 @@ fun SettingsScreen(
                     ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back",
+                            contentDescription = tr(Res.string.back),
                             tint = OnSurfacePrimary,
                             modifier = Modifier.size(20.dp)
                         )
@@ -118,7 +154,7 @@ fun SettingsScreen(
                     Spacer(modifier = Modifier.width(16.dp))
 
                     Text(
-                        text = "Profile",
+                        text = tr(Res.string.profile),
                         style = VaultTypography.headlineLarge,
                         color = OnSurfacePrimary,
                         fontWeight = FontWeight.Bold
@@ -165,13 +201,13 @@ fun SettingsScreen(
                                 Spacer(modifier = Modifier.width(12.dp))
                                 Column {
                                     Text(
-                                        text = "Vault Health",
+                                        text = tr(Res.string.vault_health),
                                         style = VaultTypography.headlineSmall,
                                         color = OnSurfacePrimary,
                                         fontWeight = FontWeight.Bold
                                     )
                                     Text(
-                                        text = "Grade: ${securityReport.gradeLabel}",
+                                        text = tr(Res.string.grade, gradeText(securityReport.gradeLabel)),
                                         style = VaultTypography.labelSmall,
                                         color = SecurityTertiaryBright,
                                         fontWeight = FontWeight.SemiBold
@@ -180,7 +216,7 @@ fun SettingsScreen(
                             }
 
                             Text(
-                                text = "${securityReport.securityScorePercentage}%",
+                                text = displayNumber(securityReport.securityScorePercentage) + "%",
                                 style = VaultTypography.displayLarge,
                                 color = SecurityTertiaryBright,
                                 fontWeight = FontWeight.Bold,
@@ -193,9 +229,9 @@ fun SettingsScreen(
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
-                            MetricItem("Accounts", securityReport.totalCount.toString())
-                            MetricItem("Strong", securityReport.strongCount.toString())
-                            MetricItem("Reused", securityReport.reusedCount.toString())
+                            MetricItem(tr(Res.string.accounts), displayNumber(securityReport.totalCount))
+                            MetricItem(tr(Res.string.strong), displayNumber(securityReport.strongCount))
+                            MetricItem(tr(Res.string.reused), displayNumber(securityReport.reusedCount))
                         }
                     }
                 }
@@ -215,7 +251,7 @@ fun SettingsScreen(
                 ) {
                     Column(verticalArrangement = Arrangement.spacedBy(22.dp)) {
                         Text(
-                            text = "Security",
+                            text = tr(Res.string.security),
                             style = VaultTypography.headlineSmall,
                             color = OnSurfacePrimary,
                             fontWeight = FontWeight.SemiBold
@@ -238,20 +274,20 @@ fun SettingsScreen(
                                     Spacer(modifier = Modifier.width(10.dp))
                                     Column {
                                         Text(
-                                            text = "Biometric Unlock",
+                                            text = tr(Res.string.biometric_unlock),
                                             style = VaultTypography.bodyMedium,
                                             color = OnSurfacePrimary,
                                             fontWeight = FontWeight.Medium
                                         )
                                         Text(
-                                            text = "Touch ID / Face Unlock authentication",
+                                            text = tr(Res.string.touch_id_face_unlock_authentication),
                                             style = VaultTypography.bodySmall,
                                             color = SecondarySlate,
                                             fontSize = 11.sp
                                         )
-                                        if (!biometricMessage.isNullOrBlank()) {
+                                        if (!(biometricMessage == null)) {
                                             Text(
-                                                text = biometricMessage.orEmpty(),
+                                                text = biometricMessage?.resolve().orEmpty(),
                                                 style = VaultTypography.bodySmall,
                                                 color = Color(0xFFBA1A1A),
                                                 fontSize = 11.sp
@@ -264,8 +300,8 @@ fun SettingsScreen(
                                     onCheckedChange = { enabled ->
                                         if (enabled) {
                                             BiometricUnlock.authenticate(
-                                                title = "Enable biometric unlock",
-                                                subtitle = "Confirm your fingerprint or face"
+                                                title = tr(Res.string.enable_biometric_unlock),
+                                                subtitle = tr(Res.string.confirm_your_fingerprint_or_face)
                                             ) { result ->
                                                 when (result) {
                                                     BiometricUnlockResult.Success -> {
@@ -276,18 +312,17 @@ fun SettingsScreen(
                                                             BiometricSettings.setUnlockEnabled(true)
                                                         } catch (error: Exception) {
                                                             biometricEnabled = false
-                                                            biometricMessage = error.message
-                                                                ?: "Could not enable biometric unlock"
+                                                            biometricMessage = UiMessage(Res.string.could_not_enable_biometric_unlock)
                                                         }
                                                     }
                                                     BiometricUnlockResult.Unavailable -> {
                                                         biometricEnabled = false
                                                         biometricMessage =
-                                                            "Set up fingerprint or face unlock in system settings"
+                                                            UiMessage(Res.string.set_up_fingerprint_or_face_unlock_in_system_settings)
                                                     }
                                                     is BiometricUnlockResult.Error -> {
                                                         biometricEnabled = false
-                                                        biometricMessage = result.message.ifBlank { null }
+                                                        biometricMessage = if (result.message.isBlank()) null else UiMessage(Res.string.authentication_failed)
                                                     }
                                                 }
                                             }
@@ -318,13 +353,13 @@ fun SettingsScreen(
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Column {
                                     Text(
-                                        text = "Auto-Clear Clipboard",
+                                        text = tr(Res.string.auto_clear_clipboard),
                                         style = VaultTypography.bodyMedium,
                                         color = OnSurfacePrimary,
                                         fontWeight = FontWeight.Medium
                                     )
                                     Text(
-                                        text = "Clears secrets after 30 seconds",
+                                        text = tr(Res.string.clears_secrets_after_30_seconds),
                                         style = VaultTypography.bodySmall,
                                         color = SecondarySlate,
                                         fontSize = 11.sp
@@ -371,13 +406,13 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.width(10.dp))
                             Column {
                                 Text(
-                                    text = "Change master password",
+                                    text = tr(Res.string.change_master_password),
                                     style = VaultTypography.bodyMedium,
                                     color = OnSurfacePrimary,
                                     fontWeight = FontWeight.Medium
                                 )
                                 Text(
-                                    text = "Updates the password that unlocks this vault",
+                                    text = tr(Res.string.updates_the_password_that_unlocks_this_vault),
                                     style = VaultTypography.bodySmall,
                                     color = SecondarySlate,
                                     fontSize = 11.sp
@@ -422,13 +457,13 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.width(10.dp))
                             Column {
                                 Text(
-                                    text = "Sync devices",
+                                    text = tr(Res.string.sync_devices),
                                     style = VaultTypography.bodyMedium,
                                     color = OnSurfacePrimary,
                                     fontWeight = FontWeight.Medium
                                 )
                                 Text(
-                                    text = "QR or USB — local only, phone must approve",
+                                    text = tr(Res.string.qr_or_usb_local_only_phone_must_approve),
                                     style = VaultTypography.bodySmall,
                                     color = SecondarySlate,
                                     fontSize = 11.sp
@@ -442,6 +477,32 @@ fun SettingsScreen(
                             modifier = Modifier.size(22.dp)
                         )
                     }
+                }
+            }
+
+            item {
+                Row(
+                    modifier = Modifier.fillMaxWidth().testTag("language_setting")
+                        .neuFlat(
+                            shape = RoundedCornerShape(24.dp),
+                            cornerRadius = 24.dp,
+                            backgroundColor = SurfaceContainerLowest
+                        )
+                        .clickable { showLanguageDialog = true }
+                        .padding(18.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(Icons.Default.Language, contentDescription = null,
+                        tint = ElectricPrimaryBright, modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(10.dp))
+                    Column(Modifier.weight(1f)) {
+                        Text(tr(Res.string.language), style = VaultTypography.bodyMedium,
+                            color = OnSurfacePrimary, fontWeight = FontWeight.Medium)
+                        Text(languageLabel(LanguageController.selection), style = VaultTypography.bodySmall,
+                            color = SecondarySlate, fontSize = 11.sp)
+                    }
+                    Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null,
+                        tint = SecondarySlate, modifier = Modifier.size(22.dp))
                 }
             }
 
@@ -473,13 +534,13 @@ fun SettingsScreen(
                             Spacer(modifier = Modifier.width(10.dp))
                             Column {
                                 Text(
-                                    text = "Categories",
+                                    text = tr(Res.string.categories),
                                     style = VaultTypography.bodyMedium,
                                     color = OnSurfacePrimary,
                                     fontWeight = FontWeight.Medium
                                 )
                                 Text(
-                                    text = "Add, rename, or remove",
+                                    text = tr(Res.string.add_rename_or_remove),
                                     style = VaultTypography.bodySmall,
                                     color = SecondarySlate,
                                     fontSize = 11.sp
@@ -523,7 +584,7 @@ fun SettingsScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Lock Vault Now",
+                            text = tr(Res.string.lock_vault_now),
                             style = VaultTypography.headlineSmall,
                             color = Color(0xFFBA1A1A),
                             fontWeight = FontWeight.SemiBold
@@ -551,4 +612,10 @@ private fun MetricItem(label: String, value: String) {
             fontSize = 11.sp
         )
     }
+}
+
+private fun languageLabel(language: com.example.core.localization.AppLanguage): String = when (language) {
+    com.example.core.localization.AppLanguage.SYSTEM -> tr(Res.string.system_default)
+    com.example.core.localization.AppLanguage.ENGLISH -> tr(Res.string.english)
+    com.example.core.localization.AppLanguage.PERSIAN -> tr(Res.string.persian)
 }

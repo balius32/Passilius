@@ -1,5 +1,8 @@
 package com.example.presentation.vault
 
+import com.example.core.localization.*
+import passilius.composeapp.generated.resources.*
+
 import com.example.domain.model.Credential
 
 data class VaultUiState(
@@ -18,11 +21,11 @@ data class VaultUiState(
     val categorySheetSessionId: Long = 0L,
     val isLocked: Boolean = true,
     val needsMasterSetup: Boolean = false,
-    val unlockError: String? = null,
+    val unlockError: UiMessage? = null,
     val isUnlocking: Boolean = false,
     val legacyFailures: Int = 0,
     val isChangingPassword: Boolean = false,
-    val passwordChangeError: String? = null,
+    val passwordChangeError: UiMessage? = null,
     val passwordChangeSucceeded: Boolean = false
 )
 

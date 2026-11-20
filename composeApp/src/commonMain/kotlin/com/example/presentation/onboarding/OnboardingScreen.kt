@@ -1,5 +1,10 @@
 package com.example.presentation.onboarding
 
+import com.example.core.localization.*
+
+import com.example.core.localization.tr
+import passilius.composeapp.generated.resources.*
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -26,12 +31,18 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material.icons.filled.Key
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Shield
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -79,6 +90,10 @@ fun OnboardingScreen(
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        if (pagerState.currentPage == 0) {
+            OnboardingLanguageSelector()
+            Spacer(Modifier.height(8.dp))
+        }
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
@@ -95,7 +110,7 @@ fun OnboardingScreen(
         PageDots(currentPage = pagerState.currentPage)
         Spacer(modifier = Modifier.height(20.dp))
         OnboardingButton(
-            label = if (pagerState.currentPage == 0) "Continue" else "Create master password",
+            label = if (pagerState.currentPage == 0) tr(Res.string.`continue`) else tr(Res.string.create_master_password),
             onClick = {
                 if (pagerState.currentPage == 0) {
                     scope.launch { pagerState.animateScrollToPage(1) }
@@ -104,6 +119,60 @@ fun OnboardingScreen(
                 }
             }
         )
+    }
+}
+
+@Composable
+private fun OnboardingLanguageSelector() {
+    var showLanguageDialog by remember { mutableStateOf(false) }
+    fun languageLabel(language: AppLanguage): String = tr(when (language) {
+        AppLanguage.SYSTEM -> Res.string.system_default
+        AppLanguage.ENGLISH -> Res.string.english
+        AppLanguage.PERSIAN -> Res.string.persian
+    })
+    if (showLanguageDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showLanguageDialog = false },
+            title = { Text(tr(Res.string.language)) },
+            text = {
+                Column {
+                    AppLanguage.entries.forEach { language ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth().clickable {
+                                LanguageController.select(language)
+                                showLanguageDialog = false
+                            }.padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            androidx.compose.material3.RadioButton(
+                                selected = LanguageController.selection == language,
+                                onClick = null
+                            )
+                            Text(languageLabel(language))
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                androidx.compose.material3.TextButton(onClick = { showLanguageDialog = false }) {
+                    Text(tr(Res.string.cancel))
+                }
+            }
+        )
+    }
+    Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        androidx.compose.material3.TextButton(
+            onClick = { showLanguageDialog = true },
+            modifier = Modifier.testTag("onboarding_language")
+        ) {
+            Icon(Icons.Filled.Language, contentDescription = null,
+                modifier = Modifier.size(20.dp))
+            Spacer(Modifier.width(8.dp))
+            Text(languageLabel(LanguageController.selection))
+            Spacer(Modifier.width(4.dp))
+            Icon(Icons.Filled.ArrowDropDown, contentDescription = tr(Res.string.language))
+        }
     }
 }
 
@@ -122,7 +191,7 @@ private fun IntroPage() {
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Passwords stay on this device. No account. No cloud.",
+            text = tr(Res.string.passwords_stay_on_this_device_no_account_no_cloud),
             style = VaultTypography.bodySmall,
             color = SecondarySlate,
             textAlign = TextAlign.Center,
@@ -133,18 +202,18 @@ private fun IntroPage() {
             features = listOf(
                 Feature(
                     icon = Icons.Filled.Shield,
-                    title = "Encrypted here",
-                    body = "Credentials are encrypted on this device before they are saved."
+                    title = tr(Res.string.encrypted_here),
+                    body = tr(Res.string.credentials_are_encrypted_on_this_device_before_they_are_saved)
                 ),
                 Feature(
                     icon = Icons.Filled.ContentCopy,
-                    title = "Search and copy",
-                    body = "Find a login, then copy the username or password."
+                    title = tr(Res.string.search_and_copy),
+                    body = tr(Res.string.find_a_login_then_copy_the_username_or_password)
                 ),
                 Feature(
                     icon = Icons.Filled.QrCode,
-                    title = "Your other device",
-                    body = "Pair with a QR code and move the vault over your local network."
+                    title = tr(Res.string.your_other_device),
+                    body = tr(Res.string.pair_with_a_qr_code_and_move_the_vault_over_your_local_network)
                 )
             )
         )
@@ -154,10 +223,10 @@ private fun IntroPage() {
 @Composable
 private fun MasterKeyPage() {
     PageBody {
-        HeroIcon(icon = Icons.Filled.Key, contentDescription = "Master password")
+        HeroIcon(icon = Icons.Filled.Key, contentDescription = tr(Res.string.master_password))
         Spacer(modifier = Modifier.height(20.dp))
         Text(
-            text = "The only key",
+            text = tr(Res.string.the_only_key),
             style = VaultTypography.headlineLarge,
             color = OnSurfacePrimary,
             fontWeight = FontWeight.Bold,
@@ -166,7 +235,7 @@ private fun MasterKeyPage() {
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "The master password opens this vault. If you forget it, the vault cannot be opened.",
+            text = tr(Res.string.the_master_password_opens_this_vault_if_you_forget_it_the_vault_cannot_be_opened),
             style = VaultTypography.bodySmall,
             color = SecondarySlate,
             textAlign = TextAlign.Center,
@@ -177,13 +246,13 @@ private fun MasterKeyPage() {
             features = listOf(
                 Feature(
                     icon = Icons.Filled.Lock,
-                    title = "No reset",
-                    body = "There is no account and no way to recover a forgotten password."
+                    title = tr(Res.string.no_reset),
+                    body = tr(Res.string.there_is_no_account_and_no_way_to_recover_a_forgotten_password)
                 ),
                 Feature(
                     icon = Icons.Filled.Key,
-                    title = "At least ${VaultKeyStore.MIN_PASSWORD_LENGTH} characters",
-                    body = "You will choose it on the next screen. Write it down first."
+                    title = tr(Res.string.minimum_length, VaultKeyStore.MIN_PASSWORD_LENGTH),
+                    body = tr(Res.string.you_will_choose_it_on_the_next_screen_write_it_down_first)
                 )
             )
         )

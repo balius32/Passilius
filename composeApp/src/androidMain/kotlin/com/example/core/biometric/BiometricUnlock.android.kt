@@ -1,5 +1,8 @@
 package com.example.core.biometric
 
+import com.example.core.localization.*
+import passilius.composeapp.generated.resources.*
+
 import android.os.Build
 import androidx.biometric.BiometricManager
 import androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK
@@ -75,7 +78,7 @@ actual object BiometricUnlock {
                 // Device credential cannot share a negative button, and that
                 // combination is only valid from API 30.
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                    setNegativeButtonText("Cancel")
+                    setNegativeButtonText(tr(Res.string.cancel))
                 }
             }
             .build()
@@ -83,9 +86,9 @@ actual object BiometricUnlock {
         try {
             prompt.authenticate(info)
         } catch (error: IllegalArgumentException) {
-            onResult(BiometricUnlockResult.Error(error.message ?: "Biometrics unavailable"))
+            onResult(BiometricUnlockResult.Error(tr(Res.string.biometrics_unavailable)))
         } catch (error: IllegalStateException) {
-            onResult(BiometricUnlockResult.Error(error.message ?: "Biometrics unavailable"))
+            onResult(BiometricUnlockResult.Error(tr(Res.string.biometrics_unavailable)))
         }
     }
 

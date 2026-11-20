@@ -320,7 +320,7 @@ class VaultRepositoryImpl(
         if (categoryDao.getCount() > 0) return
         categoryDao.insertAll(
             DEFAULT_CATEGORIES.mapIndexed { index, name ->
-                CategoryEntity(syncId = newSyncId(), name = name, sortOrder = index)
+                CategoryEntity(syncId = "builtin:$name", name = name, sortOrder = index)
             }
         )
     }

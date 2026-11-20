@@ -64,10 +64,12 @@ See [composeApp/README.md](composeApp/README.md) for module details.
 
 ### Release signing (optional)
 
-Release builds expect keystore environment variables (see `composeApp/build.gradle.kts`):
+Copy `keystore.properties.example` to `keystore.properties` (gitignored) and fill in:
 
-- `KEYSTORE_PATH` (defaults to `my-upload-key.jks` in the project root)
-- `STORE_PASSWORD`, `KEY_PASSWORD`
+- `storeFile` — path to the keystore (relative to the project root, or absolute)
+- `storePassword`, `keyPassword`, `keyAlias`
+
+Environment variables still work as overrides: `KEYSTORE_PATH`, `STORE_PASSWORD`, `KEY_PASSWORD`, `KEY_ALIAS`.
 
 Debug builds can use a local `debug.keystore` if present.
 
