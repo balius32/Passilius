@@ -31,6 +31,7 @@ class MainActivity : AppCompatActivity() {
         VaultFiles.bind(applicationContext)
         ClipboardHelper.bind(applicationContext)
         ClipboardSettings.bind(applicationContext)
+        com.example.core.util.GuidePreferences.bind(applicationContext)
         BiometricUnlock.bind(this)
         BiometricSettings.bind(applicationContext)
 

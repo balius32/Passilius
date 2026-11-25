@@ -1,5 +1,9 @@
 package com.example.presentation.navigation
 
+import androidx.compose.runtime.CompositionLocalProvider
+import com.example.core.platform.LocalPlatformCapabilities
+import com.example.core.util.GuidePreferences
+import com.example.presentation.guide.*
 import com.example.core.localization.*
 import passilius.composeapp.generated.resources.*
 
@@ -142,174 +146,243 @@ fun VaultApp(
             }
         )
     } else {
-        val currentKey = backStack.lastOrNull()
+        var topic by remember {
+            mutableStateOf(GuideTopic.Quick.takeIf { GuidePreferences.completedVersion() < GuideVersion })
+        }
+        var automatic by remember { mutableStateOf(topic != null) }
+        var showGuideMenu by remember { mutableStateOf(false) }
+        var guideIndex by remember { mutableStateOf(0) }
+        val supportsBiometric = LocalPlatformCapabilities.current.supportsBiometricUnlock
+        val steps = topic?.steps.orEmpty().filter { it.id != "biometric" || supportsBiometric }
+        val step = steps.getOrNull(guideIndex)
+        val guideTarget = remember(step) { step?.let(::GuideTarget) }
+        val formPreview = step?.page == GuidePage.Form
+
+        fun exitGuide() {
+            if (automatic) {
+                GuidePreferences.complete(GuideVersion)
+                selectTopLevelTab(backStack, VaultRoute)
+            } else {
+                showGuideMenu = true
+            }
+            topic = null
+            guideIndex = 0
+            automatic = false
+        }
+
+        val guideDestination = when (step?.page) {
+            GuidePage.Vault, GuidePage.Form -> VaultRoute
+            GuidePage.Generator -> GeneratorRoute
+            GuidePage.Settings -> SettingsRoute
+            GuidePage.Categories -> CategoriesRoute
+            null -> null
+        }
+        val currentKey = guideDestination ?: backStack.lastOrNull()
         val showBottomBar = currentKey != SettingsRoute &&
             currentKey != CategoriesRoute &&
             currentKey != SyncRoute &&
             currentKey != ChangeMasterPasswordRoute
         val hazeState = rememberHazeState()
 
-        BackHandler(enabled = backStack.size > 1) {
-            backStack.removeAt(backStack.lastIndex)
+        BackHandler(enabled = step != null || backStack.size > 1) {
+            if (step != null) exitGuide()
+            else backStack.removeAt(backStack.lastIndex)
         }
 
-        Scaffold(
-            containerColor = SurfaceCanvas,
-            contentWindowInsets = WindowInsets(0, 0, 0, 0)
-        ) { paddingValues ->
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(top = paddingValues.calculateTopPadding())
-            ) {
+        val overlay: (@Composable () -> Unit)? = guideTarget?.let { target ->
+            {
+                GuideOverlay(
+                    target = target,
+                    index = guideIndex,
+                    count = steps.size,
+                    onPrevious = { guideIndex-- },
+                    onNext = { if (guideIndex == steps.lastIndex) exitGuide() else guideIndex++ },
+                    onExit = ::exitGuide
+                )
+            }
+        }
+
+        CompositionLocalProvider(LocalGuideTarget provides guideTarget) {
+            Scaffold(
+                containerColor = SurfaceCanvas,
+                contentWindowInsets = WindowInsets(0, 0, 0, 0)
+            ) { paddingValues ->
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .hazeSource(state = hazeState)
+                        .padding(top = paddingValues.calculateTopPadding())
                 ) {
-                    AnimatedContent(
-                        targetState = currentKey,
-                        transitionSpec = {
-                            val direction = if (com.example.core.localization.LanguageController.language == "fa") -1 else 1
-                            val fromDepth = stackDepth(initialState)
-                            val toDepth = stackDepth(targetState)
-                            val slide = tween<IntOffset>(ProfileTransitionDurationMs)
-                            when {
-                                toDepth > fromDepth -> {
-                                    slideInHorizontally(
-                                        animationSpec = slide,
-                                        initialOffsetX = { it * direction }
-                                    ) togetherWith slideOutHorizontally(
-                                        animationSpec = slide,
-                                        targetOffsetX = { -it * direction / 4 }
+                    Box(Modifier.fillMaxSize().guideBackground(step != null)) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .hazeSource(state = hazeState)
+                        ) {
+                            AnimatedContent(
+                                targetState = currentKey,
+                                transitionSpec = {
+                                    val direction = if (com.example.core.localization.LanguageController.language == "fa") -1 else 1
+                                    val fromDepth = stackDepth(initialState)
+                                    val toDepth = stackDepth(targetState)
+                                    val slide = tween<IntOffset>(ProfileTransitionDurationMs)
+                                    when {
+                                        toDepth > fromDepth -> {
+                                            slideInHorizontally(
+                                                animationSpec = slide,
+                                                initialOffsetX = { it * direction }
+                                            ) togetherWith slideOutHorizontally(
+                                                animationSpec = slide,
+                                                targetOffsetX = { -it * direction / 4 }
+                                            )
+                                        }
+                                        toDepth < fromDepth -> {
+                                            slideInHorizontally(
+                                                animationSpec = slide,
+                                                initialOffsetX = { -it * direction / 4 }
+                                            ) togetherWith slideOutHorizontally(
+                                                animationSpec = slide,
+                                                targetOffsetX = { it * direction }
+                                            )
+                                        }
+                                        else -> {
+                                            fadeIn(animationSpec = tween(120)) togetherWith
+                                                fadeOut(animationSpec = tween(120))
+                                        }
+                                    }.apply {
+                                        targetContentZIndex = toDepth.toFloat()
+                                    }
+                                },
+                                label = "vault_nav"
+                            ) { destination ->
+                                when (destination) {
+                                    VaultRoute, null -> VaultScreen(
+                                        viewModel = vaultViewModel,
+                                        onNavigateToSettings = { backStack.add(SettingsRoute) }
+                                    )
+                                    GeneratorRoute -> GeneratorScreen(
+                                        viewModel = generatorViewModel,
+                                        onNavigateToSettings = { backStack.add(SettingsRoute) }
+                                    )
+                                    SettingsRoute -> SettingsScreen(
+                                        viewModel = settingsViewModel,
+                                        onBack = {
+                                            if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+                                        },
+                                        onOpenGuide = { showGuideMenu = true },
+                                        onLockVault = {
+                                            vaultViewModel.handleIntent(VaultUiIntent.LockVault)
+                                        },
+                                        onManageCategories = { backStack.add(CategoriesRoute) },
+                                        onSyncDevices = { backStack.add(SyncRoute) },
+                                        onChangeMasterPassword = {
+                                            vaultViewModel.handleIntent(VaultUiIntent.ClearPasswordChangeResult)
+                                            backStack.add(ChangeMasterPasswordRoute)
+                                        }
+                                    )
+                                    CategoriesRoute -> ManageCategoriesScreen(
+                                        viewModel = manageCategoriesViewModel,
+                                        onBack = {
+                                            if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+                                        }
+                                    )
+                                    SyncRoute -> SyncScreen(
+                                        viewModel = syncViewModel,
+                                        onBack = {
+                                            if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+                                        }
+                                    )
+                                    ChangeMasterPasswordRoute -> ChangeMasterPasswordScreen(
+                                        isChanging = vaultState.isChangingPassword,
+                                        errorMessage = vaultState.passwordChangeError?.resolve(),
+                                        succeeded = vaultState.passwordChangeSucceeded,
+                                        onBack = {
+                                            vaultViewModel.handleIntent(VaultUiIntent.ClearPasswordChangeResult)
+                                            if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+                                        },
+                                        onSubmit = { current, newPassword, confirm ->
+                                            vaultViewModel.handleIntent(
+                                                VaultUiIntent.ChangeMasterPassword(current, newPassword, confirm)
+                                            )
+                                        },
+                                        onClearError = {
+                                            vaultViewModel.handleIntent(VaultUiIntent.ClearPasswordChangeResult)
+                                        },
+                                        onFinished = {
+                                            vaultViewModel.handleIntent(VaultUiIntent.ClearPasswordChangeResult)
+                                            if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+                                        }
                                     )
                                 }
-                                toDepth < fromDepth -> {
-                                    slideInHorizontally(
-                                        animationSpec = slide,
-                                        initialOffsetX = { -it * direction / 4 }
-                                    ) togetherWith slideOutHorizontally(
-                                        animationSpec = slide,
-                                        targetOffsetX = { it * direction }
-                                    )
-                                }
-                                else -> {
-                                    fadeIn(animationSpec = tween(120)) togetherWith
-                                        fadeOut(animationSpec = tween(120))
-                                }
-                            }.apply {
-                                targetContentZIndex = toDepth.toFloat()
                             }
-                        },
-                        label = "vault_nav"
-                    ) { destination ->
-                        when (destination) {
-                            VaultRoute, null -> VaultScreen(
-                                viewModel = vaultViewModel,
-                                onNavigateToSettings = { backStack.add(SettingsRoute) }
-                            )
-                            GeneratorRoute -> GeneratorScreen(
-                                viewModel = generatorViewModel,
-                                onNavigateToSettings = { backStack.add(SettingsRoute) }
-                            )
-                            SettingsRoute -> SettingsScreen(
-                                viewModel = settingsViewModel,
-                                onBack = {
-                                    if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+                        }
+
+                        AnimatedVisibility(
+                            visible = showBottomBar,
+                            enter = slideInVertically(initialOffsetY = { it }),
+                            exit = slideOutVertically(targetOffsetY = { it }),
+                            modifier = Modifier.align(Alignment.BottomCenter)
+                        ) {
+                            VaultBottomNavigationBar(
+                                currentDestination = currentKey,
+                                hazeState = hazeState,
+                                onSelectDestination = { destination ->
+                                    selectTopLevelTab(backStack, destination)
                                 },
-                                onLockVault = {
-                                    vaultViewModel.handleIntent(VaultUiIntent.LockVault)
-                                },
-                                onManageCategories = { backStack.add(CategoriesRoute) },
-                                onSyncDevices = { backStack.add(SyncRoute) },
-                                onChangeMasterPassword = {
-                                    vaultViewModel.handleIntent(VaultUiIntent.ClearPasswordChangeResult)
-                                    backStack.add(ChangeMasterPasswordRoute)
-                                }
-                            )
-                            CategoriesRoute -> ManageCategoriesScreen(
-                                viewModel = manageCategoriesViewModel,
-                                onBack = {
-                                    if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
-                                }
-                            )
-                            SyncRoute -> SyncScreen(
-                                viewModel = syncViewModel,
-                                onBack = {
-                                    if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
-                                }
-                            )
-                            ChangeMasterPasswordRoute -> ChangeMasterPasswordScreen(
-                                isChanging = vaultState.isChangingPassword,
-                                errorMessage = vaultState.passwordChangeError?.resolve(),
-                                succeeded = vaultState.passwordChangeSucceeded,
-                                onBack = {
-                                    vaultViewModel.handleIntent(VaultUiIntent.ClearPasswordChangeResult)
-                                    if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
-                                },
-                                onSubmit = { current, newPassword, confirm ->
-                                    vaultViewModel.handleIntent(
-                                        VaultUiIntent.ChangeMasterPassword(current, newPassword, confirm)
-                                    )
-                                },
-                                onClearError = {
-                                    vaultViewModel.handleIntent(VaultUiIntent.ClearPasswordChangeResult)
-                                },
-                                onFinished = {
-                                    vaultViewModel.handleIntent(VaultUiIntent.ClearPasswordChangeResult)
-                                    if (backStack.size > 1) backStack.removeAt(backStack.lastIndex)
+                                onOpenCreate = {
+                                    vaultViewModel.handleIntent(VaultUiIntent.OpenCreate)
                                 }
                             )
                         }
-                    }
-                }
 
-                AnimatedVisibility(
-                    visible = showBottomBar,
-                    enter = slideInVertically(initialOffsetY = { it }),
-                    exit = slideOutVertically(targetOffsetY = { it }),
-                    modifier = Modifier.align(Alignment.BottomCenter)
-                ) {
-                    VaultBottomNavigationBar(
-                        currentDestination = currentKey,
-                        hazeState = hazeState,
-                        onSelectDestination = { destination ->
-                            selectTopLevelTab(backStack, destination)
-                        },
-                        onOpenCreate = {
-                            vaultViewModel.handleIntent(VaultUiIntent.OpenCreate)
+                        if (formPreview) {
+                            CredentialBottomSheet(
+                                initialCredential = null,
+                                categories = vaultState.selectableCategories,
+                                onDismiss = ::exitGuide,
+                                guideOverlay = overlay,
+                                onSave = {}
+                            )
+                        } else if (step == null && vaultState.isBottomSheetOpen) {
+                            key(vaultState.bottomSheetSessionId) {
+                                CredentialBottomSheet(
+                                    initialCredential = vaultState.editingCredential,
+                                    categories = vaultState.selectableCategories,
+                                    onDismiss = {
+                                        vaultViewModel.handleIntent(VaultUiIntent.CloseBottomSheet)
+                                    },
+                                    onSave = {
+                                        vaultViewModel.handleIntent(VaultUiIntent.SaveCredential(it))
+                                    }
+                                )
+                            }
                         }
-                    )
-                }
 
-                if (vaultState.isBottomSheetOpen) {
-                    key(vaultState.bottomSheetSessionId) {
-                        CredentialBottomSheet(
-                            initialCredential = vaultState.editingCredential,
-                            categories = vaultState.selectableCategories,
-                            onDismiss = {
-                                vaultViewModel.handleIntent(VaultUiIntent.CloseBottomSheet)
-                            },
-                            onSave = {
-                                vaultViewModel.handleIntent(VaultUiIntent.SaveCredential(it))
+                        if (step == null && vaultState.isCategorySheetOpen) {
+                            key(vaultState.categorySheetSessionId) {
+                                CategoryBottomSheet(
+                                    onDismiss = {
+                                        vaultViewModel.handleIntent(VaultUiIntent.CloseCategorySheet)
+                                    },
+                                    onSave = {
+                                        vaultViewModel.handleIntent(VaultUiIntent.CreateCategory(it))
+                                    }
+                                )
                             }
-                        )
+                        }
                     }
-                }
-
-                if (vaultState.isCategorySheetOpen) {
-                    key(vaultState.categorySheetSessionId) {
-                        CategoryBottomSheet(
-                            onDismiss = {
-                                vaultViewModel.handleIntent(VaultUiIntent.CloseCategorySheet)
-                            },
-                            onSave = {
-                                vaultViewModel.handleIntent(VaultUiIntent.CreateCategory(it))
-                            }
-                        )
-                    }
+                    if (!formPreview) overlay?.invoke()
                 }
             }
+        }
+        if (showGuideMenu && step == null) {
+            GuideMenu(
+                onClose = { showGuideMenu = false },
+                onSelect = {
+                    showGuideMenu = false
+                    guideIndex = 0
+                    topic = it
+                }
+            )
         }
     }
 }
@@ -393,7 +466,7 @@ fun VaultBottomNavigationBar(
                 Column(
                     modifier = Modifier
                         .weight(1f)
-                        .testTag("nav_tab_generator")
+                        .guideTarget("generator").testTag("nav_tab_generator")
                         .clickable(
                             interactionSource = generatorTabInteraction,
                             indication = null
@@ -433,6 +506,7 @@ fun VaultBottomNavigationBar(
             Box(
                 modifier = Modifier
                     .size(FabSize)
+                    .guideTarget("add", CircleShape)
                     .clip(CircleShape)
                     .background(ElectricPrimaryBright, CircleShape),
                 contentAlignment = Alignment.Center

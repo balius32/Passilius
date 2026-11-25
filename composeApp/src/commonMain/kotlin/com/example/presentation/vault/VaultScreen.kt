@@ -1,5 +1,7 @@
 package com.example.presentation.vault
 
+import com.example.presentation.guide.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import com.example.core.localization.*
 
 import com.example.core.localization.tr
@@ -27,6 +29,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
@@ -72,7 +75,15 @@ fun VaultScreen(
             .fillMaxSize()
             .background(SurfaceCanvas)
     ) {
+        val guideListState = rememberLazyListState()
+        GuideScroll(guideListState, when (LocalGuideTarget.current?.step?.id) {
+            "search" -> 0
+            "filter" -> if (uiState.isSearchVisible) 2 else 1
+            "card" -> (if (uiState.isSearchVisible) 4 else 3)
+            else -> null
+        })
         LazyColumn(
+            state = guideListState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -101,7 +112,7 @@ fun VaultScreen(
                         Box(
                             modifier = Modifier
                                 .size(40.dp)
-                                .testTag("search_btn")
+                                .guideTarget("search", CircleShape).testTag("search_btn")
                                 .then(
                                     if (uiState.isSearchVisible) {
                                         Modifier.neuPressed(
@@ -181,6 +192,7 @@ fun VaultScreen(
                     selectedCategory = uiState.selectedCategory,
                     onSelectCategory = { viewModel.handleIntent(VaultUiIntent.SelectCategory(it)) },
                     onAddCategory = { viewModel.handleIntent(VaultUiIntent.OpenCreateCategory) },
+                    modifier = Modifier.guideTarget("filter"),
                     contentPadding = PaddingValues(horizontal = VaultItemPadding)
                 )
             }
@@ -214,7 +226,7 @@ fun VaultScreen(
             if (uiState.credentials.isEmpty()) {
                 item {
                     Box(
-                        modifier = itemInset
+                        modifier = itemInset.guideTarget("card")
                             .fillMaxWidth()
                             .padding(top = 40.dp),
                         contentAlignment = Alignment.Center
@@ -241,7 +253,7 @@ fun VaultScreen(
                         onCopyUsername = { viewModel.handleIntent(VaultUiIntent.CopyUsername(it)) },
                         onEdit = { viewModel.handleIntent(VaultUiIntent.OpenEdit(it)) },
                         onDelete = { viewModel.handleIntent(VaultUiIntent.DeleteCredential(it)) },
-                        modifier = itemInset
+                        modifier = if (cred == uiState.credentials.first()) itemInset.guideTarget("card", RoundedCornerShape(24.dp)) else itemInset
                     )
                 }
             }

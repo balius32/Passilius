@@ -1,5 +1,6 @@
 package com.example.presentation.credential
 
+import com.example.presentation.guide.*
 import com.example.core.localization.*
 
 import com.example.core.localization.tr
@@ -93,6 +94,7 @@ fun CredentialBottomSheet(
     initialCredential: Credential?,
     categories: List<String>,
     onDismiss: () -> Unit,
+    guideOverlay: (@Composable () -> Unit)? = null,
     onSave: (Credential) -> Unit
 ) {
     var service by remember { mutableStateOf(initialCredential?.service ?: "") }
@@ -139,6 +141,7 @@ fun CredentialBottomSheet(
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
+        sheetGesturesEnabled = guideOverlay == null,
         sheetState = sheetState,
         containerColor = SurfaceCanvas,
         tonalElevation = 0.dp,
@@ -153,356 +156,363 @@ fun CredentialBottomSheet(
             )
         }
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 32.dp)
-                .verticalScroll(rememberScrollState())
-                .navigationBarsPadding()
-                .imePadding()
-        ) {
-            Text(
-                text = if (initialCredential == null) tr(Res.string.new_credential) else tr(Res.string.edit_credential),
-                style = VaultTypography.headlineMedium,
-                color = OnSurfacePrimary,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = SheetHorizontalPadding)
-                    .padding(bottom = 22.dp)
-            )
-
-            Text(
-                text = tr(Res.string.category),
-                style = VaultTypography.labelMedium,
-                color = SecondarySlate,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = SheetHorizontalPadding)
-                    .padding(bottom = 10.dp)
-            )
-            LazyRow(
-                modifier = Modifier.fillMaxWidth(),
-                contentPadding = PaddingValues(horizontal = SheetHorizontalPadding),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(categories) { cat ->
-                    val isCatSelected = cat.equals(category, ignoreCase = true)
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(14.dp))
-                            .background(
-                                if (isCatSelected) ElectricPrimaryBright else SurfaceCanvas,
-                                RoundedCornerShape(14.dp)
-                            )
-                            .then(
-                                if (!isCatSelected) {
-                                    Modifier.border(1.dp, SheetFieldBorder, RoundedCornerShape(14.dp))
-                                } else {
-                                    Modifier
-                                }
-                            )
-                            .clickable { category = cat }
-                            .padding(horizontal = 14.dp, vertical = 7.dp)
-                    ) {
-                        Text(
-                            text = com.example.core.localization.categoryLabel(cat),
-                            style = VaultTypography.labelSmall,
-                            color = if (isCatSelected) OnPrimary else SecondarySlate,
-                            fontWeight = if (isCatSelected) FontWeight.Bold else FontWeight.Medium
-                        )
-                    }
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Field 1: Website or Service
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = SheetHorizontalPadding)
-                    .height(52.dp)
-                    .sheetFieldWell()
-                    .padding(horizontal = 14.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(Color(0xFFEBEEF3)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Public,
-                            contentDescription = null,
-                            tint = SecondarySlate,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(10.dp))
-
-                    BasicTextField(
-                        value = service,
-                        onValueChange = { service = it },
-                        modifier = Modifier
-                            .weight(1f)
-                            .testTag("service_input"),
-                        textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary, textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr),
-                        cursorBrush = SolidColor(ElectricPrimaryBright),
-                        singleLine = true,
-                        decorationBox = { inner ->
-                            if (service.isEmpty()) {
-                                Text(
-                                    text = tr(Res.string.website_name),
-                                    style = VaultTypography.bodyMedium,
-                                    color = OutlineColor
-                                )
-                            }
-                            inner()
-                        }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Field 2: Username or Email
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = SheetHorizontalPadding)
-                    .height(52.dp)
-                    .sheetFieldWell()
-                    .padding(horizontal = 14.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(Color(0xFFEBEEF3)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.AlternateEmail,
-                            contentDescription = null,
-                            tint = SecondarySlate,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(10.dp))
-
-                    BasicTextField(
-                        value = username,
-                        onValueChange = { username = it },
-                        modifier = Modifier
-                            .weight(1f)
-                            .testTag("username_input"),
-                        textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary, textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr),
-                        cursorBrush = SolidColor(ElectricPrimaryBright),
-                        singleLine = true,
-                        decorationBox = { inner ->
-                            if (username.isEmpty()) {
-                                Text(
-                                    text = tr(Res.string.email_or_username),
-                                    style = VaultTypography.bodyMedium,
-                                    color = OutlineColor
-                                )
-                            }
-                            inner()
-                        }
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Field 3: Password / Secret
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = SheetHorizontalPadding)
-                    .height(52.dp)
-                    .sheetFieldWell()
-                    .padding(horizontal = 14.dp),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .clip(RoundedCornerShape(10.dp))
-                            .background(Color(0xFFEBEEF3)),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.Lock,
-                            contentDescription = null,
-                            tint = SecondarySlate,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.width(10.dp))
-
-                    BasicTextField(
-                        value = password,
-                        onValueChange = { password = it },
-                        modifier = Modifier
-                            .weight(1f)
-                            .testTag("password_input"),
-                        textStyle = VaultTypography.labelMedium.copy(color = OnSurfacePrimary, textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr),
-                        cursorBrush = SolidColor(ElectricPrimaryBright),
-                        singleLine = true,
-                        visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                        decorationBox = { inner ->
-                            if (password.isEmpty()) {
-                                Text(
-                                    text = tr(Res.string.enter_master_password),
-                                    style = VaultTypography.labelMedium,
-                                    color = OutlineColor
-                                )
-                            }
-                            inner()
-                        }
-                    )
-
-                    // Eye visibility toggle
-                    Box(
-                        modifier = Modifier
-                            .size(32.dp)
-                            .sheetIconButton()
-                            .clickable { isPasswordVisible = !isPasswordVisible },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
-                            contentDescription = tr(Res.string.toggle_visibility),
-                            tint = SecondarySlate,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
-                }
-            }
-
-            // Entropy Strength Track
+        Box {
             Column(
                 modifier = Modifier
+                    .guideBackground(guideOverlay != null)
                     .fillMaxWidth()
-                    .padding(horizontal = SheetHorizontalPadding)
-                    .padding(top = 8.dp)
+                    .padding(bottom = 32.dp)
+                    .verticalScroll(rememberScrollState())
+                    .navigationBarsPadding()
+                    .imePadding()
             ) {
-                val fraction = (entropyBits / 128f).coerceIn(0.05f, 1f)
-                val barColor = if (entropyBits >= 90) SecurityTertiaryBright else if (entropyBits >= 60) Color(0xFFF59E0B) else Color(0xFFBA1A1A)
+                Text(
+                    text = if (initialCredential == null) tr(Res.string.new_credential) else tr(Res.string.edit_credential),
+                    style = VaultTypography.headlineMedium,
+                    color = OnSurfacePrimary,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = SheetHorizontalPadding)
+                        .padding(bottom = 22.dp)
+                )
 
+                Text(
+                    text = tr(Res.string.category),
+                    style = VaultTypography.labelMedium,
+                    color = SecondarySlate,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = SheetHorizontalPadding)
+                        .padding(bottom = 10.dp)
+                )
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth().guideTarget("form_category"),
+                    contentPadding = PaddingValues(horizontal = SheetHorizontalPadding),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(categories) { cat ->
+                        val isCatSelected = cat.equals(category, ignoreCase = true)
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(
+                                    if (isCatSelected) ElectricPrimaryBright else SurfaceCanvas,
+                                    RoundedCornerShape(14.dp)
+                                )
+                                .then(
+                                    if (!isCatSelected) {
+                                        Modifier.border(1.dp, SheetFieldBorder, RoundedCornerShape(14.dp))
+                                    } else {
+                                        Modifier
+                                    }
+                                )
+                                .clickable { category = cat }
+                                .padding(horizontal = 14.dp, vertical = 7.dp)
+                        ) {
+                            Text(
+                                text = com.example.core.localization.categoryLabel(cat),
+                                style = VaultTypography.labelSmall,
+                                color = if (isCatSelected) OnPrimary else SecondarySlate,
+                                fontWeight = if (isCatSelected) FontWeight.Bold else FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Field 1: Website or Service
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(6.dp)
-                        .clip(RoundedCornerShape(3.dp))
-                        .background(Color(0xFFE2E8F0))
+                        .padding(horizontal = SheetHorizontalPadding)
+                        .height(52.dp)
+                        .guideTarget("service", SheetFieldShape)
+                        .sheetFieldWell()
+                        .padding(horizontal = 14.dp),
+                    contentAlignment = Alignment.CenterStart
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxHeight()
-                            .fillMaxWidth(fraction)
-                            .clip(RoundedCornerShape(3.dp))
-                            .background(barColor)
-                    )
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color(0xFFEBEEF3)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Public,
+                                contentDescription = null,
+                                tint = SecondarySlate,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        BasicTextField(
+                            value = service,
+                            onValueChange = { service = it },
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("service_input"),
+                            textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary, textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr),
+                            cursorBrush = SolidColor(ElectricPrimaryBright),
+                            singleLine = true,
+                            decorationBox = { inner ->
+                                if (service.isEmpty()) {
+                                    Text(
+                                        text = tr(Res.string.website_name),
+                                        style = VaultTypography.bodyMedium,
+                                        color = OutlineColor
+                                    )
+                                }
+                                inner()
+                            }
+                        )
+                    }
                 }
 
-                Spacer(modifier = Modifier.height(10.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
+                // Field 2: Username or Email
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = SheetHorizontalPadding)
+                        .height(52.dp)
+                        .sheetFieldWell()
+                        .padding(horizontal = 14.dp),
+                    contentAlignment = Alignment.CenterStart
                 ) {
-                    Text(
-                        text = plural(Res.plurals.password_length, password.length),
-                        style = VaultTypography.labelSmall,
-                        color = SecondarySlate
-                    )
-
-                    Box(
-                        modifier = Modifier
-                            .clip(RoundedCornerShape(12.dp))
-                            .background(Color(0xFFDBE1FF), RoundedCornerShape(12.dp))
-                            .clickable {
-                                val generated = PasswordGenerator.generate(GeneratorConfig(length = 20))
-                                password = generated.password
-                            }
-                            .padding(horizontal = 10.dp, vertical = 6.dp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color(0xFFEBEEF3)),
+                            contentAlignment = Alignment.Center
+                        ) {
                             Icon(
-                                imageVector = Icons.Default.AutoAwesome,
+                                imageVector = Icons.Default.AlternateEmail,
                                 contentDescription = null,
-                                tint = ElectricPrimaryBright,
-                                modifier = Modifier.size(13.dp)
+                                tint = SecondarySlate,
+                                modifier = Modifier.size(18.dp)
                             )
-                            Spacer(modifier = Modifier.width(3.dp))
-                            Text(
-                                text = tr(Res.string.gen),
-                                style = VaultTypography.labelSmall,
-                                color = ElectricPrimaryBright,
-                                fontWeight = FontWeight.Bold
+                        }
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        BasicTextField(
+                            value = username,
+                            onValueChange = { username = it },
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("username_input"),
+                            textStyle = VaultTypography.bodyMedium.copy(color = OnSurfacePrimary, textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr),
+                            cursorBrush = SolidColor(ElectricPrimaryBright),
+                            singleLine = true,
+                            decorationBox = { inner ->
+                                if (username.isEmpty()) {
+                                    Text(
+                                        text = tr(Res.string.email_or_username),
+                                        style = VaultTypography.bodyMedium,
+                                        color = OutlineColor
+                                    )
+                                }
+                                inner()
+                            }
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Field 3: Password / Secret
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = SheetHorizontalPadding)
+                        .height(52.dp)
+                        .guideTarget("password", SheetFieldShape)
+                        .sheetFieldWell()
+                        .padding(horizontal = 14.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .clip(RoundedCornerShape(10.dp))
+                                .background(Color(0xFFEBEEF3)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Lock,
+                                contentDescription = null,
+                                tint = SecondarySlate,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(10.dp))
+
+                        BasicTextField(
+                            value = password,
+                            onValueChange = { password = it },
+                            modifier = Modifier
+                                .weight(1f)
+                                .testTag("password_input"),
+                            textStyle = VaultTypography.labelMedium.copy(color = OnSurfacePrimary, textDirection = androidx.compose.ui.text.style.TextDirection.ContentOrLtr),
+                            cursorBrush = SolidColor(ElectricPrimaryBright),
+                            singleLine = true,
+                            visualTransformation = if (isPasswordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                            decorationBox = { inner ->
+                                if (password.isEmpty()) {
+                                    Text(
+                                        text = tr(Res.string.enter_master_password),
+                                        style = VaultTypography.labelMedium,
+                                        color = OutlineColor
+                                    )
+                                }
+                                inner()
+                            }
+                        )
+
+                        // Eye visibility toggle
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .sheetIconButton()
+                                .clickable { isPasswordVisible = !isPasswordVisible },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = if (isPasswordVisible) Icons.Default.VisibilityOff else Icons.Default.Visibility,
+                                contentDescription = tr(Res.string.toggle_visibility),
+                                tint = SecondarySlate,
+                                modifier = Modifier.size(16.dp)
                             )
                         }
                     }
                 }
-            }
 
-            Spacer(modifier = Modifier.height(40.dp))
+                // Entropy Strength Track
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = SheetHorizontalPadding)
+                        .padding(top = 8.dp)
+                ) {
+                    val fraction = (entropyBits / 128f).coerceIn(0.05f, 1f)
+                    val barColor = if (entropyBits >= 90) SecurityTertiaryBright else if (entropyBits >= 60) Color(0xFFF59E0B) else Color(0xFFBA1A1A)
 
-            // Save
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = SheetHorizontalPadding)
-                    .height(56.dp)
-                    .clip(RoundedCornerShape(20.dp))
-                    .background(ElectricPrimaryBright, RoundedCornerShape(20.dp))
-                    .clickable(enabled = service.isNotBlank() && password.isNotBlank() && !isSaving) {
-                        isSaving = true
-                        val cred = Credential(
-                            id = initialCredential?.id ?: 0L,
-                            syncId = initialCredential?.syncId.orEmpty(),
-                            service = service.trim(),
-                            username = username.trim(),
-                            password = password,
-                            category = category,
-                            websiteUrl = websiteUrl.trim(),
-                            notes = notes.trim(),
-                            isFavorite = initialCredential?.isFavorite ?: false,
-                            entropyBits = entropyBits
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(6.dp)
+                            .clip(RoundedCornerShape(3.dp))
+                            .background(Color(0xFFE2E8F0))
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .fillMaxWidth(fraction)
+                                .clip(RoundedCornerShape(3.dp))
+                                .background(barColor)
                         )
-                        saveAndDismiss(cred)
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Text(
-                    text = tr(Res.string.save),
-                    style = VaultTypography.headlineSmall,
-                    color = OnPrimary,
-                    fontWeight = FontWeight.SemiBold
-                )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = plural(Res.plurals.password_length, password.length),
+                            style = VaultTypography.labelSmall,
+                            color = SecondarySlate
+                        )
+
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(12.dp))
+                                .background(Color(0xFFDBE1FF), RoundedCornerShape(12.dp))
+                                .clickable {
+                                    val generated = PasswordGenerator.generate(GeneratorConfig(length = 20))
+                                    password = generated.password
+                                }
+                                .padding(horizontal = 10.dp, vertical = 6.dp)
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    imageVector = Icons.Default.AutoAwesome,
+                                    contentDescription = null,
+                                    tint = ElectricPrimaryBright,
+                                    modifier = Modifier.size(13.dp)
+                                )
+                                Spacer(modifier = Modifier.width(3.dp))
+                                Text(
+                                    text = tr(Res.string.gen),
+                                    style = VaultTypography.labelSmall,
+                                    color = ElectricPrimaryBright,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            }
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(40.dp))
+
+                // Save
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = SheetHorizontalPadding)
+                        .height(56.dp)
+                        .guideTarget("save", RoundedCornerShape(20.dp))
+                        .clip(RoundedCornerShape(20.dp))
+                        .background(ElectricPrimaryBright, RoundedCornerShape(20.dp))
+                        .clickable(enabled = service.isNotBlank() && password.isNotBlank() && !isSaving) {
+                            isSaving = true
+                            val cred = Credential(
+                                id = initialCredential?.id ?: 0L,
+                                syncId = initialCredential?.syncId.orEmpty(),
+                                service = service.trim(),
+                                username = username.trim(),
+                                password = password,
+                                category = category,
+                                websiteUrl = websiteUrl.trim(),
+                                notes = notes.trim(),
+                                isFavorite = initialCredential?.isFavorite ?: false,
+                                entropyBits = entropyBits
+                            )
+                            saveAndDismiss(cred)
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = tr(Res.string.save),
+                        style = VaultTypography.headlineSmall,
+                        color = OnPrimary,
+                        fontWeight = FontWeight.SemiBold
+                    )
+                }
             }
+            guideOverlay?.invoke()
         }
     }
 }

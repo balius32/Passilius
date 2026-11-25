@@ -1,5 +1,7 @@
 package com.example.presentation.settings
 
+import com.example.presentation.guide.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import com.example.core.localization.*
 
 import com.example.core.localization.tr
@@ -25,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Category
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Fingerprint
 import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.Lock
@@ -72,6 +75,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     onBack: () -> Unit,
     onLockVault: () -> Unit,
+    onOpenGuide: () -> Unit = {},
     onManageCategories: () -> Unit,
     onSyncDevices: () -> Unit = {},
     onChangeMasterPassword: () -> Unit = {},
@@ -119,7 +123,18 @@ fun SettingsScreen(
             .fillMaxSize()
             .background(SurfaceCanvas)
     ) {
+        val guideListState = rememberLazyListState()
+        GuideScroll(guideListState, when (LocalGuideTarget.current?.step?.id) {
+            "report" -> 1
+            "biometric", "clipboard" -> 2
+            "master" -> 3
+            "sync" -> 4
+            "categories" -> 6
+            "lock" -> 8
+            else -> null
+        })
         LazyColumn(
+            state = guideListState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(18.dp)
@@ -167,6 +182,7 @@ fun SettingsScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .guideTarget("report", RoundedCornerShape(24.dp))
                         .neuFlat(
                             shape = RoundedCornerShape(24.dp),
                             cornerRadius = 24.dp,
@@ -296,6 +312,7 @@ fun SettingsScreen(
                                     }
                                 }
                                 TactileToggleSwitch(
+                                    modifier = Modifier.guideTarget("biometric", RoundedCornerShape(14.dp)),
                                     checked = biometricEnabled,
                                     onCheckedChange = { enabled ->
                                         if (enabled) {
@@ -367,6 +384,7 @@ fun SettingsScreen(
                                 }
                             }
                             TactileToggleSwitch(
+                                modifier = Modifier.guideTarget("clipboard", RoundedCornerShape(14.dp)),
                                 checked = autoClearClipboard,
                                 onCheckedChange = { enabled ->
                                     autoClearClipboard = enabled
@@ -382,7 +400,7 @@ fun SettingsScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag("change_master_password_row")
+                        .guideTarget("master", RoundedCornerShape(24.dp)).testTag("change_master_password_row")
                         .neuFlat(
                             shape = RoundedCornerShape(24.dp),
                             cornerRadius = 24.dp,
@@ -433,7 +451,7 @@ fun SettingsScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag("sync_devices_row")
+                        .guideTarget("sync", RoundedCornerShape(24.dp)).testTag("sync_devices_row")
                         .neuFlat(
                             shape = RoundedCornerShape(24.dp),
                             cornerRadius = 24.dp,
@@ -510,7 +528,7 @@ fun SettingsScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .testTag("manage_categories_row")
+                        .guideTarget("categories", RoundedCornerShape(24.dp)).testTag("manage_categories_row")
                         .neuFlat(
                             shape = RoundedCornerShape(24.dp),
                             cornerRadius = 24.dp,
@@ -557,13 +575,45 @@ fun SettingsScreen(
                 }
             }
 
+            item {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .neuFlat(backgroundColor = SurfaceContainerLowest)
+                        .clickable(onClick = onOpenGuide)
+                        .padding(18.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Info,
+                        contentDescription = null,
+                        tint = ElectricPrimaryBright,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(10.dp))
+                    Text(
+                        text = tr(Res.string.guide_menu),
+                        modifier = Modifier.weight(1f),
+                        style = VaultTypography.bodyMedium,
+                        color = OnSurfacePrimary,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                        contentDescription = null,
+                        tint = SecondarySlate,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+            }
+
             // Lock Vault Now CTA
             item {
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp)
-                        .testTag("lock_vault_now_btn")
+                        .guideTarget("lock", RoundedCornerShape(22.dp)).testTag("lock_vault_now_btn")
                         .neuFlat(
                             shape = RoundedCornerShape(22.dp),
                             cornerRadius = 22.dp,

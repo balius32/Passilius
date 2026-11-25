@@ -1,5 +1,7 @@
 package com.example.presentation.generator
 
+import com.example.presentation.guide.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import com.example.core.localization.*
 
 import com.example.core.localization.tr
@@ -78,7 +80,15 @@ fun GeneratorScreen(
             .fillMaxSize()
             .background(SurfaceCanvas)
     ) {
+        val guideListState = rememberLazyListState()
+        GuideScroll(guideListState, when (LocalGuideTarget.current?.step?.id) {
+            "length" -> 2
+            "characters" -> 3
+            "regenerate", "copy" -> 1
+            else -> null
+        })
         LazyColumn(
+            state = guideListState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(18.dp)
@@ -213,7 +223,7 @@ fun GeneratorScreen(
                                 Box(
                                     modifier = Modifier
                                         .size(38.dp)
-                                        .testTag("regenerate_btn")
+                                        .guideTarget("regenerate", CircleShape).testTag("regenerate_btn")
                                         .neuFlat(
                                             shape = CircleShape,
                                             cornerRadius = 19.dp,
@@ -239,7 +249,7 @@ fun GeneratorScreen(
                                 Box(
                                     modifier = Modifier
                                         .size(38.dp)
-                                        .testTag("quick_copy_btn")
+                                        .guideTarget("copy", CircleShape).testTag("quick_copy_btn")
                                         .neuFlat(
                                             shape = CircleShape,
                                             cornerRadius = 19.dp,
@@ -266,6 +276,7 @@ fun GeneratorScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .guideTarget("length", RoundedCornerShape(24.dp))
                         .neuFlat(
                             shape = RoundedCornerShape(24.dp),
                             cornerRadius = 24.dp,
@@ -348,6 +359,7 @@ fun GeneratorScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .guideTarget("characters", RoundedCornerShape(24.dp))
                         .neuFlat(
                             shape = RoundedCornerShape(24.dp),
                             cornerRadius = 24.dp,

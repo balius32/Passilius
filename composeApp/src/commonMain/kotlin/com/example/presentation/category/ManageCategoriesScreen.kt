@@ -1,5 +1,7 @@
 package com.example.presentation.category
 
+import com.example.presentation.guide.*
+import androidx.compose.foundation.lazy.rememberLazyListState
 import com.example.core.localization.tr
 import passilius.composeapp.generated.resources.*
 
@@ -60,7 +62,15 @@ fun ManageCategoriesScreen(
             .fillMaxSize()
             .background(SurfaceCanvas)
     ) {
+        val guideListState = rememberLazyListState()
+        val guideCategory = uiState.categories.firstOrNull { viewModel.canRename(it) || viewModel.canDelete(it) }
+        GuideScroll(guideListState, when (LocalGuideTarget.current?.step?.id) {
+            "category_add" -> 0
+            "category_edit" -> guideCategory?.let { uiState.categories.indexOf(it) + 1 }
+            else -> null
+        })
         LazyColumn(
+            state = guideListState,
             modifier = Modifier.fillMaxSize(),
             contentPadding = contentPadding,
             verticalArrangement = Arrangement.spacedBy(14.dp)
@@ -104,7 +114,7 @@ fun ManageCategoriesScreen(
                     Box(
                         modifier = Modifier
                             .size(40.dp)
-                            .testTag("manage_category_add")
+                            .guideTarget("category_add", CircleShape).testTag("manage_category_add")
                             .neuFlat(
                                 shape = CircleShape,
                                 cornerRadius = 20.dp,
@@ -127,7 +137,7 @@ fun ManageCategoriesScreen(
                 val canDelete = viewModel.canDelete(category)
                 val canRename = viewModel.canRename(category)
                 Box(
-                    modifier = Modifier
+                    modifier = (if (category == guideCategory) Modifier.guideTarget("category_edit", RoundedCornerShape(20.dp)) else Modifier)
                         .fillMaxWidth()
                         .heightIn(min = 64.dp)
                         .neuFlat(
