@@ -38,9 +38,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import kotlin.math.roundToInt
 import com.example.core.designsystem.ElectricPrimaryBright
@@ -177,6 +179,7 @@ fun TactileSlider(
     steps: Int = 0
 ) {
     var isDragging by remember { mutableStateOf(false) }
+    val layoutDirection = LocalLayoutDirection.current
     var localValue by remember { mutableFloatStateOf(value) }
     val onValueChangeState by rememberUpdatedState(onValueChange)
 
@@ -200,7 +203,13 @@ fun TactileSlider(
         val fraction = ((displayValue - valueRange.start) / rangeSpan).coerceIn(0f, 1f)
 
         fun valueFromX(x: Float): Float {
-            val rawFraction = (x / maxPx).coerceIn(0f, 1f)
+            val positionFraction = (x / maxPx).coerceIn(0f, 1f)
+            // Pointer coordinates are physical; the track and thumb follow layout direction.
+            val rawFraction = if (layoutDirection == LayoutDirection.Rtl) {
+                1f - positionFraction
+            } else {
+                positionFraction
+            }
             var newValue = valueRange.start + rawFraction * rangeSpan
             if (steps > 0) {
                 val stepSize = rangeSpan / (steps + 1)
@@ -214,7 +223,7 @@ fun TactileSlider(
         Box(
             modifier = Modifier
                 .matchParentSize()
-                .pointerInput(valueRange, maxPx, steps) {
+                .pointerInput(valueRange, maxPx, steps, layoutDirection) {
                     awaitEachGesture {
                         val down = awaitFirstDown()
                         isDragging = true

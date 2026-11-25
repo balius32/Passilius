@@ -175,7 +175,16 @@ base {
   archivesName.set("passilius")
 }
 
-fun renameReleaseArtifact(dir: File, extension: String, newFileName: String) {
+class RenameReleaseArtifacts(
+  private val directories: List<File>,
+  private val extension: String,
+  private val newFileName: String,
+) : org.gradle.api.Action<org.gradle.api.Task>, java.io.Serializable {
+  override fun execute(task: org.gradle.api.Task) {
+    directories.forEach { renameReleaseArtifact(it, extension, newFileName) }
+  }
+
+  private fun renameReleaseArtifact(dir: File, extension: String, newFileName: String) {
   if (!dir.isDirectory) return
   dir.listFiles()
     ?.filter { it.isFile && it.extension.equals(extension, ignoreCase = true) && it.name != newFileName }
@@ -199,6 +208,16 @@ fun renameReleaseArtifact(dir: File, extension: String, newFileName: String) {
     }
   }
 }
+}
+
+class ValidateReleaseSigning(
+  private val available: Boolean,
+  private val message: String,
+) : org.gradle.api.Action<org.gradle.api.Task>, java.io.Serializable {
+  override fun execute(task: org.gradle.api.Task) {
+    if (!available) throw org.gradle.api.GradleException(message)
+  }
+}
 
 val releaseSigningOk = hasReleaseSigning
 val releaseSigningError =
@@ -209,27 +228,15 @@ tasks.configureEach {
   if (name != "assembleRelease" && name != "bundleRelease") return@configureEach
   val ok = releaseSigningOk
   val msg = releaseSigningError
-  doFirst {
-    if (!ok) {
-      throw org.gradle.api.GradleException(msg)
-    }
-  }
-  doLast {
-    when (name) {
-      "assembleRelease" -> {
+  doFirst(ValidateReleaseSigning(ok, msg))
+  val extension = if (name == "assembleRelease") "apk" else "aab"
+  val outputPath = if (extension == "apk") "outputs/apk/release" else "outputs/bundle/release"
+  doLast(RenameReleaseArtifacts(
         listOf(
-          layout.buildDirectory.dir("outputs/apk/release").get().asFile,
+          layout.buildDirectory.dir(outputPath).get().asFile,
           layout.projectDirectory.dir("release").asFile,
-        ).forEach { renameReleaseArtifact(it, "apk", "passilius.apk") }
-      }
-      "bundleRelease" -> {
-        listOf(
-          layout.buildDirectory.dir("outputs/bundle/release").get().asFile,
-          layout.projectDirectory.dir("release").asFile,
-        ).forEach { renameReleaseArtifact(it, "aab", "passilius.aab") }
-      }
-    }
-  }
+        ), extension, "passilius.$extension"
+  ))
 }
 
 compose.desktop {
